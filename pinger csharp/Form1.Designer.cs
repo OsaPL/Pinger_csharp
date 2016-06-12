@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.label1 = new System.Windows.Forms.Label();
+            System.Windows.Forms.Label label2;
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.placementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.leftLowerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,10 +54,12 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.resetlocation = new System.Windows.Forms.Timer(this.components);
+            label2 = new System.Windows.Forms.Label();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -266,6 +268,17 @@
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.label1.ContextMenuStrip = this.contextMenuStrip;
+            this.label1.Location = new System.Drawing.Point(12, 1);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(50, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "(1)999ms";
+            // 
             // button1
             // 
             this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
@@ -277,6 +290,9 @@
             this.button1.Size = new System.Drawing.Size(14, 14);
             this.button1.TabIndex = 1;
             this.button1.UseVisualStyleBackColor = false;
+            this.button1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.button1_MouseDown);
+            this.button1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.button1_MouseMove);
+            this.button1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.button1_MouseUp);
             // 
             // label2
             // 

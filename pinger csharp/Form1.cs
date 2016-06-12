@@ -21,7 +21,7 @@ namespace pinger_csharp
         }
         private double fontsize;
         private void Form1_Load(object sender, EventArgs e)
-        { 
+        {
             string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
             label1.ForeColor = Color.FromArgb(64, 64, 64);
             label2.ForeColor = Color.FromArgb(64, 64, 64);
@@ -114,7 +114,7 @@ namespace pinger_csharp
                         pingadress2.Text = "Wrong address";
                     }
                 }
-                Size = new Size(14 + label1.Size.Width + label2.Size.Width + 10, label1.Height);
+                Size = new Size(14 + label1.Size.Width + label2.Size.Width , label1.Height);
                 label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
             }
             else
@@ -151,7 +151,7 @@ namespace pinger_csharp
                         pingadress2.Text = "Wrong address";
                     }
                 }
-                Size = new Size(14 + label1.Size.Width + label2.Size.Width + 10, label1.Height);
+                Size = new Size(14 + label1.Size.Width + label2.Size.Width, label1.Height);
                 label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
             }
         }
@@ -242,7 +242,7 @@ namespace pinger_csharp
 
         private void OwnX_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if(e.KeyChar == (char)13)
+            if (e.KeyChar == (char)13)
             {
                 Location = new Point((int)Parsestring(OwnX.Text), (int)Parsestring(OwnY.Text));
             }
@@ -251,7 +251,7 @@ namespace pinger_csharp
         private IPAddress validatedaddress2;
         private void toolStripTextBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if(e.KeyChar == (char)13)
+            if (e.KeyChar == (char)13)
             {
                 if (IPAddress.TryParse(pingadress1.Text, out validatedaddress1))
                 {
@@ -300,15 +300,18 @@ namespace pinger_csharp
                 label1.Text = "Address!";
                 label1.ForeColor = Color.BlueViolet;
             }
-            if (pingadress2.Text != "Wrong address") { 
+            if (pingadress2.Text != "Wrong address")
+            {
                 th2 = new Thread(pingthread2);
-            th2.Start();
+                th2.Start();
             }
             else
             {
                 label2.Text = "Address!";
                 label2.ForeColor = Color.BlueViolet;
             }
+            if (!IsOnScreen(this))
+                Location = new Point(0, 0);
         }
         private void pingthread1()
         {
@@ -429,8 +432,8 @@ namespace pinger_csharp
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            
-            string[] settings= { "", "", "", "", "", "", "", "" };
+
+            string[] settings = { "", "", "", "", "", "", "", "" };
             settings[0] = Location.X.ToString();
             settings[1] = Location.Y.ToString();
             settings[2] = fontsize.ToString();
@@ -442,20 +445,20 @@ namespace pinger_csharp
                 settings[4] = false.ToString();
             else
                 settings[4] = true.ToString();
-            if(validatedaddress1 == null)
-              validatedaddress1 = IPAddress.Parse("8.8.8.8");
-            if(validatedaddress2 == null)
-              validatedaddress2 = IPAddress.Parse("8.8.8.8");
+            if (validatedaddress1 == null)
+                validatedaddress1 = IPAddress.Parse("8.8.8.8");
+            if (validatedaddress2 == null)
+                validatedaddress2 = IPAddress.Parse("8.8.8.8");
 
             settings[5] = validatedaddress1.ToString();
             settings[6] = validatedaddress2.ToString();
-            
+
 
             string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
             System.IO.FileInfo file = new System.IO.FileInfo(filepath);
             file.Directory.Create();
             System.IO.File.WriteAllLines(file.FullName, settings, Encoding.UTF8);
-           
+
         }
 
         private void biggerToolStripMenuItem_Click(object sender, EventArgs e)
@@ -463,7 +466,7 @@ namespace pinger_csharp
             fontsize++;
             label1.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
             label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
-            Size = new Size(14 + label1.Size.Width + label2.Size.Width + 10, label1.Height);
+            Size = new Size(14 + label1.Size.Width + label2.Size.Width, label1.Height);
             label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
         }
 
@@ -472,21 +475,21 @@ namespace pinger_csharp
             fontsize--;
             label1.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
             label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
-            Size = new Size(14 + label1.Size.Width + label2.Size.Width + 10, label1.Height);
+            Size = new Size(14 + label1.Size.Width + label2.Size.Width, label1.Height);
             label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
         }
 
         private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(label1.BackColor == Color.FromArgb(64, 64, 64))
+            if (label1.BackColor == Color.FromArgb(64, 64, 64))
             {
                 label1.BackColor = Color.Black;
                 label2.BackColor = Color.Black;
             }
             else
             {
-                label1.BackColor = Color.FromArgb(64,64,64);
-                label2.BackColor = Color.FromArgb(64,64,64);
+                label1.BackColor = Color.FromArgb(64, 64, 64);
+                label2.BackColor = Color.FromArgb(64, 64, 64);
             }
         }
 
@@ -506,9 +509,54 @@ namespace pinger_csharp
 
         private void resetlocation_Tick(object sender, EventArgs e)
         {
-            Size = new Size(14 + label1.Size.Width + label2.Size.Width + 10, label1.Height);
+            Size = new Size(14 + label1.Size.Width + label2.Size.Width , label1.Height);
             label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
             resetlocation.Enabled = false;
+        }
+
+        private bool mouseDown;
+        private Point lastPos;
+        private void button1_MouseUp(object sender, MouseEventArgs e)
+        {
+            mouseDown = false;
+        }
+
+        private void button1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                mouseDown = true;
+                lastPos = MousePosition;
+            }
+        }
+
+        private void button1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (mouseDown)
+            {
+                int xoffset = MousePosition.X - lastPos.X;
+                int yoffset = MousePosition.Y - lastPos.Y;
+                Left += xoffset;
+                Top += yoffset;
+                lastPos = MousePosition;
+                OwnX.Text = "" + Location.X;
+                OwnY.Text = "" + Location.Y;
+            }
+        }
+        public bool IsOnScreen(Form form)
+        {
+            Screen[] screens = Screen.AllScreens;
+            foreach (Screen screen in screens)
+            {
+                Rectangle formRectangle = new Rectangle(form.Left, form.Top, form.Width, form.Height);
+
+                if (screen.WorkingArea.Contains(formRectangle))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
