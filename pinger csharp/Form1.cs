@@ -83,77 +83,13 @@ namespace pinger_csharp
                 }
                 pingadress1.Text = settings[5];
                 pingadress2.Text = settings[6];
-                if (IPAddress.TryParse(pingadress1.Text, out validatedaddress1))
-                {
-                    pingadress1.Text = validatedaddress1.ToString();
-
-                }
-                else {
-                    try
-                    {
-                        validatedaddress1 = Dns.GetHostAddresses(pingadress1.Text)[0];
-                    }
-                    catch (Exception)
-                    {
-                        pingadress1.Text = "Wrong address";
-                    }
-                }
-
-                if (IPAddress.TryParse(pingadress2.Text, out validatedaddress2))
-                {
-                    pingadress2.Text = validatedaddress2.ToString();
-
-                }
-                else {
-                    try
-                    {
-                        validatedaddress2 = Dns.GetHostAddresses(pingadress2.Text)[0];
-                    }
-                    catch (Exception)
-                    {
-                        pingadress2.Text = "Wrong address";
-                    }
-                }
-                Size = new Size(14 + label1.Size.Width + label2.Size.Width , label1.Height);
-                label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
             }
             else
             {
                 fontsize = 9.75;
-                if (IPAddress.TryParse(pingadress1.Text, out validatedaddress1))
-                {
-                    pingadress1.Text = validatedaddress1.ToString();
-
-                }
-                else {
-                    try
-                    {
-                        validatedaddress1 = Dns.GetHostAddresses(pingadress1.Text)[0];
-                    }
-                    catch (Exception)
-                    {
-                        pingadress1.Text = "Wrong address";
-                    }
-                }
-
-                if (IPAddress.TryParse(pingadress2.Text, out validatedaddress2))
-                {
-                    pingadress2.Text = validatedaddress2.ToString();
-
-                }
-                else {
-                    try
-                    {
-                        validatedaddress2 = Dns.GetHostAddresses(pingadress2.Text)[0];
-                    }
-                    catch (Exception)
-                    {
-                        pingadress2.Text = "Wrong address";
-                    }
-                }
-                Size = new Size(14 + label1.Size.Width + label2.Size.Width, label1.Height);
-                label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
             }
+            checkipadress();
+            refreshsize();
         }
         private double Parsestring(String strings)
         {
@@ -253,37 +189,7 @@ namespace pinger_csharp
         {
             if (e.KeyChar == (char)13)
             {
-                if (IPAddress.TryParse(pingadress1.Text, out validatedaddress1))
-                {
-                    pingadress1.Text = validatedaddress1.ToString();
-
-                }
-                else {
-                    try
-                    {
-                        validatedaddress1 = Dns.GetHostAddresses(pingadress1.Text)[0];
-                    }
-                    catch (Exception)
-                    {
-                        pingadress1.Text = "Wrong address";
-                    }
-                }
-
-                if (IPAddress.TryParse(pingadress2.Text, out validatedaddress2))
-                {
-                    pingadress2.Text = validatedaddress2.ToString();
-
-                }
-                else {
-                    try
-                    {
-                        validatedaddress2 = Dns.GetHostAddresses(pingadress2.Text)[0];
-                    }
-                    catch (Exception)
-                    {
-                        pingadress2.Text = "Wrong address";
-                    }
-                }
+                checkipadress();
             }
         }
         private Thread th1;
@@ -310,8 +216,26 @@ namespace pinger_csharp
                 label2.Text = "Address!";
                 label2.ForeColor = Color.BlueViolet;
             }
-            if (!IsOnScreen(this))
-                Location = new Point(0, 0);
+            if (!IsOnScreen())
+            {
+                //Location = new Point(0, 0);
+                Rectangle resolution = Screen.PrimaryScreen.Bounds;
+
+                int h = resolution.Height;
+                int w = resolution.Width;
+                int y = 0, x = 0;
+                if (Location.X > w)
+                {
+                    x = w;
+                }
+                if (Location.Y > h)
+                {
+                    y = h;
+                }
+                Location = new Point(x, y);
+                mouseDown = false;
+                this.Focus();
+            }
         }
         private void pingthread1()
         {
@@ -464,19 +388,15 @@ namespace pinger_csharp
         private void biggerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             fontsize++;
-            label1.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
-            label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
-            Size = new Size(14 + label1.Size.Width + label2.Size.Width, label1.Height);
-            label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
+            setfontsize();
+            refreshsize();
         }
 
         private void smallerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             fontsize--;
-            label1.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
-            label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
-            Size = new Size(14 + label1.Size.Width + label2.Size.Width, label1.Height);
-            label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
+            setfontsize();
+            refreshsize();
         }
 
         private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
@@ -509,8 +429,7 @@ namespace pinger_csharp
 
         private void resetlocation_Tick(object sender, EventArgs e)
         {
-            Size = new Size(14 + label1.Size.Width + label2.Size.Width , label1.Height);
-            label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
+            refreshsize();
             resetlocation.Enabled = false;
         }
 
@@ -543,20 +462,73 @@ namespace pinger_csharp
                 OwnY.Text = "" + Location.Y;
             }
         }
-        public bool IsOnScreen(Form form)
+        private bool IsOnScreen()
         {
             Screen[] screens = Screen.AllScreens;
             foreach (Screen screen in screens)
             {
-                Rectangle formRectangle = new Rectangle(form.Left, form.Top, form.Width, form.Height);
+                Rectangle controlRectangle = new Rectangle(this.Left, this.Top, this.button1.Width, this.button1.Height);
 
-                if (screen.WorkingArea.Contains(formRectangle))
+                if (screen.WorkingArea.Contains(controlRectangle))
                 {
                     return true;
                 }
             }
-
             return false;
         }
+
+        private void refreshsize()
+        {
+            Size = new Size(14 + label1.Size.Width + label2.Size.Width, label1.Height);
+            label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
+        }
+        private void setfontsize()
+        {
+            if (label1.Font.Style == FontStyle.Bold)
+            {
+                label1.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Bold);
+                label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Bold);
+            }
+            else
+            {
+                label1.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
+                label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
+            }
+        }
+        private void checkipadress()
+        {
+            if (IPAddress.TryParse(pingadress1.Text, out validatedaddress1))
+            {
+                pingadress1.Text = validatedaddress1.ToString();
+
+            }
+            else {
+                try
+                {
+                    validatedaddress1 = Dns.GetHostAddresses(pingadress1.Text)[0];
+                }
+                catch (Exception)
+                {
+                    pingadress1.Text = "Wrong address";
+                }
+            }
+
+            if (IPAddress.TryParse(pingadress2.Text, out validatedaddress2))
+            {
+                pingadress2.Text = validatedaddress2.ToString();
+
+            }
+            else {
+                try
+                {
+                    validatedaddress2 = Dns.GetHostAddresses(pingadress2.Text)[0];
+                }
+                catch (Exception)
+                {
+                    pingadress2.Text = "Wrong address";
+                }
+            }
+        }
     }
+
 }
