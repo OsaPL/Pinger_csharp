@@ -23,19 +23,19 @@ namespace pinger_csharp
         private void Form1_Load(object sender, EventArgs e)
         {
             string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
-            label1.ForeColor = Color.FromArgb(64, 64, 64);
+            label1.ForeColor = Color.FromArgb(64, 64, 64); 
             label2.ForeColor = Color.FromArgb(64, 64, 64);
-            if (System.IO.File.Exists(filepath))
+            if (System.IO.File.Exists(filepath))  //if cfg file exists
             {
                 System.IO.FileInfo file = new System.IO.FileInfo(filepath);
-                file.Directory.Create(); // If the directory already exists, this method does nothing.
+                file.Directory.Create(); // if the directory already exists, this method does nothing, just a failsafe
                 string[] settings = System.IO.File.ReadAllLines(file.FullName, Encoding.UTF8);
                 Rectangle resolution = Screen.PrimaryScreen.Bounds;
 
                 h = resolution.Height;
                 w = resolution.Width;
                 int x = 0, y = 0;
-                if (System.Convert.ToInt32(settings[0]) < w && System.Convert.ToInt32(settings[0]) < h)
+                if (System.Convert.ToInt32(settings[0]) < w && System.Convert.ToInt32(settings[0]) < h) //if out of bounds of the main screen
                 {
                     OwnX.Text = settings[0];
                     OwnY.Text = settings[1];
@@ -57,11 +57,11 @@ namespace pinger_csharp
                     Location = new Point(x, y);
                 }
                 fontsize = System.Convert.ToDouble(settings[2]);
-                if (fontsize <= 0)
+                if (fontsize <= 0)  //cant be negative
                 {
                     fontsize = 9.75;
                 }
-                if (System.Convert.ToBoolean(settings[3]))
+                if (System.Convert.ToBoolean(settings[3])) // with or without background
                 {
                     label1.BackColor = Color.FromArgb(64, 64, 64);
                     label2.BackColor = Color.FromArgb(64, 64, 64);
@@ -71,7 +71,7 @@ namespace pinger_csharp
                     label1.BackColor = Color.Black;
                     label2.BackColor = Color.Black;
                 }
-                if (System.Convert.ToBoolean(settings[4]))
+                if (System.Convert.ToBoolean(settings[4]))//bold or not
                 {
                     label1.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Bold);
                     label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Bold);
@@ -174,7 +174,7 @@ namespace pinger_csharp
 
         private void OwnX_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == (char)13)
+            if (e.KeyChar == (char)13)//on enter press, change location
             {
                 Location = new Point((int)Parsestring(OwnX.Text), (int)Parsestring(OwnY.Text));
             }
@@ -183,16 +183,16 @@ namespace pinger_csharp
         private IPAddress validatedaddress2;
         private void toolStripTextBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == (char)13)
+            if (e.KeyChar == (char)13)//on enter press, check if ip adresses are valid, and then ping
             {
                 checkipadress();
             }
         }
         private Thread th1;
         private Thread th2;
-        private void timer1_Tick(object sender, EventArgs e)
+        private void timer1_Tick(object sender, EventArgs e) 
         {
-            if (pingadress1.Text != "Wrong address")
+            if (pingadress1.Text != "Wrong address") 
             {
                 th1 = new Thread(pingthread1);
                 th1.Start();
@@ -212,7 +212,7 @@ namespace pinger_csharp
                 label2.Text = "Address!";
                 label2.ForeColor = Color.White;
             }
-            if (!IsOnScreen())
+            if (!IsOnScreen()) //check if button is on screen
             {
                 //Location = new Point(0, 0);
                 Rectangle resolution = Screen.PrimaryScreen.Bounds;
@@ -247,6 +247,7 @@ namespace pinger_csharp
                 }
                 else {
                     label1.Text = "(1)" + ping + "ms";
+                    //using 2 diffrent functions to create green to yellow to red spectrum for the ranges 25 to 230 ms.
                     if (ping > 230)
                         ping = 230;
 
@@ -352,7 +353,7 @@ namespace pinger_csharp
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-
+            //on close save everything
             string[] settings = { "", "", "", "", "", "", "", "" };
             settings[0] = Location.X.ToString();
             settings[1] = Location.Y.ToString();
@@ -391,7 +392,7 @@ namespace pinger_csharp
         private void smallerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             fontsize--;
-            if (fontsize < 0)
+            if (fontsize < 0)//cant be negative
                 fontsize = 0.25;
             setfontsize();
             refreshsize();
@@ -426,12 +427,13 @@ namespace pinger_csharp
             }
         }
 
-        private void resetlocation_Tick(object sender, EventArgs e)
+        private void resetlocation_Tick(object sender, EventArgs e)//one time size refresh to make sure labels are alligned properly
         {
             refreshsize();
             resetlocation.Enabled = false;
         }
 
+        // mouse dragging by button
         private bool mouseDown;
         private Point lastPos;
         private void button1_MouseUp(object sender, MouseEventArgs e)
@@ -476,7 +478,7 @@ namespace pinger_csharp
             return false;
         }
 
-        private void refreshsize()
+        private void refreshsize() //recalculates form size and label placement
         {
             label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
             if (button1.Height < this.Height)
@@ -488,7 +490,7 @@ namespace pinger_csharp
                 Size = new Size(14 + label1.Size.Width + label2.Size.Width, label1.Height);
             }
         }
-        private void setfontsize()
+        private void setfontsize()//updates font size and style
         {
             if (label1.Font.Style == FontStyle.Bold)
             {
@@ -501,7 +503,7 @@ namespace pinger_csharp
                 label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
             }
         }
-        private void checkipadress()
+        private void checkipadress() //checks if address is valid, without pinging!
         {
             if (IPAddress.TryParse(pingadress1.Text, out validatedaddress1))
             {
