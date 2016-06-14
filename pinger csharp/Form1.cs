@@ -391,8 +391,11 @@ namespace pinger_csharp
         private void smallerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             fontsize--;
+            if (fontsize < 0)
+                fontsize = 0.25;
             setfontsize();
             refreshsize();
+            
         }
 
         private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
