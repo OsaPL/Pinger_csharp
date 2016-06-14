@@ -122,10 +122,6 @@ namespace pinger_csharp
             }
             return number;
         }
-        private String ping1;
-        private String ping2;
-        private double lastping1;
-        private double lastping2;
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -204,7 +200,7 @@ namespace pinger_csharp
             else
             {
                 label1.Text = "Address!";
-                label1.ForeColor = Color.BlueViolet;
+                label1.ForeColor = Color.White;
             }
             if (pingadress2.Text != "Wrong address")
             {
@@ -214,7 +210,7 @@ namespace pinger_csharp
             else
             {
                 label2.Text = "Address!";
-                label2.ForeColor = Color.BlueViolet;
+                label2.ForeColor = Color.White;
             }
             if (!IsOnScreen())
             {
@@ -247,7 +243,7 @@ namespace pinger_csharp
                 if (ping == 0)
                 {
                     label1.Text = "Timeout!";
-                    label1.ForeColor = Color.BlueViolet;
+                    label1.ForeColor = Color.White;
                 }
                 else {
                     label1.Text = "(1)" + ping + "ms";
@@ -297,7 +293,7 @@ namespace pinger_csharp
                 if (ping == 0)
                 {
                     label1.Text = "Timeout!";
-                    label1.ForeColor = Color.BlueViolet;
+                    label1.ForeColor = Color.White;
                 }
                 else {
                     label2.Text = "(2)" + ping + "ms";
@@ -345,7 +341,7 @@ namespace pinger_csharp
                 double time = Parsestring(timeset.Text);
                 if (time < 200)
                 {
-                    timeset.Text = "To small interval!";
+                    timeset.Text = "";
                 }
                 else
                 {
@@ -479,8 +475,15 @@ namespace pinger_csharp
 
         private void refreshsize()
         {
-            Size = new Size(14 + label1.Size.Width + label2.Size.Width, label1.Height);
             label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
+            if (button1.Height < this.Height)
+            {
+                Size = new Size(14 + label1.Size.Width + label2.Size.Width, this.Height);
+            }
+            else
+            {
+                Size = new Size(14 + label1.Size.Width + label2.Size.Width, label1.Height);
+            }
         }
         private void setfontsize()
         {
