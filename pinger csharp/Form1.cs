@@ -61,18 +61,28 @@ namespace pinger_csharp
                 {
                     fontsize = 9.75;
                 }
-                var cvt = new FontConverter();
-                Font f = cvt.ConvertFromString(settings[3]) as Font;
-                label1.Font = f;
-                label2.Font = f;
+                if (System.Convert.ToBoolean(settings[3])) // with or without background
+                {
+                    label1.BackColor = Color.FromArgb(64, 64, 64);
+                    label2.BackColor = Color.FromArgb(64, 64, 64);
+                }
+                else
+                {
+                    label1.BackColor = Color.Black;
+                    label2.BackColor = Color.Black;
+                }
+                if (System.Convert.ToBoolean(settings[4]))//bold or not
+                {
+                    label1.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Bold);
+                    label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Bold);
+                }
+                else
+                {
+                    label1.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
+                    label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
+                }
                 pingadress1.Text = settings[5];
                 pingadress2.Text = settings[6];
-                int r, g, b;
-                r = Convert.ToInt16(settings[7]);
-                g = Convert.ToInt16(settings[8]);
-                b = Convert.ToInt16(settings[9]);
-                label1.BackColor = Color.FromArgb(r, g, b);
-                label2.BackColor = Color.FromArgb(r, g, b);
             }
             else
             {
@@ -344,13 +354,18 @@ namespace pinger_csharp
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             //on close save everything
-            string[] settings = { "", "", "", "", "", "", "", "", "", "", "" };
+            string[] settings = { "", "", "", "", "", "", "", "" };
             settings[0] = Location.X.ToString();
             settings[1] = Location.Y.ToString();
             settings[2] = fontsize.ToString();
-            var cvt = new FontConverter();
-            settings[3] = cvt.ConvertToString(label1.Font);
-            settings[4] = "nothing";
+            if (label1.BackColor != Color.FromArgb(64, 64, 64))
+                settings[3] = false.ToString();
+            else
+                settings[3] = true.ToString();
+            if (label1.Font.Style != FontStyle.Bold)
+                settings[4] = false.ToString();
+            else
+                settings[4] = true.ToString();
             if (validatedaddress1 == null)
                 validatedaddress1 = IPAddress.Parse("8.8.8.8");
             if (validatedaddress2 == null)
@@ -358,9 +373,7 @@ namespace pinger_csharp
 
             settings[5] = validatedaddress1.ToString();
             settings[6] = validatedaddress2.ToString();
-            settings[7] = label1.BackColor.R.ToString();
-            settings[8] = label1.BackColor.G.ToString();
-            settings[9] = label1.BackColor.B.ToString();
+
 
             string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
             System.IO.FileInfo file = new System.IO.FileInfo(filepath);
@@ -380,7 +393,7 @@ namespace pinger_csharp
         {
             fontsize--;
             if (fontsize < 0)//cant be negative
-                fontsize = 9.25;
+                fontsize = 0.25;
             setfontsize();
             refreshsize();
             
@@ -388,29 +401,30 @@ namespace pinger_csharp
 
         private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ColorDialog MyDialog = new ColorDialog();
-            MyDialog.AllowFullOpen = true;
-            MyDialog.Color = label1.BackColor;
-
-            if (MyDialog.ShowDialog() == DialogResult.OK)
+            if (label1.BackColor == Color.FromArgb(64, 64, 64))
             {
-                label1.BackColor = MyDialog.Color;
-                label2.BackColor = MyDialog.Color;
+                label1.BackColor = Color.Black;
+                label2.BackColor = Color.Black;
+            }
+            else
+            {
+                label1.BackColor = Color.FromArgb(64, 64, 64);
+                label2.BackColor = Color.FromArgb(64, 64, 64);
             }
         }
 
         private void boldToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FontDialog fontDialog1 = new FontDialog();
-            fontDialog1.Font = label1.Font;
-
-            if (fontDialog1.ShowDialog() != DialogResult.Cancel)
+            if (label1.Font.Style != FontStyle.Bold)
             {
-                label1.Font = fontDialog1.Font;
-                label2.Font = fontDialog1.Font;
+                label1.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Bold);
+                label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Bold);
             }
-            fontsize = label1.Font.Size;
-            refreshsize();
+            else
+            {
+                label1.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
+                label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
+            }
         }
 
         private void resetlocation_Tick(object sender, EventArgs e)//one time size refresh to make sure labels are alligned properly
@@ -478,8 +492,16 @@ namespace pinger_csharp
         }
         private void setfontsize()//updates font size and style
         {
-                label1.Font = new System.Drawing.Font(label1.Font.Name, (float)fontsize, label1.Font.Style);
-                label2.Font = new System.Drawing.Font(label1.Font.Name, (float)fontsize, label1.Font.Style);
+            if (label1.Font.Style == FontStyle.Bold)
+            {
+                label1.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Bold);
+                label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Bold);
+            }
+            else
+            {
+                label1.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
+                label2.Font = new System.Drawing.Font("Arial", (float)fontsize, FontStyle.Regular);
+            }
         }
         private void checkipadress() //checks if address is valid, without pinging!
         {
@@ -514,11 +536,6 @@ namespace pinger_csharp
                     pingadress2.Text = "Wrong address";
                 }
             }
-        }
-
-        private void Form1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-
         }
     }
 
