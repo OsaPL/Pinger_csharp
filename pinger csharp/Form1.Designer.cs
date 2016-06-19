@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.Label label2;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.placementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.leftLowerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,9 +41,6 @@
             this.OwnY = new System.Windows.Forms.ToolStripTextBox();
             this.lookToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.boldToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fontSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.biggerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.smallerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.adress1 = new System.Windows.Forms.ToolStripMenuItem();
             this.pingadress1 = new System.Windows.Forms.ToolStripTextBox();
@@ -56,10 +53,9 @@
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.resetlocation = new System.Windows.Forms.Timer(this.components);
-            label2 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -157,7 +153,6 @@
             // 
             this.lookToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.boldToolStripMenuItem,
-            this.fontSizeToolStripMenuItem,
             this.backgroundToolStripMenuItem});
             this.lookToolStripMenuItem.Name = "lookToolStripMenuItem";
             this.lookToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
@@ -166,41 +161,14 @@
             // boldToolStripMenuItem
             // 
             this.boldToolStripMenuItem.Name = "boldToolStripMenuItem";
-            this.boldToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Right)));
-            this.boldToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.boldToolStripMenuItem.Text = "Bold";
+            this.boldToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.boldToolStripMenuItem.Text = "Font";
             this.boldToolStripMenuItem.Click += new System.EventHandler(this.boldToolStripMenuItem_Click);
-            // 
-            // fontSizeToolStripMenuItem
-            // 
-            this.fontSizeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.biggerToolStripMenuItem,
-            this.smallerToolStripMenuItem});
-            this.fontSizeToolStripMenuItem.Name = "fontSizeToolStripMenuItem";
-            this.fontSizeToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.fontSizeToolStripMenuItem.Text = "Font_Size";
-            // 
-            // biggerToolStripMenuItem
-            // 
-            this.biggerToolStripMenuItem.Name = "biggerToolStripMenuItem";
-            this.biggerToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
-            this.biggerToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.biggerToolStripMenuItem.Text = "Bigger";
-            this.biggerToolStripMenuItem.Click += new System.EventHandler(this.biggerToolStripMenuItem_Click);
-            // 
-            // smallerToolStripMenuItem
-            // 
-            this.smallerToolStripMenuItem.Name = "smallerToolStripMenuItem";
-            this.smallerToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
-            this.smallerToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.smallerToolStripMenuItem.Text = "Smaller";
-            this.smallerToolStripMenuItem.Click += new System.EventHandler(this.smallerToolStripMenuItem_Click);
             // 
             // backgroundToolStripMenuItem
             // 
             this.backgroundToolStripMenuItem.Name = "backgroundToolStripMenuItem";
-            this.backgroundToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Left)));
-            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.backgroundToolStripMenuItem.Text = "Background";
             this.backgroundToolStripMenuItem.Click += new System.EventHandler(this.backgroundToolStripMenuItem_Click);
             // 
@@ -328,12 +296,14 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Opacity = 0.7D;
             this.TopMost = true;
             this.TransparencyKey = System.Drawing.Color.Black;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Form1_KeyPress);
             this.contextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -343,8 +313,8 @@
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem placementToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem leftLowerToolStripMenuItem;
@@ -354,10 +324,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem lookToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem boldToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem fontSizeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem biggerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem smallerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem backgroundToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem adress1;
         private System.Windows.Forms.ToolStripMenuItem adress2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
@@ -371,6 +337,7 @@
         private System.Windows.Forms.ToolStripMenuItem time;
         private System.Windows.Forms.ToolStripTextBox timeset;
         private System.Windows.Forms.Timer resetlocation;
+        private System.Windows.Forms.ToolStripMenuItem backgroundToolStripMenuItem;
     }
 }
 
