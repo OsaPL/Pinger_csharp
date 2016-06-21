@@ -282,7 +282,7 @@
             // resetlocation
             // 
             this.resetlocation.Enabled = true;
-            this.resetlocation.Interval = 300;
+            this.resetlocation.Interval = 30;
             this.resetlocation.Tick += new System.EventHandler(this.resetlocation_Tick);
             // 
             // Form1

@@ -129,8 +129,7 @@ namespace pinger_csharp
         private int h;
         private void leftLowerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Rectangle resolution = Screen.PrimaryScreen.Bounds;
-            h = resolution.Height;
+            h = Screen.PrimaryScreen.WorkingArea.Bottom;
             OwnX.Text = "" + 0;
             OwnY.Text = "" + (h - Size.Height);
             Location = new Point(0, h - Size.Height);
@@ -145,9 +144,8 @@ namespace pinger_csharp
 
         private void rightLowerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Rectangle resolution = Screen.PrimaryScreen.Bounds;
-            h = resolution.Height;
-            w = resolution.Width;
+            h = Screen.PrimaryScreen.WorkingArea.Bottom;
+            w = Screen.PrimaryScreen.WorkingArea.Right;
             OwnX.Text = "" + (h - Size.Height);
             OwnY.Text = "" + (w - Size.Width);
             Location = new Point(w - Size.Width, h - Size.Height);
@@ -155,8 +153,7 @@ namespace pinger_csharp
 
         private void rightHigherToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Rectangle resolution = Screen.PrimaryScreen.Bounds;
-            w = resolution.Width;
+            w = Screen.PrimaryScreen.WorkingArea.Right;
             OwnX.Text = "" + (w - Size.Width);
             OwnY.Text = "" + 0;
             Location = new Point(w - Size.Width, 0);
@@ -201,26 +198,6 @@ namespace pinger_csharp
             {
                 label2.Text = "Address!";
                 label2.ForeColor = Color.White;
-            }
-            if (!IsOnScreen()) //check if button is on screen
-            {
-                //Location = new Point(0, 0);
-                Rectangle resolution = Screen.PrimaryScreen.Bounds;
-
-                int h = resolution.Height;
-                int w = resolution.Width;
-                int y = 0, x = 0;
-                if (Location.X > w)
-                {
-                    x = w;
-                }
-                if (Location.Y > h)
-                {
-                    y = h;
-                }
-                Location = new Point(x, y);
-                mouseDown = false;
-                this.Focus();
             }
         }
         private void pingthread1()
@@ -416,12 +393,16 @@ namespace pinger_csharp
         private void resetlocation_Tick(object sender, EventArgs e)//one time size refresh to make sure labels are alligned properly
         {
             refreshsize();
-            resetlocation.Enabled = false;
+            if (IsOnScreen())
+            {
+                lastFormPos = Location;
+            }
         }
 
         // mouse dragging by button
         private bool mouseDown;
         private Point lastPos;
+        private Point lastFormPos;
         private void button1_MouseUp(object sender, MouseEventArgs e)
         {
             mouseDown = false;
@@ -433,6 +414,7 @@ namespace pinger_csharp
             {
                 mouseDown = true;
                 lastPos = MousePosition;
+                lastFormPos = this.Location;
             }
         }
 
@@ -447,6 +429,12 @@ namespace pinger_csharp
                 lastPos = MousePosition;
                 OwnX.Text = "" + Location.X;
                 OwnY.Text = "" + Location.Y;
+                if (!IsOnScreen())
+                {
+                    Location = lastFormPos;
+                    mouseDown = false;
+                    this.Focus();
+                }
             }
         }
         private bool IsOnScreen()
@@ -467,7 +455,7 @@ namespace pinger_csharp
         private void refreshsize() //recalculates form size and label placement
         {
             label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
-            if (button1.Height < this.Height)
+            if (button1.Height > this.Height)
             {
                 Size = new Size(14 + label1.Size.Width + label2.Size.Width, this.Height);
             }
