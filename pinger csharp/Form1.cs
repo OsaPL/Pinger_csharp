@@ -411,16 +411,22 @@ namespace pinger_csharp
             }
             if (!this.ContainsFocus)
             {
-                if (ClientRectangle.Contains(PointToClient(Control.MousePosition)) && !mouseDown)
+                Point p = PointToClient(Control.MousePosition);
+                h = Screen.PrimaryScreen.WorkingArea.Bottom;
+                w = Screen.PrimaryScreen.WorkingArea.Right;
+                p.X -= w/64;
+                p.Y -= h/64;
+                Rectangle r = new Rectangle (p, new Size(w/32, h/32));
+                if (ClientRectangle.IntersectsWith(r) && !mouseDown)
                 {
                     if(!locked)
-                        this.Opacity = lastOpacity * 0.5;
+                        this.Opacity = lastOpacity * 0.3;
                 }
                 else
                 {
                     this.Opacity = lastOpacity;
                 }
-                if (ClientRectangle.Contains(PointToClient(Control.MousePosition)) && locked)
+                if (ClientRectangle.IntersectsWith(r) && locked)
                 {
                     lockedCounter = 0;
                     this.Opacity = 0;
