@@ -82,6 +82,7 @@ namespace pinger_csharp
             {
                 fontsize = 9.75;
             }
+            locked = false;
             checkipadress();
             refreshsize();
         }
@@ -412,16 +413,34 @@ namespace pinger_csharp
             {
                 if (ClientRectangle.Contains(PointToClient(Control.MousePosition)) && !mouseDown)
                 {
-                    this.Opacity = lastOpacity * 0.3;
+                    if(!locked)
+                        this.Opacity = lastOpacity * 0.5;
                 }
                 else
                 {
                     this.Opacity = lastOpacity;
                 }
+                if (ClientRectangle.Contains(PointToClient(Control.MousePosition)) && locked)
+                {
+                    lockedCounter = 0;
+                    this.Opacity = 0;
+                }
             }
             else
             {
                 this.Opacity = lastOpacity;
+            }
+            if (locked && this.ContainsFocus)
+            {
+                lockedCounter++;
+                if (lockedCounter > 40)
+                {
+                    System.Media.SystemSounds.Beep.Play();
+                    this.Opacity = lastOpacity;
+                    locked = false;
+                    lockedCounter = 0;
+                }
+
             }
         }
 
@@ -571,7 +590,15 @@ namespace pinger_csharp
                 toolStripTextBox1.Text = "";
             }
         }
-
-
+        private bool locked;
+        private int lockedCounter;
+        private void lockWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(locked)
+                locked = false;
+            if(!locked)
+                locked = true;
+            lockedCounter = 0;
+        }
     }
 }
