@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.Label label2;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.placementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,6 +43,8 @@
             this.lookToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.boldToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.opacityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
             this.adress1 = new System.Windows.Forms.ToolStripMenuItem();
             this.pingadress1 = new System.Windows.Forms.ToolStripTextBox();
             this.adress2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -153,7 +156,8 @@
             // 
             this.lookToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.boldToolStripMenuItem,
-            this.backgroundToolStripMenuItem});
+            this.backgroundToolStripMenuItem,
+            this.opacityToolStripMenuItem});
             this.lookToolStripMenuItem.Name = "lookToolStripMenuItem";
             this.lookToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.lookToolStripMenuItem.Text = "Look";
@@ -171,6 +175,20 @@
             this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.backgroundToolStripMenuItem.Text = "Background";
             this.backgroundToolStripMenuItem.Click += new System.EventHandler(this.backgroundToolStripMenuItem_Click);
+            // 
+            // opacityToolStripMenuItem
+            // 
+            this.opacityToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripTextBox1});
+            this.opacityToolStripMenuItem.Name = "opacityToolStripMenuItem";
+            this.opacityToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.opacityToolStripMenuItem.Text = "Opacity";
+            // 
+            // toolStripTextBox1
+            // 
+            this.toolStripTextBox1.Name = "toolStripTextBox1";
+            this.toolStripTextBox1.Size = new System.Drawing.Size(100, 23);
+            this.toolStripTextBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.toolStripTextBox1_KeyPress);
             // 
             // adress1
             // 
@@ -338,6 +356,8 @@
         private System.Windows.Forms.ToolStripTextBox timeset;
         private System.Windows.Forms.Timer resetlocation;
         private System.Windows.Forms.ToolStripMenuItem backgroundToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox toolStripTextBox1;
+        private System.Windows.Forms.ToolStripMenuItem opacityToolStripMenuItem;
     }
 }
 

@@ -23,7 +23,7 @@ namespace pinger_csharp
         private void Form1_Load(object sender, EventArgs e)
         {
             string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
-            label1.ForeColor = Color.FromArgb(64, 64, 64); 
+            label1.ForeColor = Color.FromArgb(64, 64, 64);
             label2.ForeColor = Color.FromArgb(64, 64, 64);
             if (System.IO.File.Exists(filepath))  //if cfg file exists
             {
@@ -65,6 +65,10 @@ namespace pinger_csharp
                 Font f = cvt.ConvertFromString(settings[3]) as Font;
                 label1.Font = f;
                 label2.Font = f;
+                this.Opacity = Convert.ToDouble(settings[4]);
+                if (this.Opacity < 15 / 100)
+                    this.Opacity = 1;
+                lastOpacity = Convert.ToDouble(settings[4]);
                 pingadress1.Text = settings[5];
                 pingadress2.Text = settings[6];
                 int r, g, b;
@@ -177,9 +181,14 @@ namespace pinger_csharp
         }
         private Thread th1;
         private Thread th2;
-        private void timer1_Tick(object sender, EventArgs e) 
+        private void timer1_Tick(object sender, EventArgs e)
         {
-            if (pingadress1.Text != "Wrong address") 
+            if (timeoutcounter > 2)
+            {
+                label1.Text = "Connection!";
+                label1.ForeColor = Color.White;
+            }
+            if (pingadress1.Text != "Wrong address")
             {
                 th1 = new Thread(pingthread1);
                 th1.Start();
@@ -200,6 +209,7 @@ namespace pinger_csharp
                 label2.ForeColor = Color.White;
             }
         }
+        private int timeoutcounter;
         private void pingthread1()
         {
             try
@@ -244,6 +254,7 @@ namespace pinger_csharp
                     }
 
                     label1.ForeColor = Color.FromArgb(r, g, 0);
+                    timeoutcounter = 0;
                 }
             }
             catch (Exception)
@@ -327,7 +338,7 @@ namespace pinger_csharp
             settings[2] = fontsize.ToString();
             var cvt = new FontConverter();
             settings[3] = cvt.ConvertToString(label1.Font);
-            settings[4] = "nothing";
+            settings[4] = this.Opacity.ToString();
             if (validatedaddress1 == null)
                 validatedaddress1 = IPAddress.Parse("8.8.8.8");
             if (validatedaddress2 == null)
@@ -360,7 +371,7 @@ namespace pinger_csharp
                 fontsize = 9.25;
             setfontsize();
             refreshsize();
-            
+
         }
 
         private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
@@ -389,13 +400,21 @@ namespace pinger_csharp
             fontsize = label1.Font.Size;
             refreshsize();
         }
-
+        double lastOpacity;
         private void resetlocation_Tick(object sender, EventArgs e)//one time size refresh to make sure labels are alligned properly
         {
             refreshsize();
             if (IsOnScreen())
             {
                 lastFormPos = Location;
+            }
+            if (ClientRectangle.Contains(PointToClient(Control.MousePosition)) && !mouseDown)
+            {
+                this.Opacity = lastOpacity * 0.1;
+            }
+            else
+            {
+                this.Opacity = lastOpacity;
             }
         }
 
@@ -466,8 +485,8 @@ namespace pinger_csharp
         }
         private void setfontsize()//updates font size and style
         {
-                label1.Font = new System.Drawing.Font(label1.Font.Name, (float)fontsize, label1.Font.Style);
-                label2.Font = new System.Drawing.Font(label1.Font.Name, (float)fontsize, label1.Font.Style);
+            label1.Font = new System.Drawing.Font(label1.Font.Name, (float)fontsize, label1.Font.Style);
+            label2.Font = new System.Drawing.Font(label1.Font.Name, (float)fontsize, label1.Font.Style);
         }
         private void checkipadress() //checks if address is valid, without pinging!
         {
@@ -508,6 +527,44 @@ namespace pinger_csharp
         {
 
         }
-    }
 
+        private void toolStripTextBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (toolStripTextBox1.Text == "Too high!" || toolStripTextBox1.Text == "Too low!")
+            {
+                toolStripTextBox1.Text = "";
+            }
+
+            if (e.KeyChar == (char)13)
+            {
+                double op = (int)Parsestring(toolStripTextBox1.Text);
+                if (op <= 100)
+                {
+                    if (op >= 15)
+                    {
+                        this.Opacity = op / 100;
+                        lastOpacity = op / 100;
+                    }
+                    else
+                    {
+                        toolStripTextBox1.Text = "Too low!";
+                    }
+                }
+                else
+                {
+                    toolStripTextBox1.Text = "Too high!";
+                }
+            }
+
+        }
+        private void toolStripTextBox1_Click(object sender, KeyPressEventArgs e)
+        {
+            if (toolStripTextBox1.Text == "Too high!" || toolStripTextBox1.Text == "Too low!")
+            {
+                toolStripTextBox1.Text = "";
+            }
+        }
+
+
+    }
 }
