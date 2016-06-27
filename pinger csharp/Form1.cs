@@ -27,60 +27,57 @@ namespace pinger_csharp
             label2.ForeColor = Color.FromArgb(64, 64, 64);
             if (System.IO.File.Exists(filepath))  //if cfg file exists
             {
-                System.IO.FileInfo file = new System.IO.FileInfo(filepath);
-                file.Directory.Create(); // if the directory already exists, this method does nothing, just a failsafe
-                string[] settings = System.IO.File.ReadAllLines(file.FullName, Encoding.UTF8);
-                Rectangle resolution = Screen.PrimaryScreen.Bounds;
-
-                h = resolution.Height;
-                w = resolution.Width;
-                int x = 0, y = 0;
-                if (System.Convert.ToInt32(settings[0]) < w && System.Convert.ToInt32(settings[0]) < h) //if out of bounds of the main screen
+                try
                 {
-                    OwnX.Text = settings[0];
-                    OwnY.Text = settings[1];
-                    Location = new Point(System.Convert.ToInt32(settings[0]), System.Convert.ToInt32(settings[1]));
-                }
-                else {
-                    if (System.Convert.ToInt32(settings[0]) > w)
-                    {
-                        OwnX.Text = "" + 0;
-                        x = 0;
-                        y = System.Convert.ToInt32(settings[1]);
-                    }
-                    if (System.Convert.ToInt32(settings[1]) > h)
-                    {
-                        OwnY.Text = "" + 0;
-                        x = System.Convert.ToInt32(settings[0]);
+                    System.IO.FileInfo file = new System.IO.FileInfo(filepath);
+                    file.Directory.Create(); // if the directory already exists, this method does nothing, just a failsafe
+                    string[] settings = System.IO.File.ReadAllLines(file.FullName, Encoding.UTF8);
+                    int x = 0, y = 0;
+                            y = System.Convert.ToInt32(settings[1]);
+                            OwnY.Text = "" + y;
+                            x = System.Convert.ToInt32(settings[0]);
+                            OwnX.Text = "" + x;
+                            Location = new Point(x, y);
+                    if (!IsOnScreen())
+                        {
+                            OwnY.Text = "" + 0;
+                            OwnX.Text = "" + 0;
                         y = 0;
+                            x = 0;
+                        Location = new Point(x, y);
                     }
-                    Location = new Point(x, y);
+                        
+                    fontsize = System.Convert.ToDouble(settings[2]);
+                    if (fontsize <= 0)  //cant be negative
+                    {
+                        fontsize = 9.75;
+                    }
+                    var cvt = new FontConverter();
+                    Font f = cvt.ConvertFromString(settings[3]) as Font;
+                    label1.Font = f;
+                    label2.Font = f;
+                    this.Opacity = Convert.ToDouble(settings[4]);
+                    if (this.Opacity < 15 / 100)
+                        this.Opacity = 1;
+                    lastOpacity = Convert.ToDouble(settings[4]);
+                    pingadress1.Text = settings[5];
+                    pingadress2.Text = settings[6];
+                    int r, g, b;
+                    r = Convert.ToInt16(settings[7]);
+                    g = Convert.ToInt16(settings[8]);
+                    b = Convert.ToInt16(settings[9]);
+                    label1.BackColor = Color.FromArgb(r, g, b);
+                    label2.BackColor = Color.FromArgb(r, g, b);
                 }
-                fontsize = System.Convert.ToDouble(settings[2]);
-                if (fontsize <= 0)  //cant be negative
+
+                catch (Exception)
                 {
-                    fontsize = 9.75;
+                    defaultValues();
                 }
-                var cvt = new FontConverter();
-                Font f = cvt.ConvertFromString(settings[3]) as Font;
-                label1.Font = f;
-                label2.Font = f;
-                this.Opacity = Convert.ToDouble(settings[4]);
-                if (this.Opacity < 15 / 100)
-                    this.Opacity = 1;
-                lastOpacity = Convert.ToDouble(settings[4]);
-                pingadress1.Text = settings[5];
-                pingadress2.Text = settings[6];
-                int r, g, b;
-                r = Convert.ToInt16(settings[7]);
-                g = Convert.ToInt16(settings[8]);
-                b = Convert.ToInt16(settings[9]);
-                label1.BackColor = Color.FromArgb(r, g, b);
-                label2.BackColor = Color.FromArgb(r, g, b);
             }
             else
             {
-                fontsize = 9.75;
+                defaultValues();
             }
             locked = false;
             checkipadress();
@@ -605,6 +602,21 @@ namespace pinger_csharp
             if(!locked)
                 locked = true;
             lockedCounter = 0;
+        }
+        private void defaultValues()
+        {
+            OwnX.Text = "" + 0;
+            OwnY.Text = "" + 0;
+            Location = new Point(0, 0);
+            fontsize = 9.75;
+            label1.Font = new Font("Arial", (float)fontsize, FontStyle.Regular);
+            label2.Font = new Font("Arial", (float)fontsize, FontStyle.Regular);
+            this.Opacity = 0.8;
+            lastOpacity = 0.8;
+            pingadress1.Text = "wp.pl";
+            pingadress2.Text = "8.8.8.8";
+            label1.BackColor = Color.FromArgb(64, 64, 64);
+            label2.BackColor = Color.FromArgb(64, 64, 64);
         }
     }
 }
