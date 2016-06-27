@@ -408,9 +408,16 @@ namespace pinger_csharp
             {
                 lastFormPos = Location;
             }
-            if (ClientRectangle.Contains(PointToClient(Control.MousePosition)) && !mouseDown)
+            if (!this.ContainsFocus)
             {
-                this.Opacity = lastOpacity * 0.1;
+                if (ClientRectangle.Contains(PointToClient(Control.MousePosition)) && !mouseDown)
+                {
+                    this.Opacity = lastOpacity * 0.3;
+                }
+                else
+                {
+                    this.Opacity = lastOpacity;
+                }
             }
             else
             {
