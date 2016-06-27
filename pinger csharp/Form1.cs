@@ -85,6 +85,7 @@ namespace pinger_csharp
         }
         private double Parsestring(String strings)
         {
+            try { 
             System.Int32 number;
 
             if (strings != "")
@@ -113,6 +114,11 @@ namespace pinger_csharp
                 return 0;
             }
             return number;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
         }
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
