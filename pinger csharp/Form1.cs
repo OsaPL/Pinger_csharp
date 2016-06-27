@@ -502,11 +502,11 @@ namespace pinger_csharp
             }
             return false;
         }
-
+            
         private void refreshsize() //recalculates form size and label placement
         {
             label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
-            if (button1.Height > this.Height)
+            if (button1.Height > label1.Height)
             {
                 Size = new Size(14 + label1.Size.Width + label2.Size.Width, this.Height);
             }
