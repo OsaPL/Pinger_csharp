@@ -558,10 +558,12 @@ namespace pinger_csharp
             {
                 toolStripTextBox1.Text = "";
             }
+            else
 
             if (e.KeyChar == (char)13)
             {
-                double op = (int)Parsestring(toolStripTextBox1.Text);
+                String temp = toolStripTextBox1.Text;
+                double op = (int)Parsestring(temp);
                 if (op <= 100)
                 {
                     if (op >= 15)
