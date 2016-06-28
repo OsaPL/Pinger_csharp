@@ -51,6 +51,7 @@
             this.pingadress2 = new System.Windows.Forms.ToolStripTextBox();
             this.time = new System.Windows.Forms.ToolStripMenuItem();
             this.timeset = new System.Windows.Forms.ToolStripTextBox();
+            this.lockWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,7 +59,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.resetlocation = new System.Windows.Forms.Timer(this.components);
-            this.lockWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.label2 = new System.Windows.Forms.Label();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -74,6 +75,17 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "(1)999ms";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.label2.ContextMenuStrip = this.contextMenuStrip;
+            this.label2.Location = new System.Drawing.Point(58, 1);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(50, 13);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "(2)999ms";
+            // 
             // contextMenuStrip
             // 
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -87,7 +99,7 @@
             this.aboutToolStripMenuItem,
             this.quitToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(153, 208);
+            this.contextMenuStrip.Size = new System.Drawing.Size(142, 186);
             // 
             // placementToolStripMenuItem
             // 
@@ -100,7 +112,7 @@
             this.OwnX,
             this.OwnY});
             this.placementToolStripMenuItem.Name = "placementToolStripMenuItem";
-            this.placementToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.placementToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.placementToolStripMenuItem.Text = "Placement";
             // 
             // leftLowerToolStripMenuItem
@@ -161,20 +173,20 @@
             this.backgroundToolStripMenuItem,
             this.opacityToolStripMenuItem});
             this.lookToolStripMenuItem.Name = "lookToolStripMenuItem";
-            this.lookToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.lookToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.lookToolStripMenuItem.Text = "Look";
             // 
             // boldToolStripMenuItem
             // 
             this.boldToolStripMenuItem.Name = "boldToolStripMenuItem";
-            this.boldToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.boldToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.boldToolStripMenuItem.Text = "Font";
             this.boldToolStripMenuItem.Click += new System.EventHandler(this.boldToolStripMenuItem_Click);
             // 
             // backgroundToolStripMenuItem
             // 
             this.backgroundToolStripMenuItem.Name = "backgroundToolStripMenuItem";
-            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.backgroundToolStripMenuItem.Text = "Background";
             this.backgroundToolStripMenuItem.Click += new System.EventHandler(this.backgroundToolStripMenuItem_Click);
             // 
@@ -183,7 +195,7 @@
             this.opacityToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripTextBox1});
             this.opacityToolStripMenuItem.Name = "opacityToolStripMenuItem";
-            this.opacityToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.opacityToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.opacityToolStripMenuItem.Text = "Opacity";
             // 
             // toolStripTextBox1
@@ -197,7 +209,7 @@
             this.adress1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pingadress1});
             this.adress1.Name = "adress1";
-            this.adress1.Size = new System.Drawing.Size(152, 22);
+            this.adress1.Size = new System.Drawing.Size(141, 22);
             this.adress1.Text = "Ping1";
             // 
             // pingadress1
@@ -212,7 +224,7 @@
             this.adress2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pingadress2});
             this.adress2.Name = "adress2";
-            this.adress2.Size = new System.Drawing.Size(152, 22);
+            this.adress2.Size = new System.Drawing.Size(141, 22);
             this.adress2.Text = "Ping2";
             // 
             // pingadress2
@@ -227,7 +239,7 @@
             this.time.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.timeset});
             this.time.Name = "time";
-            this.time.Size = new System.Drawing.Size(152, 22);
+            this.time.Size = new System.Drawing.Size(141, 22);
             this.time.Text = "Time";
             // 
             // timeset
@@ -237,22 +249,30 @@
             this.timeset.Text = "500";
             this.timeset.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.timeset_KeyPress);
             // 
+            // lockWindowToolStripMenuItem
+            // 
+            this.lockWindowToolStripMenuItem.Name = "lockWindowToolStripMenuItem";
+            this.lockWindowToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.lockWindowToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.lockWindowToolStripMenuItem.Text = "Lock";
+            this.lockWindowToolStripMenuItem.Click += new System.EventHandler(this.lockWindowToolStripMenuItem_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(138, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
@@ -282,17 +302,6 @@
             this.button1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.button1_MouseMove);
             this.button1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.button1_MouseUp);
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label2.ContextMenuStrip = this.contextMenuStrip;
-            this.label2.Location = new System.Drawing.Point(58, 1);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(50, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "(2)999ms";
-            // 
             // timer1
             // 
             this.timer1.Enabled = true;
@@ -305,13 +314,13 @@
             this.resetlocation.Interval = 30;
             this.resetlocation.Tick += new System.EventHandler(this.resetlocation_Tick);
             // 
-            // lockWindowToolStripMenuItem
+            // notifyIcon
             // 
-            this.lockWindowToolStripMenuItem.Name = "lockWindowToolStripMenuItem";
-            this.lockWindowToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.lockWindowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.lockWindowToolStripMenuItem.Text = "Lock";
-            this.lockWindowToolStripMenuItem.Click += new System.EventHandler(this.lockWindowToolStripMenuItem_Click);
+            this.notifyIcon.ContextMenuStrip = this.contextMenuStrip;
+            this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
+            this.notifyIcon.Text = "Pinger";
+            this.notifyIcon.Visible = true;
+            this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
             // 
             // Form1
             // 
@@ -332,6 +341,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Form1_KeyPress);
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             this.contextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -369,6 +379,7 @@
         private System.Windows.Forms.ToolStripTextBox toolStripTextBox1;
         private System.Windows.Forms.ToolStripMenuItem opacityToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lockWindowToolStripMenuItem;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
     }
 }
 

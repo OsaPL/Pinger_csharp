@@ -25,6 +25,7 @@ namespace pinger_csharp
             string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
             label1.ForeColor = Color.FromArgb(64, 64, 64);
             label2.ForeColor = Color.FromArgb(64, 64, 64);
+            this.ShowInTaskbar = false;
             if (System.IO.File.Exists(filepath))  //if cfg file exists
             {
                 try
@@ -59,6 +60,9 @@ namespace pinger_csharp
                     this.Opacity = Convert.ToDouble(settings[4]);
                     if (this.Opacity < 15 / 100)
                         this.Opacity = 1;
+                    if (this.Opacity > 1)
+                        this.Opacity = 1;
+                    toolStripTextBox1.Text = "" + this.Opacity*100;
                     lastOpacity = Convert.ToDouble(settings[4]);
                     pingadress1.Text = settings[5];
                     pingadress2.Text = settings[6];
@@ -187,11 +191,6 @@ namespace pinger_csharp
         private Thread th2;
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (timeoutcounter > 2)
-            {
-                label1.Text = "Connection!";
-                label1.ForeColor = Color.White;
-            }
             if (pingadress1.Text != "Wrong address")
             {
                 th1 = new Thread(pingthread1);
@@ -261,8 +260,10 @@ namespace pinger_csharp
                     timeoutcounter = 0;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                label1.Text = "Unreachable!";
+                label1.ForeColor = Color.White;
 
             }
         }
@@ -311,9 +312,10 @@ namespace pinger_csharp
                     label2.ForeColor = Color.FromArgb(r, g, 0);
                 }
             }
-            catch (Exception)
-            {
-
+            catch (Exception e)
+            { 
+                label2.Text = "Unreachable!";
+                label2.ForeColor = Color.White;
             }
         }
 
@@ -431,7 +433,6 @@ namespace pinger_csharp
                 }
                 if (ClientRectangle.IntersectsWith(r) && locked)
                 {
-                    lockedCounter = 0;
                     this.Opacity = 0;
                 }
             }
@@ -439,18 +440,7 @@ namespace pinger_csharp
             {
                 this.Opacity = lastOpacity;
             }
-            if (locked && this.ContainsFocus)
-            {
-                lockedCounter++;
-                if (lockedCounter > 40)
-                {
-                    System.Media.SystemSounds.Beep.Play();
-                    this.Opacity = lastOpacity;
-                    locked = false;
-                    lockedCounter = 0;
-                }
 
-            }
         }
 
         // mouse dragging by button
@@ -557,7 +547,6 @@ namespace pinger_csharp
                 }
             }
         }
-
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
         {
 
@@ -600,15 +589,26 @@ namespace pinger_csharp
             }
         }
         private bool locked;
-        private int lockedCounter;
         private void lockWindowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(locked)
+            if (locked)
+            {
+                System.Media.SystemSounds.Beep.Play();
+                this.Opacity = lastOpacity;
                 locked = false;
-            if(!locked)
+                lockWindowToolStripMenuItem.Text = "Lock";
+                lockWindowToolStripMenuItem.Image = null;
+                button1.BackColor = Color.FromArgb(64, 64, 64);
+            }
+            else
+            {
                 locked = true;
-            lockedCounter = 0;
-        }
+                lockWindowToolStripMenuItem.Text = "Locked";
+                Icon i = new Icon(SystemIcons.Warning, 20, 20);
+                lockWindowToolStripMenuItem.Image = i.ToBitmap();
+                button1.BackColor = Color.FromArgb(210, 0, 0);
+            }
+        } 
         private void defaultValues()
         {
             OwnX.Text = "" + 0;
@@ -619,10 +619,23 @@ namespace pinger_csharp
             label2.Font = new Font("Arial", (float)fontsize, FontStyle.Regular);
             this.Opacity = 0.8;
             lastOpacity = 0.8;
+            toolStripTextBox1.Text = "" + 80;
             pingadress1.Text = "wp.pl";
             pingadress2.Text = "8.8.8.8";
             label1.BackColor = Color.FromArgb(64, 64, 64);
             label2.BackColor = Color.FromArgb(64, 64, 64);
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (FormWindowState.Minimized == WindowState)
+                this.Hide();
+        }
+
+        private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            this.Show();
+            //this.Focus();
         }
     }
 }
