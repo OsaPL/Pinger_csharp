@@ -558,7 +558,6 @@ namespace pinger_csharp
             {
                 toolStripTextBox1.Text = "";
             }
-            else
 
             if (e.KeyChar == (char)13)
             {
