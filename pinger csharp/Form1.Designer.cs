@@ -1,5 +1,6 @@
 ﻿namespace pinger_csharp
 {
+
     partial class Form1
     {
         /// <summary>
@@ -45,12 +46,15 @@
             this.backgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.opacityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
+            this.barsWidthToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dotsHeightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.adress1 = new System.Windows.Forms.ToolStripMenuItem();
             this.pingadress1 = new System.Windows.Forms.ToolStripTextBox();
             this.adress2 = new System.Windows.Forms.ToolStripMenuItem();
             this.pingadress2 = new System.Windows.Forms.ToolStripTextBox();
             this.time = new System.Windows.Forms.ToolStripMenuItem();
             this.timeset = new System.Windows.Forms.ToolStripTextBox();
+            this.graphCheck = new System.Windows.Forms.ToolStripMenuItem();
             this.lockWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,20 +64,13 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.resetlocation = new System.Windows.Forms.Timer(this.components);
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
             this.contextMenuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label1.ContextMenuStrip = this.contextMenuStrip;
-            this.label1.Location = new System.Drawing.Point(12, 1);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(50, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "(1)999ms";
             // 
             // label2
             // 
@@ -94,12 +91,13 @@
             this.adress1,
             this.adress2,
             this.time,
+            this.graphCheck,
             this.lockWindowToolStripMenuItem,
             this.toolStripSeparator1,
             this.aboutToolStripMenuItem,
             this.quitToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(142, 186);
+            this.contextMenuStrip.Size = new System.Drawing.Size(142, 208);
             // 
             // placementToolStripMenuItem
             // 
@@ -171,7 +169,9 @@
             this.lookToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.boldToolStripMenuItem,
             this.backgroundToolStripMenuItem,
-            this.opacityToolStripMenuItem});
+            this.opacityToolStripMenuItem,
+            this.barsWidthToolStripMenuItem,
+            this.dotsHeightToolStripMenuItem});
             this.lookToolStripMenuItem.Name = "lookToolStripMenuItem";
             this.lookToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.lookToolStripMenuItem.Text = "Look";
@@ -203,6 +203,18 @@
             this.toolStripTextBox1.Name = "toolStripTextBox1";
             this.toolStripTextBox1.Size = new System.Drawing.Size(100, 23);
             this.toolStripTextBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.toolStripTextBox1_KeyPress);
+            // 
+            // barsWidthToolStripMenuItem
+            // 
+            this.barsWidthToolStripMenuItem.Name = "barsWidthToolStripMenuItem";
+            this.barsWidthToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.barsWidthToolStripMenuItem.Text = "Bars Width";
+            // 
+            // dotsHeightToolStripMenuItem
+            // 
+            this.dotsHeightToolStripMenuItem.Name = "dotsHeightToolStripMenuItem";
+            this.dotsHeightToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.dotsHeightToolStripMenuItem.Text = "Dots Height";
             // 
             // adress1
             // 
@@ -248,6 +260,13 @@
             this.timeset.Size = new System.Drawing.Size(100, 23);
             this.timeset.Text = "500";
             this.timeset.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.timeset_KeyPress);
+            // 
+            // graphCheck
+            // 
+            this.graphCheck.Name = "graphCheck";
+            this.graphCheck.Size = new System.Drawing.Size(141, 22);
+            this.graphCheck.Text = "graphCheck";
+            this.graphCheck.Click += new System.EventHandler(this.graphCheck_Click);
             // 
             // lockWindowToolStripMenuItem
             // 
@@ -322,6 +341,24 @@
             this.notifyIcon.Visible = true;
             this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.pictureBox1.Location = new System.Drawing.Point(0, 17);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(108, 41);
+            this.pictureBox1.TabIndex = 3;
+            this.pictureBox1.TabStop = false;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.pictureBox2.Location = new System.Drawing.Point(0, 55);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(108, 41);
+            this.pictureBox2.TabIndex = 4;
+            this.pictureBox2.TabStop = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -329,6 +366,8 @@
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(331, 238);
             this.ControlBox = false;
+            this.Controls.Add(this.pictureBox2);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
@@ -343,6 +382,8 @@
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Form1_KeyPress);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.contextMenuStrip.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -380,6 +421,11 @@
         private System.Windows.Forms.ToolStripMenuItem opacityToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lockWindowToolStripMenuItem;
         private System.Windows.Forms.NotifyIcon notifyIcon;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.ToolStripMenuItem graphCheck;
+        private System.Windows.Forms.ToolStripMenuItem barsWidthToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dotsHeightToolStripMenuItem;
+        private System.Windows.Forms.PictureBox pictureBox2;
     }
 }
 
