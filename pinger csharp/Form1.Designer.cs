@@ -46,8 +46,6 @@
             this.backgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.opacityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
-            this.barsWidthToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.dotsHeightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.adress1 = new System.Windows.Forms.ToolStripMenuItem();
             this.pingadress1 = new System.Windows.Forms.ToolStripTextBox();
             this.adress2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,6 +64,11 @@
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.rightBottomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.barsWidthToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dotsHeightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripTextBox2 = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripTextBox3 = new System.Windows.Forms.ToolStripTextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.contextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -77,7 +80,7 @@
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.label2.ContextMenuStrip = this.contextMenuStrip;
-            this.label2.Location = new System.Drawing.Point(58, 1);
+            this.label2.Location = new System.Drawing.Point(58, -1);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(50, 13);
             this.label2.TabIndex = 2;
@@ -169,9 +172,7 @@
             this.lookToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.boldToolStripMenuItem,
             this.backgroundToolStripMenuItem,
-            this.opacityToolStripMenuItem,
-            this.barsWidthToolStripMenuItem,
-            this.dotsHeightToolStripMenuItem});
+            this.opacityToolStripMenuItem});
             this.lookToolStripMenuItem.Name = "lookToolStripMenuItem";
             this.lookToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.lookToolStripMenuItem.Text = "Look";
@@ -179,14 +180,14 @@
             // boldToolStripMenuItem
             // 
             this.boldToolStripMenuItem.Name = "boldToolStripMenuItem";
-            this.boldToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.boldToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.boldToolStripMenuItem.Text = "Font";
             this.boldToolStripMenuItem.Click += new System.EventHandler(this.boldToolStripMenuItem_Click);
             // 
             // backgroundToolStripMenuItem
             // 
             this.backgroundToolStripMenuItem.Name = "backgroundToolStripMenuItem";
-            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.backgroundToolStripMenuItem.Text = "Background";
             this.backgroundToolStripMenuItem.Click += new System.EventHandler(this.backgroundToolStripMenuItem_Click);
             // 
@@ -195,7 +196,7 @@
             this.opacityToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripTextBox1});
             this.opacityToolStripMenuItem.Name = "opacityToolStripMenuItem";
-            this.opacityToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.opacityToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.opacityToolStripMenuItem.Text = "Opacity";
             // 
             // toolStripTextBox1
@@ -203,18 +204,6 @@
             this.toolStripTextBox1.Name = "toolStripTextBox1";
             this.toolStripTextBox1.Size = new System.Drawing.Size(100, 23);
             this.toolStripTextBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.toolStripTextBox1_KeyPress);
-            // 
-            // barsWidthToolStripMenuItem
-            // 
-            this.barsWidthToolStripMenuItem.Name = "barsWidthToolStripMenuItem";
-            this.barsWidthToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
-            this.barsWidthToolStripMenuItem.Text = "Bars Width";
-            // 
-            // dotsHeightToolStripMenuItem
-            // 
-            this.dotsHeightToolStripMenuItem.Name = "dotsHeightToolStripMenuItem";
-            this.dotsHeightToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
-            this.dotsHeightToolStripMenuItem.Text = "Dots Height";
             // 
             // adress1
             // 
@@ -263,6 +252,10 @@
             // 
             // graphCheck
             // 
+            this.graphCheck.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.rightBottomToolStripMenuItem,
+            this.barsWidthToolStripMenuItem,
+            this.dotsHeightToolStripMenuItem});
             this.graphCheck.Name = "graphCheck";
             this.graphCheck.Size = new System.Drawing.Size(141, 22);
             this.graphCheck.Text = "graphCheck";
@@ -300,7 +293,7 @@
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.label1.ContextMenuStrip = this.contextMenuStrip;
-            this.label1.Location = new System.Drawing.Point(12, 1);
+            this.label1.Location = new System.Drawing.Point(12, -1);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(50, 13);
             this.label1.TabIndex = 0;
@@ -344,6 +337,7 @@
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.pictureBox1.ContextMenuStrip = this.contextMenuStrip;
             this.pictureBox1.Location = new System.Drawing.Point(0, 17);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(108, 41);
@@ -353,18 +347,54 @@
             // pictureBox2
             // 
             this.pictureBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.pictureBox2.ContextMenuStrip = this.contextMenuStrip;
             this.pictureBox2.Location = new System.Drawing.Point(0, 55);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(108, 41);
             this.pictureBox2.TabIndex = 4;
             this.pictureBox2.TabStop = false;
             // 
+            // rightBottomToolStripMenuItem
+            // 
+            this.rightBottomToolStripMenuItem.Name = "rightBottomToolStripMenuItem";
+            this.rightBottomToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.rightBottomToolStripMenuItem.Text = "RightBottom";
+            this.rightBottomToolStripMenuItem.Click += new System.EventHandler(this.rightBottomToolStripMenuItem_Click);
+            // 
+            // barsWidthToolStripMenuItem
+            // 
+            this.barsWidthToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripTextBox3});
+            this.barsWidthToolStripMenuItem.Name = "barsWidthToolStripMenuItem";
+            this.barsWidthToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.barsWidthToolStripMenuItem.Text = "BarsWidth";
+            this.barsWidthToolStripMenuItem.Click += new System.EventHandler(this.barsWidthToolStripMenuItem_Click);
+            // 
+            // dotsHeightToolStripMenuItem
+            // 
+            this.dotsHeightToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripTextBox2});
+            this.dotsHeightToolStripMenuItem.Name = "dotsHeightToolStripMenuItem";
+            this.dotsHeightToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dotsHeightToolStripMenuItem.Text = "DotsHeight";
+            // 
+            // toolStripTextBox2
+            // 
+            this.toolStripTextBox2.Name = "toolStripTextBox2";
+            this.toolStripTextBox2.Size = new System.Drawing.Size(100, 23);
+            // 
+            // toolStripTextBox3
+            // 
+            this.toolStripTextBox3.Name = "toolStripTextBox3";
+            this.toolStripTextBox3.Size = new System.Drawing.Size(100, 23);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Black;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.ClientSize = new System.Drawing.Size(331, 238);
+            this.ContextMenuStrip = this.contextMenuStrip;
             this.ControlBox = false;
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
@@ -423,9 +453,12 @@
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem graphCheck;
+        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.ToolStripMenuItem rightBottomToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem barsWidthToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dotsHeightToolStripMenuItem;
-        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.ToolStripTextBox toolStripTextBox3;
+        private System.Windows.Forms.ToolStripTextBox toolStripTextBox2;
     }
 }
 

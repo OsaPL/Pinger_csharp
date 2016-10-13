@@ -24,12 +24,15 @@ namespace pinger_csharp
             label2.ForeColor = Color.FromArgb(64, 64, 64);
             this.ShowInTaskbar = false;
             pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
-            graphPings = new List<Int32>();
+            pictureBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox2_Paint);
+            graphPings1 = new List<Int32>();
+            graphPings2 = new List<Int32>();
             barsWidth = 1;
             dotHeight = 1;
             graphLimit = pictureBox1.Width / barsWidth + 1;
-            maxValue = 1;
-            
+            maxValue1 = 1;
+            maxValue2 = 1;
+
 
             if (System.IO.File.Exists(filepath))  //if cfg file exists
             {
@@ -77,8 +80,13 @@ namespace pinger_csharp
                     b = Convert.ToInt16(settings[9]);
                     label1.BackColor = Color.FromArgb(r, g, b);
                     label2.BackColor = Color.FromArgb(r, g, b);
-
-
+                    pictureBox1.BackColor = Color.FromArgb(r, g, b);
+                    pictureBox2.BackColor = Color.FromArgb(r, g, b);
+                    this.BackColor = Color.FromArgb(r, g, b);
+                    graphActivated = Convert.ToBoolean(settings[10]);
+                    rightNotBottom = Convert.ToBoolean(settings[11]);
+                    rightBottomToolStripMenuItem.PerformClick();
+                    rightBottomToolStripMenuItem.PerformClick();
                     //this should be on form load!!
                     refreshsize();
                 }
@@ -93,7 +101,7 @@ namespace pinger_csharp
                 defaultValues();
             }
             locked = false;
-            graphActivated = true;
+            
             checkipadress();
             refreshsize();
 
@@ -248,6 +256,22 @@ namespace pinger_csharp
                     
                     label1.ForeColor = pingColor(ping);
                 }
+                if (graphActivated == true)
+                {
+                    if (ping == 0)
+                        ping = 1;
+                    if (graphPings1.Count > graphLimit - 1)
+                    {
+                        graphPings1.Insert(graphLimit, (int)ping);
+                        graphPings1.RemoveAt(0);
+                    }
+                    else {
+                        int temp = (int)ping;
+                        graphPings1.Add(temp);
+                    }
+                    //change the graphping1 array from {first, ... , last2nd, last1st} to {..., last2nd,last1st, NEWping }
+                    //PING1 and PING2 Should use DIFFERENT TABLES!!! otherwise access violation can be caused!  
+                }
             }
             catch (Exception e)
             {
@@ -277,14 +301,14 @@ namespace pinger_csharp
                 {
                     if (ping == 0)
                         ping = 1;
-                    if (graphPings.Count > graphLimit - 1)
+                    if (graphPings2.Count > graphLimit - 1)
                     {
-                        graphPings.Insert(graphLimit, (int)ping);
-                        graphPings.RemoveAt(0);
+                        graphPings2.Insert(graphLimit, (int)ping);
+                        graphPings2.RemoveAt(0);
                     }
                     else {
                         int temp = (int)ping;
-                        graphPings.Add(temp);
+                        graphPings2.Add(temp);
                     }
                     //change the graphping1 array from {first, ... , last2nd, last1st} to {..., last2nd,last1st, NEWping }
                     //PING1 and PING2 Should use DIFFERENT TABLES!!! otherwise access violation can be caused!  
@@ -316,7 +340,7 @@ namespace pinger_csharp
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             //on close save everything
-            string[] settings = { "", "", "", "", "", "", "", "", "", "", "" };
+            string[] settings = { "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
             settings[0] = Location.X.ToString();
             settings[1] = Location.Y.ToString();
             settings[2] = fontsize.ToString();
@@ -333,6 +357,8 @@ namespace pinger_csharp
             settings[7] = label1.BackColor.R.ToString();
             settings[8] = label1.BackColor.G.ToString();
             settings[9] = label1.BackColor.B.ToString();
+            settings[10] = graphActivated.ToString();
+            settings[11] = rightNotBottom.ToString();
 
             string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
             System.IO.FileInfo file = new System.IO.FileInfo(filepath);
@@ -368,6 +394,8 @@ namespace pinger_csharp
             {
                 label1.BackColor = MyDialog.Color;
                 label2.BackColor = MyDialog.Color;
+                pictureBox1.BackColor = MyDialog.Color;
+                pictureBox2.BackColor = MyDialog.Color;
             }
         }
 
@@ -474,12 +502,16 @@ namespace pinger_csharp
             return false;
         }
         private bool graphActivated;
-        private List<Int32> graphPings;
+        private List<Int32> graphPings1;
+        private List<Int32> graphPings2;
         private int graphLimit;
         private void refreshsize() //recalculates form size and label placement
         {
-            label2.Location = new Point(label1.Location.X + label1.Size.Width, 1);
-            if (!graphActivated) { 
+            //button1.Size =new Size (label1.Height,label1.Height);
+            
+            if (!graphActivated) {
+                label2.Location = new Point(label1.Location.X + label1.Size.Width, label1.Location.Y);
+                this.BackColor = Color.Black;
                 if (button1.Height > label1.Height)
                     {
                         Size = new Size(14 + label1.Size.Width + label2.Size.Width, button1.Height);
@@ -492,18 +524,31 @@ namespace pinger_csharp
             }
             else
             {
+                if(rightNotBottom)
+                    label2.Location = new Point(pictureBox2.Location.X, label1.Location.Y);
+                else
+                    label2.Location = new Point(label1.Location.X + label1.Size.Width, label1.Location.Y);
+                this.BackColor = label1.BackColor;
                 graphCheck.Text = "Graph ON";
-                maxValue = 1;
-                for (int k = 0; k < graphPings.Count; k++)
+                maxValue1 = 1;
+                maxValue2 = 1;
+                for (int k = 0; k < graphPings1.Count; k++)
                 {
-                    if (graphPings[k] > maxValue)
-                        maxValue = graphPings[k];
+                    if (graphPings1[k] > maxValue1)
+                        maxValue1 = graphPings1[k];
+                }
+                for (int k = 0; k < graphPings2.Count; k++)
+                {
+                    if (graphPings2[k] > maxValue2)
+                        maxValue2 = graphPings2[k];
                 }
 
                 pictureBox1.Invalidate();
+                pictureBox2.Invalidate();
             }
         }
-        private int maxValue;
+        private int maxValue1;
+        private int maxValue2;
         private int barsWidth;
         private int dotHeight;
         private bool rightNotBottom;
@@ -515,19 +560,19 @@ namespace pinger_csharp
             Point tempp = pictureBox1.Location;
             tempp = new Point(0, 0);
             SolidBrush sPen = new SolidBrush(Color.FromArgb(64,64,64));
-            g.FillRectangle(sPen, 0, 0, pictureBox1.Width, pictureBox1.Height);
+            //g.FillRectangle(sPen, 0, 0, pictureBox1.Width, pictureBox1.Height);
             Color c1 = Color.FromArgb(100, 0, 100);
 
-            float scale = (float)pictureBox1.Height / (float)maxValue;
+            float scale = (float)pictureBox1.Height / (float)maxValue1;
 
             int k;
-            for (k = 0; k < graphPings.Count; k++)
+            for (k = 0; k < graphPings1.Count; k++)
             {
-                c1 = pingColor(graphPings[k]);
+                c1 = pingColor(graphPings1[k]);
 
                 Pen pPen = new Pen(c1);
                 pPen.Width = 2.0F;
-                float pixelPerV = graphPings[k] * scale;
+                float pixelPerV = graphPings1[k] * scale;
                 //if (pixelPerV <= 0)
                 //    pixelPerV = 1;
                 g.DrawLine(pPen, tempp.X + barsWidth * k, pictureBox1.Height - pixelPerV,
@@ -536,10 +581,41 @@ namespace pinger_csharp
                 g.DrawLine(pPen, tempp.X + barsWidth * k, pictureBox1.Height - pixelPerV - dotHeight,
                     tempp.X + barsWidth * k, pictureBox1.Height - pixelPerV);
             }
-            g.DrawString("(1) " + scale + "",
+            g.DrawString("(1)",
                 new Font("Arial", (int)(fontsize / 1.5)), System.Drawing.Brushes.DarkGray, new Point(0, 0));
         }
+        private void pictureBox2_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+        {
+            // Create a local version of the graphics object for the PictureBox.
 
+            Graphics g = e.Graphics;
+            Point tempp = pictureBox2.Location;
+            tempp = new Point(0, 0);
+            SolidBrush sPen = new SolidBrush(Color.FromArgb(64, 64, 64));
+            //g.FillRectangle(sPen, 0, 0, pictureBox2.Width, pictureBox2.Height);
+            Color c1 = Color.FromArgb(100, 0, 100);
+
+            float scale = (float)pictureBox2.Height / (float)maxValue2;
+
+            int k;
+            for (k = 0; k < graphPings2.Count; k++)
+            {
+                c1 = pingColor(graphPings2[k]);
+
+                Pen pPen = new Pen(c1);
+                pPen.Width = 2.0F;
+                float pixelPerV = graphPings2[k] * scale;
+                //if (pixelPerV <= 0)
+                //    pixelPerV = 1;
+                g.DrawLine(pPen, tempp.X + barsWidth * k, pictureBox2.Height - pixelPerV,
+                    tempp.X + barsWidth * k, pictureBox2.Height);
+                pPen.Color = Color.White;
+                g.DrawLine(pPen, tempp.X + barsWidth * k, pictureBox2.Height - pixelPerV - dotHeight,
+                    tempp.X + barsWidth * k, pictureBox2.Height - pixelPerV);
+            }
+            g.DrawString("(2)",
+                new Font("Arial", (int)(fontsize / 1.5)), System.Drawing.Brushes.DarkGray, new Point(0, 0));
+        }
         private void setfontsize()//updates font size and style
         {
             label1.Font = new System.Drawing.Font(label1.Font.Name, (float)fontsize, label1.Font.Style);
@@ -657,7 +733,10 @@ namespace pinger_csharp
             pingadress2.Text = "8.8.8.8";
             label1.BackColor = Color.FromArgb(64, 64, 64);
             label2.BackColor = Color.FromArgb(64, 64, 64);
-            graphActivated = true;
+            graphActivated = false;
+            rightNotBottom = true;
+            rightBottomToolStripMenuItem.PerformClick();
+            rightBottomToolStripMenuItem.PerformClick();
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -678,6 +757,7 @@ namespace pinger_csharp
             {
                 graphActivated = false;
                 pictureBox1.Hide();
+                pictureBox2.Hide();
                 graphCheck.Text = "Graph OFF";
             }
             else
@@ -685,15 +765,16 @@ namespace pinger_csharp
                 if (rightNotBottom)
                 {
                     pictureBox2.Location = new Point(pictureBox1.Location.X+pictureBox1.Width+2, pictureBox1.Top);
-                    Size = new Size(14 + label1.Size.Width + label2.Size.Width + pictureBox2.Size.Width, pictureBox1.Bottom);
+                    Size = new Size(label1.Size.Width + label2.Size.Width + pictureBox2.Size.Width, pictureBox1.Bottom);
                 }
                 else
                 {
                     pictureBox2.Location = new Point(pictureBox1.Location.X, pictureBox1.Bottom+2);
-                    Size = new Size(14 + label1.Size.Width + label2.Size.Width, pictureBox2.Bottom);
+                    Size = new Size(label1.Size.Width + label2.Size.Width, pictureBox2.Bottom);
                 }
                 graphActivated = true;
                 pictureBox1.Show();
+                pictureBox2.Show();
                 graphCheck.Text = "Graph ON";
             }
             
@@ -702,22 +783,12 @@ namespace pinger_csharp
         {
             string text = ""
                 + sender.ToString() + "\n"
-                + e.ToString() + "\n"
-                + graphActivated + "\n"
-                + graphLimit + "\n"
-                + nameof(maxValue) + ":"+ maxValue + "\n"
-                + nameof(rightNotBottom) + ":" + rightNotBottom + "\n"
-                + "{" + String.Join(Environment.NewLine, graphPings);
+                + e.ToString() + "\n";
             MessageBox.Show(text,
             "About",
             MessageBoxButtons.OK,
             MessageBoxIcon.Information);
-            if (rightNotBottom)
-                rightNotBottom = false;
-            else
-                rightNotBottom = true;
-            graphCheck.PerformClick();
-            graphCheck.PerformClick();
+
         }
         private Color pingColor(long ping)
         {
@@ -750,6 +821,25 @@ namespace pinger_csharp
                     g = 0;
             }
             return Color.FromArgb(r, g, 0);
+        }
+
+        private void rightBottomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (rightNotBottom) { 
+                rightNotBottom = false;
+                rightBottomToolStripMenuItem.Text = "Under";
+            }
+            else { 
+                rightNotBottom = true;
+                rightBottomToolStripMenuItem.Text = "Side by side";
+            }
+            graphCheck.PerformClick();
+            graphCheck.PerformClick();
+        }
+
+        private void barsWidthToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
