@@ -85,6 +85,7 @@ namespace pinger_csharp
                     this.BackColor = Color.FromArgb(r, g, b);
                     graphActivated = Convert.ToBoolean(settings[10]);
                     rightNotBottom = Convert.ToBoolean(settings[11]);
+                    timer1.Interval = Convert.ToInt32(settings[12]);
                     rightBottomToolStripMenuItem.PerformClick();
                     rightBottomToolStripMenuItem.PerformClick();
                     //this should be on form load!!
@@ -340,7 +341,7 @@ namespace pinger_csharp
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             //on close save everything
-            string[] settings = { "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+            string[] settings = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
             settings[0] = Location.X.ToString();
             settings[1] = Location.Y.ToString();
             settings[2] = fontsize.ToString();
@@ -359,6 +360,7 @@ namespace pinger_csharp
             settings[9] = label1.BackColor.B.ToString();
             settings[10] = graphActivated.ToString();
             settings[11] = rightNotBottom.ToString();
+            settings[12] = timer1.Interval.ToString();
 
             string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
             System.IO.FileInfo file = new System.IO.FileInfo(filepath);
@@ -410,6 +412,8 @@ namespace pinger_csharp
                 label2.Font = fontDialog1.Font;
             }
             fontsize = label1.Font.Size;
+            graphCheck.PerformClick();
+            graphCheck.PerformClick();
             refreshsize();
         }
         double lastOpacity;
@@ -510,8 +514,9 @@ namespace pinger_csharp
             //button1.Size =new Size (label1.Height,label1.Height);
             
             if (!graphActivated) {
-                label2.Location = new Point(label1.Location.X + label1.Size.Width, label1.Location.Y);
-                this.BackColor = Color.Black;
+                label2.Location = new Point(label1.Right+1, label1.Location.Y);
+                this.BackColor = label1.BackColor; //temporary!
+
                 if (button1.Height > label1.Height)
                     {
                         Size = new Size(14 + label1.Size.Width + label2.Size.Width, button1.Height);
@@ -524,10 +529,11 @@ namespace pinger_csharp
             }
             else
             {
-                if(rightNotBottom)
-                    label2.Location = new Point(pictureBox2.Location.X, label1.Location.Y);
+                
+                if (rightNotBottom)
+                    label2.Location = new Point(pictureBox2.Location.X+1, label1.Location.Y);
                 else
-                    label2.Location = new Point(label1.Location.X + label1.Size.Width, label1.Location.Y);
+                    label2.Location = new Point(label1.Right+1, label1.Location.Y);
                 this.BackColor = label1.BackColor;
                 graphCheck.Text = "Graph ON";
                 maxValue1 = 1;
@@ -762,15 +768,16 @@ namespace pinger_csharp
             }
             else
             {
+                pictureBox1.Location = new Point(0, label1.Bottom);
                 if (rightNotBottom)
                 {
                     pictureBox2.Location = new Point(pictureBox1.Location.X+pictureBox1.Width+2, pictureBox1.Top);
-                    Size = new Size(label1.Size.Width + label2.Size.Width + pictureBox2.Size.Width, pictureBox1.Bottom);
+                    Size = new Size(14 + label1.Size.Width + label2.Size.Width + pictureBox2.Size.Width, pictureBox1.Bottom);
                 }
                 else
                 {
                     pictureBox2.Location = new Point(pictureBox1.Location.X, pictureBox1.Bottom+2);
-                    Size = new Size(label1.Size.Width + label2.Size.Width, pictureBox2.Bottom);
+                    Size = new Size(14 + label1.Size.Width + label2.Size.Width, pictureBox2.Bottom);
                 }
                 graphActivated = true;
                 pictureBox1.Show();
