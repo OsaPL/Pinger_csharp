@@ -29,7 +29,6 @@ namespace pinger_csharp
             graphPings2 = new List<Int32>();
             barsWidth = 1;
             dotHeight = 1;
-            graphLimit = pictureBox1.Width / barsWidth + 1;
             maxValue1 = 1;
             maxValue2 = 1;
 
@@ -519,11 +518,11 @@ namespace pinger_csharp
 
                 if (button1.Height > label1.Height)
                     {
-                        Size = new Size(14 + label1.Size.Width + label2.Size.Width, button1.Height);
+                        Size = new Size(126, button1.Height);
                     }
                 else
                     {
-                        Size = new Size(14 + label1.Size.Width + label2.Size.Width, label1.Height);
+                        Size = new Size(126, label1.Height);
                     }
                 graphCheck.Text = "Graph OFF";
             }
@@ -768,18 +767,24 @@ namespace pinger_csharp
             }
             else
             {
+                
                 pictureBox1.Location = new Point(0, label1.Bottom);
                 if (rightNotBottom)
                 {
+                    pictureBox1.Size = new Size(this.Width/2, pictureBox1.Height);
+                    pictureBox2.Size = pictureBox1.Size;
                     pictureBox2.Location = new Point(pictureBox1.Location.X+pictureBox1.Width+2, pictureBox1.Top);
                     Size = new Size(14 + label1.Size.Width + label2.Size.Width + pictureBox2.Size.Width, pictureBox1.Bottom);
                 }
                 else
                 {
+                    pictureBox1.Size = new Size(this.Width, pictureBox1.Height);
+                    pictureBox2.Size = pictureBox1.Size;
                     pictureBox2.Location = new Point(pictureBox1.Location.X, pictureBox1.Bottom+2);
                     Size = new Size(14 + label1.Size.Width + label2.Size.Width, pictureBox2.Bottom);
                 }
                 graphActivated = true;
+                graphLimit = pictureBox1.Width / barsWidth + 1;
                 pictureBox1.Show();
                 pictureBox2.Show();
                 graphCheck.Text = "Graph ON";
@@ -800,34 +805,42 @@ namespace pinger_csharp
         private Color pingColor(long ping)
         {
             //using 2 diffrent functions to create green to yellow to red spectrum for the ranges 25 to 230 ms.
-            if (ping > 230)
-                ping = 230;
+            if (ping <= 1)
+            {
+                return Color.FromArgb(255, 255, 255);
+            }
+            else
+            {
+                if (ping > 230)
+                    ping = 230;
 
-            int r = 0, g = 0;
-            if (ping < 25)
-            {
-                r = 0;
-                g = 255;
-            }
-            if (ping < 120)
-            {
-                r = (int)(2.55 * ping - 51);
-                if (r > 255)
-                    r = 255;
-                if (r < 0)
+                int r = 0, g = 0;
+                if (ping < 25)
+                {
                     r = 0;
-                g = 255;
-            }
-            if (ping >= 120)
-            {
-                r = 255;
-                g = (int)(-2.125 * ping + 510);
-                if (g > 255)
                     g = 255;
-                if (g < 0)
-                    g = 0;
+                }
+                if (ping < 120)
+                {
+                    r = (int)(2.55 * ping - 51);
+                    if (r > 255)
+                        r = 255;
+                    if (r < 0)
+                        r = 0;
+                    g = 255;
+                }
+                if (ping >= 120)
+                {
+                    r = 255;
+                    g = (int)(-2.125 * ping + 510);
+                    if (g > 255)
+                        g = 255;
+                    if (g < 0)
+                        g = 0;
+                }
+
+                return Color.FromArgb(r, g, 0);
             }
-            return Color.FromArgb(r, g, 0);
         }
 
         private void rightBottomToolStripMenuItem_Click(object sender, EventArgs e)
