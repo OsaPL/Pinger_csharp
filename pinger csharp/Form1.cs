@@ -901,8 +901,11 @@ namespace pinger_csharp
                 if (newBarsWidth > 1)
                     if (newBarsWidth < 20)
                     {
-                        if (dotHeight == barsWidth/2)
-                            dotHeight = newBarsWidth/2;    
+                        if (dotHeight == barsWidth / 2)
+                        {
+                            dotHeight = newBarsWidth / 2;
+                            dotsHeightTextBox.Text = "" + dotHeight
+                        } 
                         barsWidth = newBarsWidth;
                         
                     }
