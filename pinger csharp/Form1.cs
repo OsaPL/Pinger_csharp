@@ -413,6 +413,7 @@ namespace pinger_csharp
             fontsize = label1.Font.Size;
             graphCheck.PerformClick();
             graphCheck.PerformClick();
+
             refreshsize();
         }
         double lastOpacity;
@@ -774,7 +775,10 @@ namespace pinger_csharp
                     pictureBox1.Size = new Size(this.Width/2, pictureBox1.Height);
                     pictureBox2.Size = pictureBox1.Size;
                     pictureBox2.Location = new Point(pictureBox1.Location.X+pictureBox1.Width+2, pictureBox1.Top);
-                    Size = new Size(14 + label1.Size.Width + label2.Size.Width + pictureBox2.Size.Width, pictureBox1.Bottom);
+                    if(pictureBox2.Right>label2.Right)
+                        Size = new Size(pictureBox2.Right, pictureBox1.Bottom);
+                    else
+                        Size = new Size(label2.Right, pictureBox1.Bottom);
                 }
                 else
                 {
@@ -858,6 +862,11 @@ namespace pinger_csharp
         }
 
         private void barsWidthToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripTextBox3_Click(object sender, EventArgs e)
         {
 
         }
