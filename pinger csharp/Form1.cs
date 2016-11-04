@@ -419,7 +419,7 @@ namespace pinger_csharp
         double lastOpacity;
         private void resetlocation_Tick(object sender, EventArgs e)//one time size refresh to make sure labels are alligned properly
         {
-            refreshsize();
+            //refreshsize();
             if (IsOnScreen())
             {
                 lastFormPos = Location;
@@ -451,7 +451,23 @@ namespace pinger_csharp
                 this.Opacity = lastOpacity;
             }
 
-        }
+            maxValue1 = 1;
+            maxValue2 = 1;
+            for (int k = 0; k < graphPings1.Count; k++)
+            {
+                if (graphPings1[k] > maxValue1)
+                    maxValue1 = graphPings1[k];
+            }
+            for (int k = 0; k < graphPings2.Count; k++)
+            {
+                if (graphPings2[k] > maxValue2)
+                    maxValue2 = graphPings2[k];
+            }
+
+            pictureBox1.Invalidate();
+            pictureBox2.Invalidate();
+
+    }
 
         // mouse dragging by button
         private bool mouseDown;
@@ -511,47 +527,32 @@ namespace pinger_csharp
         private int graphLimit;
         private void refreshsize() //recalculates form size and label placement
         {
-            //button1.Size =new Size (label1.Height,label1.Height);
-            
-            if (!graphActivated) {
-                label2.Location = new Point(label1.Right+1, label1.Location.Y);
-                this.BackColor = label1.BackColor; //temporary!
+        //button1.Size =new Size (label1.Height,label1.Height);
 
-                if (button1.Height > label1.Height)
-                    {
-                        Size = new Size(126, button1.Height);
-                    }
-                else
-                    {
-                        Size = new Size(126, label1.Height);
-                    }
-                graphCheck.Text = "Graph OFF";
+        if (!graphActivated)
+        {
+            //label2.Location = new Point(label1.Right+1, label1.Location.Y);
+            this.BackColor = label1.BackColor; //temporary!
+
+            if (button1.Height > label1.Height)
+            {
+                Size = new Size(74+ 74, button1.Height);
             }
             else
             {
-                
-                if (rightNotBottom)
-                    label2.Location = new Point(pictureBox2.Location.X+1, label1.Location.Y);
-                else
-                    label2.Location = new Point(label1.Right+1, label1.Location.Y);
-                this.BackColor = label1.BackColor;
-                graphCheck.Text = "Graph ON";
-                maxValue1 = 1;
-                maxValue2 = 1;
-                for (int k = 0; k < graphPings1.Count; k++)
-                {
-                    if (graphPings1[k] > maxValue1)
-                        maxValue1 = graphPings1[k];
-                }
-                for (int k = 0; k < graphPings2.Count; k++)
-                {
-                    if (graphPings2[k] > maxValue2)
-                        maxValue2 = graphPings2[k];
-                }
-
-                pictureBox1.Invalidate();
-                pictureBox2.Invalidate();
+                Size = new Size(74 + 74, label1.Height);
             }
+            graphCheck.Text = "Graph OFF";
+        }
+        else
+        {
+            if (rightNotBottom)
+                label2.Location = new Point(pictureBox2.Location.X + 1, label1.Location.Y);
+            else
+                label2.Location = new Point(74, -1);
+            this.BackColor = label1.BackColor;
+            graphCheck.Text = "Graph ON";
+        }
         }
         private int maxValue1;
         private int maxValue2;
@@ -785,7 +786,7 @@ namespace pinger_csharp
                     pictureBox1.Size = new Size(this.Width, pictureBox1.Height);
                     pictureBox2.Size = pictureBox1.Size;
                     pictureBox2.Location = new Point(pictureBox1.Location.X, pictureBox1.Bottom+2);
-                    Size = new Size(14 + label1.Size.Width + label2.Size.Width, pictureBox2.Bottom);
+                    Size = new Size(74+74, pictureBox2.Bottom);
                 }
                 graphActivated = true;
                 graphLimit = pictureBox1.Width / barsWidth + 1;
@@ -793,7 +794,7 @@ namespace pinger_csharp
                 pictureBox2.Show();
                 graphCheck.Text = "Graph ON";
             }
-            
+            refreshsize();   
         }
         private void debugWindow(object sender, EventArgs e)
         {
