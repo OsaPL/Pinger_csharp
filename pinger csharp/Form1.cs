@@ -88,9 +88,12 @@ namespace pinger_csharp
                         barsWidth = 1;
                     dotHeight = Convert.ToInt32(settings[14]);
                     barsSpacing = Convert.ToInt32(settings[15]);
+                    BarsWidthTextBox.Text = "" + barsWidth;
+                    DotsHeightTextBox.Text = "" + dotHeight;
+                    BarsSpacingTextBox.Text = "" + barsSpacing;
                     rightBottomToolStripMenuItem.PerformClick();
                     rightBottomToolStripMenuItem.PerformClick();
-                    //this should be on form load!!
+       
                     refreshsize();
                 }
 
@@ -589,11 +592,11 @@ namespace pinger_csharp
                 float pixelPerV = graphPings1[k] * scale;
                 //if (pixelPerV <= 0)
                 //    pixelPerV = 1;
-                g.DrawLine(pPen, tempp.X + barsWidth * k + k * barsSpacing, pictureBox1.Height - pixelPerV,
-                    tempp.X + barsWidth * k + k * barsSpacing, pictureBox1.Height);
+                g.DrawLine(pPen, tempp.X + (barsWidth+barsSpacing) * k, pictureBox1.Height - pixelPerV,
+                    tempp.X + (barsWidth + barsSpacing) * k, pictureBox1.Height);
                 pPen.Color = Color.White;
-                g.DrawLine(pPen, tempp.X + barsWidth * k + k * barsSpacing, pictureBox1.Height - pixelPerV - dotHeight,
-                    tempp.X + barsWidth * k + k * barsSpacing, pictureBox1.Height - pixelPerV);
+                g.DrawLine(pPen, tempp.X + (barsWidth + barsSpacing) * k, pictureBox1.Height - pixelPerV - dotHeight,
+                    tempp.X + (barsWidth + barsSpacing) * k, pictureBox1.Height - pixelPerV);
             }
             g.DrawString("(1)",
                 new Font("Arial", (int)(fontsize / 1.5)), System.Drawing.Brushes.DarkGray, new Point(0, 0));
@@ -616,16 +619,16 @@ namespace pinger_csharp
             {
                 c1 = pingColor(graphPings2[k]);
 
-                Pen pPen = new Pen(c1);
-                pPen.Width = 2.0F;
+                Pen pPen = new Pen(c1,barsWidth);
+                //pPen.Width = 2.0F;
                 float pixelPerV = graphPings2[k] * scale;
                 //if (pixelPerV <= 0)
                 //    pixelPerV = 1;
-                g.DrawLine(pPen, tempp.X + barsWidth * k, pictureBox2.Height - pixelPerV,
-                    tempp.X + barsWidth * k, pictureBox2.Height);
+                g.DrawLine(pPen, tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height - pixelPerV,
+                    tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height);
                 pPen.Color = Color.White;
-                g.DrawLine(pPen, tempp.X + barsWidth * k, pictureBox2.Height - pixelPerV - dotHeight,
-                    tempp.X + barsWidth * k, pictureBox2.Height - pixelPerV);
+                g.DrawLine(pPen, tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height - pixelPerV - dotHeight,
+                    tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height - pixelPerV);
             }
             g.DrawString("(2)",
                 new Font("Arial", (int)(fontsize / 1.5)), System.Drawing.Brushes.DarkGray, new Point(0, 0));
@@ -752,6 +755,9 @@ namespace pinger_csharp
             barsWidth = 2;
             barsSpacing = 0;
             dotHeight = 1;
+            BarsWidthTextBox.Text = "2";
+            DotsHeightTextBox.Text = "1";
+            BarsSpacingTextBox.Text = "0";
             rightBottomToolStripMenuItem.PerformClick();
             rightBottomToolStripMenuItem.PerformClick();
         }
