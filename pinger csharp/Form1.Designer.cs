@@ -69,6 +69,8 @@
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.barsSpacingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.BarsSpacingTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.contextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -85,6 +87,7 @@
             this.label2.Size = new System.Drawing.Size(56, 13);
             this.label2.TabIndex = 2;
             this.label2.Text = "(2)9999ms";
+
             // 
             // contextMenuStrip
             // 
@@ -100,7 +103,7 @@
             this.aboutToolStripMenuItem,
             this.quitToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(142, 208);
+            this.contextMenuStrip.Size = new System.Drawing.Size(153, 230);
             // 
             // placementToolStripMenuItem
             // 
@@ -255,7 +258,8 @@
             this.graphCheck.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.rightBottomToolStripMenuItem,
             this.barsWidthToolStripMenuItem,
-            this.dotsHeightToolStripMenuItem});
+            this.dotsHeightToolStripMenuItem,
+            this.barsSpacingToolStripMenuItem});
             this.graphCheck.Name = "graphCheck";
             this.graphCheck.Size = new System.Drawing.Size(152, 22);
             this.graphCheck.Text = "graphCheck";
@@ -281,6 +285,8 @@
             // 
             this.BarsWidthTextBox.Name = "BarsWidthTextBox";
             this.BarsWidthTextBox.Size = new System.Drawing.Size(100, 23);
+            this.BarsWidthTextBox.ModifiedChanged += new System.EventHandler(this.BarsWidthTextBox_ModifiedChanged);
+            this.BarsWidthTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.BarsWidthTextBox_KeyPress);
             this.BarsWidthTextBox.Click += new System.EventHandler(this.toolStripTextBox3_Click);
             // 
             // dotsHeightToolStripMenuItem
@@ -295,6 +301,7 @@
             // 
             this.DotsHeightTextBox.Name = "DotsHeightTextBox";
             this.DotsHeightTextBox.Size = new System.Drawing.Size(100, 23);
+            this.DotsHeightTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.DotsHeightTextBox_KeyPress);
             // 
             // lockWindowToolStripMenuItem
             // 
@@ -389,6 +396,20 @@
             this.pictureBox2.TabIndex = 4;
             this.pictureBox2.TabStop = false;
             // 
+            // barsSpacingToolStripMenuItem
+            // 
+            this.barsSpacingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.BarsSpacingTextBox});
+            this.barsSpacingToolStripMenuItem.Name = "barsSpacingToolStripMenuItem";
+            this.barsSpacingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.barsSpacingToolStripMenuItem.Text = "BarsSpacing";
+            // 
+            // BarsSpacingTextBox
+            // 
+            this.BarsSpacingTextBox.Name = "BarsSpacingTextBox";
+            this.BarsSpacingTextBox.Size = new System.Drawing.Size(100, 23);
+            this.BarsSpacingTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.BarsSpacingTextBox_KeyPress);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -460,6 +481,8 @@
         private System.Windows.Forms.ToolStripMenuItem dotsHeightToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox BarsWidthTextBox;
         private System.Windows.Forms.ToolStripTextBox DotsHeightTextBox;
+        private System.Windows.Forms.ToolStripMenuItem barsSpacingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox BarsSpacingTextBox;
     }
 }
 

@@ -27,8 +27,6 @@ namespace pinger_csharp
             pictureBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox2_Paint);
             graphPings1 = new List<Int32>();
             graphPings2 = new List<Int32>();
-            barsWidth = 1;
-            dotHeight = 1;
             maxValue1 = 1;
             maxValue2 = 1;
 
@@ -85,6 +83,11 @@ namespace pinger_csharp
                     graphActivated = Convert.ToBoolean(settings[10]);
                     rightNotBottom = Convert.ToBoolean(settings[11]);
                     timer1.Interval = Convert.ToInt32(settings[12]);
+                    barsWidth = Convert.ToInt32(settings[13]);
+                    if (barsWidth <= 0)
+                        barsWidth = 1;
+                    dotHeight = Convert.ToInt32(settings[14]);
+                    barsSpacing = Convert.ToInt32(settings[15]);
                     rightBottomToolStripMenuItem.PerformClick();
                     rightBottomToolStripMenuItem.PerformClick();
                     //this should be on form load!!
@@ -340,7 +343,7 @@ namespace pinger_csharp
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             //on close save everything
-            string[] settings = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+            string[] settings = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
             settings[0] = Location.X.ToString();
             settings[1] = Location.Y.ToString();
             settings[2] = fontsize.ToString();
@@ -360,6 +363,9 @@ namespace pinger_csharp
             settings[10] = graphActivated.ToString();
             settings[11] = rightNotBottom.ToString();
             settings[12] = timer1.Interval.ToString();
+            settings[13] = barsWidth.ToString();
+            settings[14] = dotHeight.ToString();
+            settings[15] = barsSpacing.ToString();
 
             string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
             System.IO.FileInfo file = new System.IO.FileInfo(filepath);
@@ -558,6 +564,7 @@ namespace pinger_csharp
         private int maxValue2;
         private int barsWidth;
         private int dotHeight;
+        private int barsSpacing;
         private bool rightNotBottom;
         private void pictureBox1_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
@@ -577,16 +584,16 @@ namespace pinger_csharp
             {
                 c1 = pingColor(graphPings1[k]);
 
-                Pen pPen = new Pen(c1);
-                pPen.Width = 2.0F;
+                Pen pPen = new Pen(c1,barsWidth);
+                //pPen.Width = 2.0F;
                 float pixelPerV = graphPings1[k] * scale;
                 //if (pixelPerV <= 0)
                 //    pixelPerV = 1;
-                g.DrawLine(pPen, tempp.X + barsWidth * k, pictureBox1.Height - pixelPerV,
-                    tempp.X + barsWidth * k, pictureBox1.Height);
+                g.DrawLine(pPen, tempp.X + barsWidth * k + k * barsSpacing, pictureBox1.Height - pixelPerV,
+                    tempp.X + barsWidth * k + k * barsSpacing, pictureBox1.Height);
                 pPen.Color = Color.White;
-                g.DrawLine(pPen, tempp.X + barsWidth * k, pictureBox1.Height - pixelPerV - dotHeight,
-                    tempp.X + barsWidth * k, pictureBox1.Height - pixelPerV);
+                g.DrawLine(pPen, tempp.X + barsWidth * k + k * barsSpacing, pictureBox1.Height - pixelPerV - dotHeight,
+                    tempp.X + barsWidth * k + k * barsSpacing, pictureBox1.Height - pixelPerV);
             }
             g.DrawString("(1)",
                 new Font("Arial", (int)(fontsize / 1.5)), System.Drawing.Brushes.DarkGray, new Point(0, 0));
@@ -742,6 +749,9 @@ namespace pinger_csharp
             label2.BackColor = Color.FromArgb(64, 64, 64);
             graphActivated = false;
             rightNotBottom = true;
+            barsWidth = 2;
+            barsSpacing = 0;
+            dotHeight = 1;
             rightBottomToolStripMenuItem.PerformClick();
             rightBottomToolStripMenuItem.PerformClick();
         }
@@ -769,7 +779,7 @@ namespace pinger_csharp
             }
             else
             {
-                
+                graphLimit = pictureBox1.Width / (barsWidth + barsSpacing) + 1;
                 pictureBox1.Location = new Point(0, label1.Bottom);
                 if (rightNotBottom)
                 {
@@ -789,7 +799,7 @@ namespace pinger_csharp
                     Size = new Size(74+74, pictureBox2.Bottom);
                 }
                 graphActivated = true;
-                graphLimit = pictureBox1.Width / barsWidth + 1;
+                graphLimit = pictureBox1.Width / (barsWidth + barsSpacing) + 1;
                 pictureBox1.Show();
                 pictureBox2.Show();
                 graphCheck.Text = "Graph ON";
@@ -870,6 +880,62 @@ namespace pinger_csharp
         private void toolStripTextBox3_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void BarsWidthTextBox_ModifiedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void BarsWidthTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)//on enter press, change location
+            {
+                int newBarsWidth = (int)Parsestring(BarsWidthTextBox.Text);
+                if (newBarsWidth > 1)
+                    if (newBarsWidth < 20)
+                    {
+                        if (dotHeight == barsWidth/2)
+                            dotHeight = newBarsWidth/2;    
+                        barsWidth = newBarsWidth;
+                        
+                    }
+
+                graphCheck.PerformClick();
+                graphCheck.PerformClick();
+            }
+        }
+
+        private void DotsHeightTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)//on enter press, change location
+            {
+                    int newDotHeight = (int)Parsestring(DotsHeightTextBox.Text);
+                    if (newDotHeight >= 0)
+                        if (newDotHeight < 20)
+                        {
+                            dotHeight = newDotHeight;
+                        }
+
+                    graphCheck.PerformClick();
+                    graphCheck.PerformClick();
+                }
+        }
+
+        private void BarsSpacingTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)//on enter press, change location
+            {
+                int newBarsSpacing = (int)Parsestring(BarsSpacingTextBox.Text);
+                if (newBarsSpacing >= 0)
+                    if (newBarsSpacing < 20)
+                    {
+                        barsSpacing = newBarsSpacing;
+                    }
+
+                graphCheck.PerformClick();
+                graphCheck.PerformClick();
+            }
         }
     }
 }
