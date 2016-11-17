@@ -533,8 +533,6 @@ namespace pinger_csharp
         private int graphLimit;
         private void refreshsize() //recalculates form size and label placement
         {
-            pictureBox1.BackColor = Color.Red;
-            pictureBox2.BackColor = Color.Red;
             if (button1.Height > label1.Height)
             {
                 Size = new Size(label2.Right, button1.Height);
