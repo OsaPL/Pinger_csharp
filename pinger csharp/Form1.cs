@@ -95,6 +95,7 @@ namespace pinger_csharp
                     rightBottomToolStripMenuItem.PerformClick();
        
                     refreshsize();
+
                 }
 
                 catch (Exception)
@@ -107,14 +108,8 @@ namespace pinger_csharp
                 defaultValues();
             }
             locked = false;
-            
             checkipadress();
             refreshsize();
-
-            if (graphActivated) // dirty AF
-            {
-                refreshgraph(true);
-            }
 
         }
         private double Parsestring(String strings)
@@ -534,8 +529,6 @@ namespace pinger_csharp
         private int graphLimit;
         private void refreshsize() //recalculates form size and label placement
         {
-            if (!graphActivated)
-            {
                 if (button1.Height > label1.Height)
                     label1.Size = new Size(label1.Width, button1.Height);
                 else
@@ -543,37 +536,41 @@ namespace pinger_csharp
 
                 label2.Size = label1.Size;
                 label2.Location = new Point((int)(label1.Font.SizeInPoints * 7.3) ,-1);
-                graphCheck.Text = "Graph OFF";
 
                 if (button1.Height > label1.Height)
                     Size = new Size(label2.Right, button1.Height);
                 else
                     Size = new Size(label2.Right, label1.Height);
-
-
-            }
-            else
+   
+            if(graphActivated)
             {
-                pictureBox1.Width = (int)(label1.Font.SizeInPoints * 7);
-                pictureBox1.Height = (int)(label1.Font.SizeInPoints * 1.5);
-                pictureBox2.Size = pictureBox2.Size;
-                graphCheck.Text = "Graph ON";
+
                 if (rightNotBottom)
                 {
-                    label2.Location = new Point((int)(label1.Font.SizeInPoints * 7.3), -1);
-                    Size = new Size(pictureBox2.Right, pictureBox1.Bottom);
+                    pictureBox1.Width = (int)(label1.Font.SizeInPoints * 7);
+                    pictureBox1.Height = (int)(label1.Font.SizeInPoints * 1.5);
+                    pictureBox2.Size = pictureBox1.Size;
+                    pictureBox1.Location = new Point((int)(label1.Font.SizeInPoints * 7.3) * 2, -1);
+                    pictureBox2.Location = new Point(pictureBox1.Right+2, -1);
+                    Size = new Size(pictureBox2.Right, +(int)(label1.Font.SizeInPoints * 1.5));
                 }
                 else
                 {
-                    label2.Location = new Point(pictureBox2.Left, -1);
-                    Size = new Size(label2.Right, pictureBox1.Bottom);
+                    pictureBox1.Width = (int)(this.Width / 2);
+                    pictureBox1.Height = (int)(label1.Font.SizeInPoints * 1.5);
+                    pictureBox2.Size = pictureBox1.Size;
+                    pictureBox1.Location = new Point(-1, (int)(label1.Font.SizeInPoints * 1.5) + 2);
+                    pictureBox2.Location = new Point(pictureBox1.Location.X + pictureBox1.Width + 2, pictureBox1.Top);
+                    Size = new Size(label2.Right, label1.Height + pictureBox1.Height);
                 }
-
-                refreshgraph(true);
+                graphLimit = pictureBox1.Width / (barsWidth + barsSpacing) + 1;
             }
             this.BackColor = label1.BackColor;
 
-
+            if (graphActivated)
+                onOffGraphToolStripMenuItem.Text = "Graph OFF";
+            else
+                onOffGraphToolStripMenuItem.Text = "Graph ON";
 
 
 
@@ -613,44 +610,7 @@ namespace pinger_csharp
         }
         private void refreshgraph(bool onlyRefresh)
         {
-                if (graphActivated)
-                {
-                    graphActivated = false;
-                    pictureBox1.Hide();
-                    pictureBox2.Hide();
-                    graphCheck.Text = "Graph OFF";
-                }
-                else
-                {
-                    graphLimit = pictureBox1.Width / (barsWidth + barsSpacing) + 1;
-                    pictureBox1.Location = new Point(0, label1.Bottom);
-                    if (rightNotBottom)
-                    {
-                        pictureBox1.Size = new Size(this.Width / 2, pictureBox1.Height);
-                        pictureBox2.Size = pictureBox1.Size;
-                        pictureBox2.Location = new Point(pictureBox1.Location.X + pictureBox1.Width + 2, pictureBox1.Top);
-                        if (pictureBox2.Right > label2.Right)
-                            Size = new Size(pictureBox2.Right, pictureBox1.Bottom);
-                        else
-                            Size = new Size(label2.Right, pictureBox1.Bottom);
-                    }
-                    else
-                    {
-                        pictureBox1.Size = new Size(this.Width, pictureBox1.Height);
-                        pictureBox2.Size = pictureBox1.Size;
-                        pictureBox2.Location = new Point(pictureBox1.Location.X, pictureBox1.Bottom + 2);
-                        Size = new Size(74 + 74, pictureBox2.Bottom);
-                    }
-                    graphActivated = true;
-                    graphLimit = pictureBox1.Width / (barsWidth + barsSpacing) + 1;
-                    pictureBox1.Show();
-                    pictureBox2.Show();
-                    graphCheck.Text = "Graph ON";
-                }
-            if (!onlyRefresh)
-                return;
-            else
-                refreshgraph(false);
+
         }
         private int maxValue1;
         private int maxValue2;
@@ -865,7 +825,19 @@ namespace pinger_csharp
 
         private void graphCheck_Click(object sender, EventArgs e)
         {
-            refreshgraph(false);
+            if (graphActivated)
+            {
+                graphActivated = false;
+                pictureBox1.Hide();
+                pictureBox2.Hide();
+            }
+            else
+            {
+                pictureBox1.Show();
+                pictureBox2.Show();
+                graphActivated = true;
+            }
+            //refreshgraph(false);
             refreshsize();   
         }
         private void debugWindow(object sender, EventArgs e)
@@ -874,7 +846,9 @@ namespace pinger_csharp
                 + sender.ToString() + "\n"
                 + e.ToString() + "\n"
                 + pictureBox1.Width.ToString() + "\n"
-                + label1.Width.ToString() + "\n";
+                + graphActivated.ToString() + "\n"
+                + label1.Location.ToString() + "\n"
+                + label2.Location.ToString() + "\n";
             MessageBox.Show(text,
             "About",
             MessageBoxButtons.OK,
@@ -932,7 +906,7 @@ namespace pinger_csharp
                 rightNotBottom = true;
                 rightBottomToolStripMenuItem.Text = "Side by side";
             }
-            refreshgraph(true);
+            refreshsize();
         }
 
         private void barsWidthToolStripMenuItem_Click(object sender, EventArgs e)

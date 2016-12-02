@@ -53,11 +53,14 @@
             this.time = new System.Windows.Forms.ToolStripMenuItem();
             this.timeset = new System.Windows.Forms.ToolStripTextBox();
             this.graphCheck = new System.Windows.Forms.ToolStripMenuItem();
+            this.onOffGraphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rightBottomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.barsWidthToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BarsWidthTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.dotsHeightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DotsHeightTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.barsSpacingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.BarsSpacingTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.lockWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -69,8 +72,6 @@
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.barsSpacingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.BarsSpacingTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.contextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -87,7 +88,6 @@
             this.label2.Size = new System.Drawing.Size(56, 13);
             this.label2.TabIndex = 2;
             this.label2.Text = "(2)9999ms";
-
             // 
             // contextMenuStrip
             // 
@@ -103,7 +103,7 @@
             this.aboutToolStripMenuItem,
             this.quitToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(153, 230);
+            this.contextMenuStrip.Size = new System.Drawing.Size(142, 208);
             // 
             // placementToolStripMenuItem
             // 
@@ -116,7 +116,7 @@
             this.OwnX,
             this.OwnY});
             this.placementToolStripMenuItem.Name = "placementToolStripMenuItem";
-            this.placementToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.placementToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.placementToolStripMenuItem.Text = "Placement";
             // 
             // leftLowerToolStripMenuItem
@@ -177,7 +177,7 @@
             this.backgroundToolStripMenuItem,
             this.opacityToolStripMenuItem});
             this.lookToolStripMenuItem.Name = "lookToolStripMenuItem";
-            this.lookToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.lookToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.lookToolStripMenuItem.Text = "Look";
             // 
             // boldToolStripMenuItem
@@ -213,7 +213,7 @@
             this.adress1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pingadress1});
             this.adress1.Name = "adress1";
-            this.adress1.Size = new System.Drawing.Size(152, 22);
+            this.adress1.Size = new System.Drawing.Size(141, 22);
             this.adress1.Text = "Ping1";
             // 
             // pingadress1
@@ -228,7 +228,7 @@
             this.adress2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pingadress2});
             this.adress2.Name = "adress2";
-            this.adress2.Size = new System.Drawing.Size(152, 22);
+            this.adress2.Size = new System.Drawing.Size(141, 22);
             this.adress2.Text = "Ping2";
             // 
             // pingadress2
@@ -243,7 +243,7 @@
             this.time.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.timeset});
             this.time.Name = "time";
-            this.time.Size = new System.Drawing.Size(152, 22);
+            this.time.Size = new System.Drawing.Size(141, 22);
             this.time.Text = "Time";
             // 
             // timeset
@@ -256,14 +256,22 @@
             // graphCheck
             // 
             this.graphCheck.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.onOffGraphToolStripMenuItem,
             this.rightBottomToolStripMenuItem,
             this.barsWidthToolStripMenuItem,
             this.dotsHeightToolStripMenuItem,
             this.barsSpacingToolStripMenuItem});
             this.graphCheck.Name = "graphCheck";
-            this.graphCheck.Size = new System.Drawing.Size(152, 22);
-            this.graphCheck.Text = "graphCheck";
+            this.graphCheck.Size = new System.Drawing.Size(141, 22);
+            this.graphCheck.Text = "Graphs";
             this.graphCheck.Click += new System.EventHandler(this.graphCheck_Click);
+            // 
+            // onOffGraphToolStripMenuItem
+            // 
+            this.onOffGraphToolStripMenuItem.Name = "onOffGraphToolStripMenuItem";
+            this.onOffGraphToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.onOffGraphToolStripMenuItem.Text = "OnOffGraph";
+            this.onOffGraphToolStripMenuItem.Click += new System.EventHandler(this.graphCheck_Click);
             // 
             // rightBottomToolStripMenuItem
             // 
@@ -303,36 +311,49 @@
             this.DotsHeightTextBox.Size = new System.Drawing.Size(100, 23);
             this.DotsHeightTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.DotsHeightTextBox_KeyPress);
             // 
+            // barsSpacingToolStripMenuItem
+            // 
+            this.barsSpacingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.BarsSpacingTextBox});
+            this.barsSpacingToolStripMenuItem.Name = "barsSpacingToolStripMenuItem";
+            this.barsSpacingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.barsSpacingToolStripMenuItem.Text = "BarsSpacing";
+            // 
+            // BarsSpacingTextBox
+            // 
+            this.BarsSpacingTextBox.Name = "BarsSpacingTextBox";
+            this.BarsSpacingTextBox.Size = new System.Drawing.Size(100, 23);
+            this.BarsSpacingTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.BarsSpacingTextBox_KeyPress);
+            // 
             // lockWindowToolStripMenuItem
             // 
             this.lockWindowToolStripMenuItem.Name = "lockWindowToolStripMenuItem";
             this.lockWindowToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.lockWindowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.lockWindowToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.lockWindowToolStripMenuItem.Text = "Lock";
             this.lockWindowToolStripMenuItem.Click += new System.EventHandler(this.lockWindowToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(138, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
             // label1
             // 
-            this.label1.AutoSize = false;
             this.label1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.label1.ContextMenuStrip = this.contextMenuStrip;
             this.label1.Location = new System.Drawing.Point(12, -1);
@@ -396,20 +417,6 @@
             this.pictureBox2.TabIndex = 4;
             this.pictureBox2.TabStop = false;
             // 
-            // barsSpacingToolStripMenuItem
-            // 
-            this.barsSpacingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.BarsSpacingTextBox});
-            this.barsSpacingToolStripMenuItem.Name = "barsSpacingToolStripMenuItem";
-            this.barsSpacingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.barsSpacingToolStripMenuItem.Text = "BarsSpacing";
-            // 
-            // BarsSpacingTextBox
-            // 
-            this.BarsSpacingTextBox.Name = "BarsSpacingTextBox";
-            this.BarsSpacingTextBox.Size = new System.Drawing.Size(100, 23);
-            this.BarsSpacingTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.BarsSpacingTextBox_KeyPress);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -437,7 +444,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -483,6 +489,7 @@
         private System.Windows.Forms.ToolStripTextBox DotsHeightTextBox;
         private System.Windows.Forms.ToolStripMenuItem barsSpacingToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox BarsSpacingTextBox;
+        private System.Windows.Forms.ToolStripMenuItem onOffGraphToolStripMenuItem;
     }
 }
 
