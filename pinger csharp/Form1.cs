@@ -420,7 +420,8 @@ namespace pinger_csharp
             }
             fontsize = label1.Font.Size;
             refreshsize();
-            refreshgraph(true);
+            if(graphActivated)
+                refreshgraph(true);
         }
         double lastOpacity;
         private void resetlocation_Tick(object sender, EventArgs e)//one time size refresh to make sure labels are alligned properly
@@ -533,22 +534,23 @@ namespace pinger_csharp
         private int graphLimit;
         private void refreshsize() //recalculates form size and label placement
         {
-            if (button1.Height > label1.Height)
-            {
-                Size = new Size(label2.Right, button1.Height);
-                label1.Size = new Size(label1.Width, button1.Height);
-            }
-            else
-            {
-                label1.Size = new Size((int)(label1.Font.SizeInPoints * 7), (int)(label1.Font.SizeInPoints * 1.5));
-                Size = new Size(label2.Right, label1.Height);
-            }
-            
-            label2.Size = label1.Size;
             if (!graphActivated)
             {
+                if (button1.Height > label1.Height)
+                    label1.Size = new Size(label1.Width, button1.Height);
+                else
+                    label1.Size = new Size((int)(label1.Font.SizeInPoints * 7), (int)(label1.Font.SizeInPoints * 1.5));
+
+                label2.Size = label1.Size;
                 label2.Location = new Point((int)(label1.Font.SizeInPoints * 7.3) ,-1);
                 graphCheck.Text = "Graph OFF";
+
+                if (button1.Height > label1.Height)
+                    Size = new Size(label2.Right, button1.Height);
+                else
+                    Size = new Size(label2.Right, label1.Height);
+
+
             }
             else
             {
