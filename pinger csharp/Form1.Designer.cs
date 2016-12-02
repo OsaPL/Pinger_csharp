@@ -287,15 +287,12 @@
             this.barsWidthToolStripMenuItem.Name = "barsWidthToolStripMenuItem";
             this.barsWidthToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.barsWidthToolStripMenuItem.Text = "BarsWidth";
-            this.barsWidthToolStripMenuItem.Click += new System.EventHandler(this.barsWidthToolStripMenuItem_Click);
             // 
             // BarsWidthTextBox
             // 
             this.BarsWidthTextBox.Name = "BarsWidthTextBox";
             this.BarsWidthTextBox.Size = new System.Drawing.Size(100, 23);
-            this.BarsWidthTextBox.ModifiedChanged += new System.EventHandler(this.BarsWidthTextBox_ModifiedChanged);
             this.BarsWidthTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.BarsWidthTextBox_KeyPress);
-            this.BarsWidthTextBox.Click += new System.EventHandler(this.toolStripTextBox3_Click);
             // 
             // dotsHeightToolStripMenuItem
             // 

@@ -148,7 +148,7 @@ namespace pinger_csharp
             {
                 return 0;
             }
-        }
+        } //simple parse string to double
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -157,11 +157,11 @@ namespace pinger_csharp
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //MessageBox.Show("Created by Michał Osowski (Osa__PL)",
-            //"About",
-            //MessageBoxButtons.OK,
-            //MessageBoxIcon.Information);
-            debugWindow(sender, e);
+            MessageBox.Show("Created by Michał Osowski (Osa__PL)",
+            "About",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+           //debugWindow(sender, e);
         }
         private int w;
         private int h;
@@ -369,24 +369,7 @@ namespace pinger_csharp
             file.Directory.Create();
             System.IO.File.WriteAllLines(file.FullName, settings, Encoding.UTF8);
 
-        }
-
-        private void biggerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            fontsize++;
-            setfontsize();
-            refreshsize();
-        }
-
-        private void smallerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            fontsize--;
-            if (fontsize < 0)//cant be negative
-                fontsize = 9.25;
-            setfontsize();
-            refreshsize();
-
-        }
+        } //saves on closing
 
         private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -415,13 +398,10 @@ namespace pinger_csharp
             }
             fontsize = label1.Font.Size;
             refreshsize();
-            if(graphActivated)
-                refreshgraph(true);
         }
         double lastOpacity;
-        private void resetlocation_Tick(object sender, EventArgs e)//one time size refresh to make sure labels are alligned properly
+        private void resetlocation_Tick(object sender, EventArgs e) //saves last on screen place, and if out of screen relocate to that place
         {
-            //refreshsize();
             if (IsOnScreen())
             {
                 lastFormPos = Location;
@@ -527,7 +507,7 @@ namespace pinger_csharp
         private List<Int32> graphPings1;
         private List<Int32> graphPings2;
         private int graphLimit;
-        private void refreshsize() //recalculates form size and label placement
+        private void refreshsize() //recalculates form size and label/graph placement
         {
                 if (button1.Height > label1.Height)
                     label1.Size = new Size(label1.Width, button1.Height);
@@ -571,46 +551,6 @@ namespace pinger_csharp
                 onOffGraphToolStripMenuItem.Text = "Graph OFF";
             else
                 onOffGraphToolStripMenuItem.Text = "Graph ON";
-
-
-
-
-            /*
-            //button1.Size =new Size (label1.Height,label1.Height);
-            label1.AutoSize = true;
-            label2.AutoSize = true;
-            if (!graphActivated)
-            {
-             //label2.Location = new Point(label1.Right+1, label1.Location.Y);
-                this.BackColor = label1.BackColor; //temporary!
-
-                if (button1.Height > label1.Height)
-                {
-                    Size = new Size(label2.Right, button1.Height);
-                }
-                else
-                {
-                    Size = new Size(label2.Right, label1.Height);
-                }
-                label2.Location = new Point(label1.Right+ (int)(label1.Font.SizeInPoints), -1);
-                graphCheck.Text = "Graph OFF";
-            }
-            else
-            {
-                if (rightNotBottom)
-                    label2.Location = new Point(pictureBox2.Location.X + 1, label1.Location.Y);
-                else
-                    label2.Location = new Point(label2.Right, -1);
-                this.BackColor = label1.BackColor;
-                graphCheck.Text = "Graph ON";
-            }
-            label1.AutoSize = false;
-            label2.AutoSize = false;
-            */
-        }
-        private void refreshgraph(bool onlyRefresh)
-        {
-
         }
         private int maxValue1;
         private int maxValue2;
@@ -620,13 +560,10 @@ namespace pinger_csharp
         private bool rightNotBottom;
         private void pictureBox1_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
-            // Create a local version of the graphics object for the PictureBox.
-            
             Graphics g = e.Graphics;
             Point tempp = pictureBox1.Location;
             tempp = new Point(0, 0);
             SolidBrush sPen = new SolidBrush(Color.FromArgb(64,64,64));
-            //g.FillRectangle(sPen, 0, 0, pictureBox1.Width, pictureBox1.Height);
             Color c1 = Color.FromArgb(100, 0, 100);
 
             float scale = (float)pictureBox1.Height / (float)maxValue1;
@@ -682,12 +619,7 @@ namespace pinger_csharp
             g.DrawString("(2)",
                 new Font("Arial", (int)(fontsize / 1.5)), System.Drawing.Brushes.DarkGray, new Point(0, 0));
         }
-        private void setfontsize()//updates font size and style
-        {
-            label1.Font = new System.Drawing.Font(label1.Font.Name, (float)fontsize, label1.Font.Style);
-            label2.Font = new System.Drawing.Font(label1.Font.Name, (float)fontsize, label1.Font.Style);
-        }
-        private void checkipadress() //checks if address is valid, without pinging!
+        private void checkipadress() //checks if address is valid, without pingin, if yes, convert to IP4/6
         {
             if (IPAddress.TryParse(pingadress1.Text, out validatedaddress1))
             {
@@ -840,7 +772,7 @@ namespace pinger_csharp
             //refreshgraph(false);
             refreshsize();   
         }
-        private void debugWindow(object sender, EventArgs e)
+        private void debugWindow(object sender, EventArgs e) //debug window, for quick var checks
         {
             string text = ""
                 + sender.ToString() + "\n"
@@ -855,9 +787,8 @@ namespace pinger_csharp
             MessageBoxIcon.Information);
 
         }
-        private Color pingColor(long ping)
+        private Color pingColor(long ping) //using 2 diffrent functions to create green to yellow to red spectrum for the ranges 25 to 230 ms.
         {
-            //using 2 diffrent functions to create green to yellow to red spectrum for the ranges 25 to 230 ms.
             if (ping <= 1)
             {
                 return Color.FromArgb(255, 255, 255);
@@ -896,7 +827,7 @@ namespace pinger_csharp
             }
         }
 
-        private void rightBottomToolStripMenuItem_Click(object sender, EventArgs e)
+        private void rightBottomToolStripMenuItem_Click(object sender, EventArgs e) 
         {
             if (rightNotBottom) { 
                 rightNotBottom = false;
@@ -909,24 +840,9 @@ namespace pinger_csharp
             refreshsize();
         }
 
-        private void barsWidthToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void toolStripTextBox3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void BarsWidthTextBox_ModifiedChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void BarsWidthTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == (char)13)//on enter press, change location
+            if (e.KeyChar == (char)13)
             {
                 int newBarsWidth = (int)Parsestring(BarsWidthTextBox.Text);
                 if (newBarsWidth > 1)
@@ -940,13 +856,12 @@ namespace pinger_csharp
                         barsWidth = newBarsWidth;
                         
                     }
-                refreshgraph(true);
             }
         }
 
         private void DotsHeightTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == (char)13)//on enter press, change location
+            if (e.KeyChar == (char)13)
             {
                     int newDotHeight = (int)Parsestring(DotsHeightTextBox.Text);
                     if (newDotHeight >= 0)
@@ -954,7 +869,6 @@ namespace pinger_csharp
                         {
                             dotHeight = newDotHeight;
                         }
-                refreshgraph(true);
             }
         }
 
@@ -968,7 +882,6 @@ namespace pinger_csharp
                     {
                         barsSpacing = newBarsSpacing;
                     }
-                refreshgraph(true);
             }
         }
     }
