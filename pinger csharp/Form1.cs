@@ -722,8 +722,8 @@ namespace pinger_csharp
             OwnY.Text = "" + 0;
             Location = new Point(0, 0);
             fontsize = 9.75;
-            label1.Font = new Font("Arial", (float)fontsize, FontStyle.Regular);
-            label2.Font = new Font("Arial", (float)fontsize, FontStyle.Regular);
+            label1.Font = new Font("Arial", 9, FontStyle.Regular);
+            label2.Font = new Font("Arial", 9, FontStyle.Regular);
             this.Opacity = 0.8;
             lastOpacity = 0.8;
             toolStripTextBox1.Text = "" + 80;
@@ -739,8 +739,6 @@ namespace pinger_csharp
             BarsWidthTextBox.Text = "2";
             DotsHeightTextBox.Text = "1";
             BarsSpacingTextBox.Text = "0";
-            rightBottomToolStripMenuItem.PerformClick();
-            rightBottomToolStripMenuItem.PerformClick();
         }
 
         private void Form1_Resize(object sender, EventArgs e)
