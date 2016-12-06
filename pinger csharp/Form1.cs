@@ -161,7 +161,7 @@ namespace pinger_csharp
             "About",
             MessageBoxButtons.OK,
             MessageBoxIcon.Information);
-           //debugWindow(sender, e);
+            debugWindow(sender, e);
         }
         private int w;
         private int h;
@@ -243,6 +243,11 @@ namespace pinger_csharp
         {
             try
             {
+                if (test)
+                {
+                    label1.Text = "(1)" + "9999" + "ms";
+                    return;
+                }
                 Ping pingClass = new Ping();
                 PingReply pingReply = pingClass.Send(validatedaddress1.ToString());
                 long ping = pingReply.RoundtripTime;
@@ -283,6 +288,11 @@ namespace pinger_csharp
         {
             try
             {
+                if (test)
+                {
+                    label2.Text = "(2)" + "9999" + "ms";
+                    return;
+                }
                 Ping pingClass = new Ping();
                 PingReply pingReply = pingClass.Send(validatedaddress2.ToString());
                 long ping = pingReply.RoundtripTime;
@@ -506,16 +516,18 @@ namespace pinger_csharp
         private bool graphActivated;
         private List<Int32> graphPings1;
         private List<Int32> graphPings2;
+        private double widthscale = 8.5;
+        private double heightscale = 1.5;
         private int graphLimit;
         private void refreshsize() //recalculates form size and label/graph placement
         {
                 if (button1.Height > label1.Height)
                     label1.Size = new Size(label1.Width, button1.Height);
                 else
-                    label1.Size = new Size((int)(label1.Font.SizeInPoints * 7), (int)(label1.Font.SizeInPoints * 1.5));
+                    label1.Size = new Size((int)(label1.Font.SizeInPoints * widthscale), (int)(label1.Font.SizeInPoints * heightscale));
 
                 label2.Size = label1.Size;
-                label2.Location = new Point((int)(label1.Font.SizeInPoints * 7.3) ,-1);
+                label2.Location = new Point((int)(label1.Font.SizeInPoints * widthscale*1.05) ,-1);
 
                 if (button1.Height > label1.Height)
                     Size = new Size(label2.Right, button1.Height);
@@ -527,19 +539,19 @@ namespace pinger_csharp
 
                 if (rightNotBottom)
                 {
-                    pictureBox1.Width = (int)(label1.Font.SizeInPoints * 7);
-                    pictureBox1.Height = (int)(label1.Font.SizeInPoints * 1.5);
+                    pictureBox1.Width = (int)(label1.Font.SizeInPoints * widthscale);
+                    pictureBox1.Height = (int)(label1.Font.SizeInPoints * heightscale );
                     pictureBox2.Size = pictureBox1.Size;
-                    pictureBox1.Location = new Point((int)(label1.Font.SizeInPoints * 7.3) * 2, -1);
+                    pictureBox1.Location = new Point((int)(label1.Font.SizeInPoints * widthscale*1.05) * 2, -1);
                     pictureBox2.Location = new Point(pictureBox1.Right+2, -1);
-                    Size = new Size(pictureBox2.Right, +(int)(label1.Font.SizeInPoints * 1.5));
+                    Size = new Size(pictureBox2.Right, +(int)(label1.Font.SizeInPoints * heightscale));
                 }
                 else
                 {
                     pictureBox1.Width = (int)(this.Width / 2);
-                    pictureBox1.Height = (int)(label1.Font.SizeInPoints * 1.5);
+                    pictureBox1.Height = (int)(label1.Font.SizeInPoints * heightscale * 1.5);
                     pictureBox2.Size = pictureBox1.Size;
-                    pictureBox1.Location = new Point(-1, (int)(label1.Font.SizeInPoints * 1.5) + 2);
+                    pictureBox1.Location = new Point(-1, (int)(label1.Font.SizeInPoints * heightscale) + 2);
                     pictureBox2.Location = new Point(pictureBox1.Location.X + pictureBox1.Width + 2, pictureBox1.Top);
                     Size = new Size(label2.Right, label1.Height + pictureBox1.Height);
                 }
@@ -770,15 +782,17 @@ namespace pinger_csharp
             //refreshgraph(false);
             refreshsize();   
         }
+        private bool test = false;
         private void debugWindow(object sender, EventArgs e) //debug window, for quick var checks
         {
+            if (test)
+                test = false;
+            else
+                test = true;
             string text = ""
                 + sender.ToString() + "\n"
                 + e.ToString() + "\n"
-                + pictureBox1.Width.ToString() + "\n"
-                + graphActivated.ToString() + "\n"
-                + label1.Location.ToString() + "\n"
-                + label2.Location.ToString() + "\n";
+                + test.ToString() + "\n";
             MessageBox.Show(text,
             "About",
             MessageBoxButtons.OK,
