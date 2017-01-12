@@ -211,8 +211,13 @@ namespace pinger_csharp
             if (e.KeyChar == (char)13)//on enter press, check if ip adresses are valid, and then ping
             {
                 checkipadress();
+                if (sender == pingadress1)
+                    graphPings1.Clear();
+                if (sender == pingadress2)
+                    graphPings2.Clear();
             }
         }
+
         private Thread th1;
         private Thread th2;
         private void timer1_Tick(object sender, EventArgs e)
