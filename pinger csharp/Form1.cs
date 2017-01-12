@@ -298,8 +298,8 @@ namespace pinger_csharp
                 long ping = pingReply.RoundtripTime;
                 if (ping == 0)
                 {
-                    label1.Text = "Timeout!";
-                    label1.ForeColor = Color.White;
+                    label2.Text = "Timeout!";
+                    label2.ForeColor = Color.White;
                 }
                 else {
                     label2.Text = "(2)" + ping + "ms";
@@ -590,11 +590,21 @@ namespace pinger_csharp
                 float pixelPerV = graphPings1[k] * scale;
                 //if (pixelPerV <= 0)
                 //    pixelPerV = 1;
-                g.DrawLine(pPen, tempp.X + (barsWidth+barsSpacing) * k, pictureBox1.Height - pixelPerV,
-                    tempp.X + (barsWidth + barsSpacing) * k, pictureBox1.Height);
-                pPen.Color = Color.White;
-                g.DrawLine(pPen, tempp.X + (barsWidth + barsSpacing) * k, pictureBox1.Height - pixelPerV - dotHeight,
-                    tempp.X + (barsWidth + barsSpacing) * k, pictureBox1.Height - pixelPerV);
+				if(graphPings1[k]==0){ //tak samo nizej
+					g.DrawLine(pPen, tempp.X + (barsWidth+barsSpacing) * k, pictureBox1.Height,
+						tempp.X + (barsWidth + barsSpacing) * k, 0);
+					pPen.Color = Color.White;
+					g.DrawLine(pPen, tempp.X + (barsWidth + barsSpacing) * k, pictureBox1.Height - pixelPerV - dotHeight,
+						tempp.X + (barsWidth + barsSpacing) * k, pictureBox1.Height - pixelPerV);
+				}
+				else
+				{
+					g.DrawLine(pPen, tempp.X + (barsWidth+barsSpacing) * k, pictureBox1.Height - pixelPerV,
+						tempp.X + (barsWidth + barsSpacing) * k, pictureBox1.Height);
+					pPen.Color = Color.White;
+					g.DrawLine(pPen, tempp.X + (barsWidth + barsSpacing) * k, pictureBox1.Height - pixelPerV - dotHeight,
+						tempp.X + (barsWidth + barsSpacing) * k, pictureBox1.Height - pixelPerV);
+				}
             }
             g.DrawString("(1)",
                 new Font("Arial", (int)(fontsize / 1.5)), System.Drawing.Brushes.DarkGray, new Point(0, 0));
@@ -622,11 +632,22 @@ namespace pinger_csharp
                 float pixelPerV = graphPings2[k] * scale;
                 //if (pixelPerV <= 0)
                 //    pixelPerV = 1;
-                g.DrawLine(pPen, tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height - pixelPerV,
-                    tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height);
-                pPen.Color = Color.White;
-                g.DrawLine(pPen, tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height - pixelPerV - dotHeight,
-                    tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height - pixelPerV);
+                if (graphPings2[k] == 0)
+                { //tak samo nizej
+                    g.DrawLine(pPen, tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height,
+                        tempp.X + (barsWidth + barsSpacing) * k, 0);
+                    pPen.Color = Color.White;
+                    g.DrawLine(pPen, tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height - pixelPerV - dotHeight,
+                        tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height - pixelPerV);
+                }
+                else
+                {
+                    g.DrawLine(pPen, tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height - pixelPerV,
+                        tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height);
+                    pPen.Color = Color.White;
+                    g.DrawLine(pPen, tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height - pixelPerV - dotHeight,
+                        tempp.X + (barsWidth + barsSpacing) * k, pictureBox2.Height - pixelPerV);
+                }
             }
             g.DrawString("(2)",
                 new Font("Arial", (int)(fontsize / 1.5)), System.Drawing.Brushes.DarkGray, new Point(0, 0));
@@ -854,48 +875,91 @@ namespace pinger_csharp
 
         private void BarsWidthTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
+            if (BarsWidthTextBox.Text == "Too high!" || BarsWidthTextBox.Text == "Too low!")
+            {
+                BarsWidthTextBox.Text = "";
+            }
             if (e.KeyChar == (char)13)
             {
                 int newBarsWidth = (int)Parsestring(BarsWidthTextBox.Text);
-                if (newBarsWidth > 1)
+                if (newBarsWidth >= 1)
+                {
                     if (newBarsWidth < 20)
                     {
                         if (dotHeight == barsWidth / 2)
                         {
                             dotHeight = newBarsWidth / 2;
                             DotsHeightTextBox.Text = "" + dotHeight;
-                        } 
+                        }
                         barsWidth = newBarsWidth;
-                        
+
                     }
+                    else
+                    {
+                        BarsWidthTextBox.Text = "Too high!";
+                    }
+                }
+                else
+                {
+                    BarsWidthTextBox.Text = "Too low!";
+                }
             }
         }
 
         private void DotsHeightTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
+            if (DotsHeightTextBox.Text == "Too high!" || DotsHeightTextBox.Text == "Too low!")
+            {
+                DotsHeightTextBox.Text = "";
+            }
             if (e.KeyChar == (char)13)
             {
                     int newDotHeight = (int)Parsestring(DotsHeightTextBox.Text);
-                    if (newDotHeight >= 0)
-                        if (newDotHeight < 20)
-                        {
-                            dotHeight = newDotHeight;
-                        }
+                if (newDotHeight >= 0)
+                {
+                    if (newDotHeight < 20)
+                    {
+                        dotHeight = newDotHeight;
+                    }
+                    else
+                    {
+                        DotsHeightTextBox.Text = "Too high!";
+                    }
+                }
+                else
+                {
+                    DotsHeightTextBox.Text = "Too low!";
+                }
             }
         }
 
         private void BarsSpacingTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
+            if (BarsSpacingTextBox.Text == "Too high!" || BarsSpacingTextBox.Text == "Too low!")
+            {
+                BarsSpacingTextBox.Text = "";
+            }
             if (e.KeyChar == (char)13)//on enter press, change location
             {
                 int newBarsSpacing = (int)Parsestring(BarsSpacingTextBox.Text);
                 if (newBarsSpacing >= 0)
+                {
                     if (newBarsSpacing < 20)
                     {
                         barsSpacing = newBarsSpacing;
                     }
+                    else
+                    {
+                        BarsSpacingTextBox.Text = "Too high!";
+                    }
+                }
+                else
+                {
+                    BarsSpacingTextBox.Text = "Too low!";
+                }
             }
         }
+
     }
 }
 
