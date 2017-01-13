@@ -965,6 +965,12 @@ namespace pinger_csharp
             }
         }
 
+        private void checkifontop_Tick(object sender, EventArgs e)
+        {
+            TopLevel = true;
+            TopMost = true;
+            //form.Activate(); //gives it focus, I dont want that
+        }
     }
 }
 

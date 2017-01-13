@@ -72,6 +72,7 @@
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.checkifontop = new System.Windows.Forms.Timer(this.components);
             this.label2 = new System.Windows.Forms.Label();
             this.contextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -103,7 +104,7 @@
             this.aboutToolStripMenuItem,
             this.quitToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(153, 230);
+            this.contextMenuStrip.Size = new System.Drawing.Size(142, 208);
             // 
             // placementToolStripMenuItem
             // 
@@ -116,7 +117,7 @@
             this.OwnX,
             this.OwnY});
             this.placementToolStripMenuItem.Name = "placementToolStripMenuItem";
-            this.placementToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.placementToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.placementToolStripMenuItem.Text = "Placement";
             // 
             // leftLowerToolStripMenuItem
@@ -177,7 +178,7 @@
             this.backgroundToolStripMenuItem,
             this.opacityToolStripMenuItem});
             this.lookToolStripMenuItem.Name = "lookToolStripMenuItem";
-            this.lookToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.lookToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.lookToolStripMenuItem.Text = "Look";
             // 
             // boldToolStripMenuItem
@@ -213,7 +214,7 @@
             this.adress1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pingadress1});
             this.adress1.Name = "adress1";
-            this.adress1.Size = new System.Drawing.Size(152, 22);
+            this.adress1.Size = new System.Drawing.Size(141, 22);
             this.adress1.Text = "Ping1";
             // 
             // pingadress1
@@ -228,7 +229,7 @@
             this.adress2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pingadress2});
             this.adress2.Name = "adress2";
-            this.adress2.Size = new System.Drawing.Size(152, 22);
+            this.adress2.Size = new System.Drawing.Size(141, 22);
             this.adress2.Text = "Ping2";
             // 
             // pingadress2
@@ -243,7 +244,7 @@
             this.time.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.timeset});
             this.time.Name = "time";
-            this.time.Size = new System.Drawing.Size(152, 22);
+            this.time.Size = new System.Drawing.Size(141, 22);
             this.time.Text = "Time";
             // 
             // timeset
@@ -262,20 +263,20 @@
             this.dotsHeightToolStripMenuItem,
             this.barsSpacingToolStripMenuItem});
             this.graphCheck.Name = "graphCheck";
-            this.graphCheck.Size = new System.Drawing.Size(152, 22);
+            this.graphCheck.Size = new System.Drawing.Size(141, 22);
             this.graphCheck.Text = "Graphs";
             // 
             // onOffGraphToolStripMenuItem
             // 
             this.onOffGraphToolStripMenuItem.Name = "onOffGraphToolStripMenuItem";
-            this.onOffGraphToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.onOffGraphToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.onOffGraphToolStripMenuItem.Text = "OnOffGraph";
             this.onOffGraphToolStripMenuItem.Click += new System.EventHandler(this.graphCheck_Click);
             // 
             // rightBottomToolStripMenuItem
             // 
             this.rightBottomToolStripMenuItem.Name = "rightBottomToolStripMenuItem";
-            this.rightBottomToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.rightBottomToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.rightBottomToolStripMenuItem.Text = "RightBottom";
             this.rightBottomToolStripMenuItem.Click += new System.EventHandler(this.rightBottomToolStripMenuItem_Click);
             // 
@@ -284,7 +285,7 @@
             this.barsWidthToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.BarsWidthTextBox});
             this.barsWidthToolStripMenuItem.Name = "barsWidthToolStripMenuItem";
-            this.barsWidthToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.barsWidthToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.barsWidthToolStripMenuItem.Text = "BarsWidth";
             // 
             // BarsWidthTextBox
@@ -298,7 +299,7 @@
             this.dotsHeightToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.DotsHeightTextBox});
             this.dotsHeightToolStripMenuItem.Name = "dotsHeightToolStripMenuItem";
-            this.dotsHeightToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dotsHeightToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.dotsHeightToolStripMenuItem.Text = "DotsHeight";
             // 
             // DotsHeightTextBox
@@ -312,7 +313,7 @@
             this.barsSpacingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.BarsSpacingTextBox});
             this.barsSpacingToolStripMenuItem.Name = "barsSpacingToolStripMenuItem";
-            this.barsSpacingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.barsSpacingToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.barsSpacingToolStripMenuItem.Text = "BarsSpacing";
             // 
             // BarsSpacingTextBox
@@ -325,26 +326,26 @@
             // 
             this.lockWindowToolStripMenuItem.Name = "lockWindowToolStripMenuItem";
             this.lockWindowToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.lockWindowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.lockWindowToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.lockWindowToolStripMenuItem.Text = "Lock";
             this.lockWindowToolStripMenuItem.Click += new System.EventHandler(this.lockWindowToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(138, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
@@ -412,6 +413,12 @@
             this.pictureBox2.Size = new System.Drawing.Size(108, 41);
             this.pictureBox2.TabIndex = 4;
             this.pictureBox2.TabStop = false;
+            // 
+            // checkifontop
+            // 
+            this.checkifontop.Enabled = true;
+            this.checkifontop.Interval = 300000;
+            this.checkifontop.Tick += new System.EventHandler(this.checkifontop_Tick);
             // 
             // Form1
             // 
@@ -486,6 +493,7 @@
         private System.Windows.Forms.ToolStripMenuItem barsSpacingToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox BarsSpacingTextBox;
         private System.Windows.Forms.ToolStripMenuItem onOffGraphToolStripMenuItem;
+        private System.Windows.Forms.Timer checkifontop;
     }
 }
 
