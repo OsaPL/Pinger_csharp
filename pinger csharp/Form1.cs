@@ -53,7 +53,7 @@ namespace pinger_csharp
                         Location = new Point(x, y);
                     }
                         
-                    fontsize = System.Convert.ToDouble(settings[2]);
+                    fontsize = System.Convert.ToDouble(settings[2]); //REMOVE 
                     if (fontsize <= 0)  //cant be negative
                     {
                         fontsize = 9.75;
@@ -84,10 +84,14 @@ namespace pinger_csharp
                     rightNotBottom = Convert.ToBoolean(settings[11]);
                     timer1.Interval = Convert.ToInt32(settings[12]);
                     barsWidth = Convert.ToInt32(settings[13]);
-                    if (barsWidth <= 0)
+                    if (barsWidth <= 0 || barsWidth > 20)
                         barsWidth = 1;
                     dotHeight = Convert.ToInt32(settings[14]);
+                    if (dotHeight < 0 || dotHeight > 20)
+                        barsWidth = 1;
                     barsSpacing = Convert.ToInt32(settings[15]);
+                    if (barsSpacing < 0 || barsSpacing > 20)
+                        barsSpacing = 1;
                     BarsWidthTextBox.Text = "" + barsWidth;
                     DotsHeightTextBox.Text = "" + dotHeight;
                     BarsSpacingTextBox.Text = "" + barsSpacing;
