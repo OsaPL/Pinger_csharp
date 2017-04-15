@@ -102,8 +102,12 @@ namespace pinger_csharp
 
                 }
 
-                catch (Exception)
+                catch (Exception s)
                 {
+                    MessageBox.Show(s.ToString(),
+                    "Exception on cfg load",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                     defaultValues();
                 }
             }
@@ -449,7 +453,7 @@ namespace pinger_csharp
             }
             else
             {
-                this.Opacity = lastOpacity;
+                    this.Opacity = lastOpacity;
             }
 
             maxValue1 = 1;
@@ -971,6 +975,9 @@ namespace pinger_csharp
 
         private void checkifontop_Tick(object sender, EventArgs e)
         {
+            //doing EVRYTHING to make sure it stay on top
+            Show();
+            BringToFront();
             TopLevel = true;
             TopMost = true;
             //form.Activate(); //gives it focus, I dont want that
