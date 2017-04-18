@@ -835,6 +835,7 @@ namespace pinger_csharp
                 + allProcs[0].ProcessName.ToString();
             MessageBox.Show(text,
             "About",
+
             MessageBoxButtons.OK,
             MessageBoxIcon.Information);
 

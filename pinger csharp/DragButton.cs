@@ -90,7 +90,10 @@ namespace pinger_csharp
         {
             //button.Location = new Point(overlay.Location.X - button.Width, overlay.Location.Y);// czy cus podobnego? idk
         }
-
+        public void SetButtonColor(Color color)
+        {
+            button.BackColor = color;
+        }
 
     }
 }

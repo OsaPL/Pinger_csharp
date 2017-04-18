@@ -80,8 +80,8 @@ namespace pinger_csharp
                     var cvt = new FontConverter();
                     Font = cvt.ConvertFromString(settings[3]) as Font;
                     Opacity = Convert.ToDouble(settings[4]);
-                    LabelsNr = Convert.ToInt32(settings[6]);
                     PingInterval = Convert.ToInt32(settings[5]);
+                    LabelsNr = Convert.ToInt32(settings[6]);
                     BackColor = Color.FromArgb(Convert.ToInt16(settings[7]), Convert.ToInt16(settings[8]), Convert.ToInt16(settings[9]));
                     GraphActivated = Convert.ToBoolean(settings[10]);
                     BarsWidth = Convert.ToInt32(settings[11]);
@@ -114,6 +114,18 @@ namespace pinger_csharp
             BarsSpacing = 0;
             WideAlignment = true;
         }
+        public void PrintValues()
+        {
+            string text = ""
+            + Location.ToString() + "\n"
+            + LabelsNr.ToString() + "\n"
+            + "hit";
+            MessageBox.Show(text,
+            "About",
+
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+        }
     }
     public partial class OverlayForm : Form
     {
@@ -121,7 +133,6 @@ namespace pinger_csharp
         {
             InitializeComponent();
         }
-        string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg"; //cfg filepath
         
         protected override CreateParams CreateParams //to make it alt tab invisible
         {
@@ -138,7 +149,6 @@ namespace pinger_csharp
         static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
         private Settings UsedSettings;
-        private int labelsNr = 0;
         private List<List<int>> graphPings = new List<List<int>>();
         private List<IPAddress> validatedAdresses = new List<IPAddress>();
         private List<int> maxValue = new List<int>();
@@ -151,7 +161,7 @@ namespace pinger_csharp
             TopMost = true;
             FormBorderStyle = FormBorderStyle.None;
             ShowInTaskbar = false;
-            Opacity = 60;
+            Opacity = 0.6;
             //prepare dragbutton
             dragbutton = new DragButton();
             dragbutton.Opacity = 60;
@@ -163,7 +173,26 @@ namespace pinger_csharp
 
             if (!UsedSettings.LoadSettings())
                 UsedSettings.DefaultValues();
+
             dragbutton.Location = new Point (UsedSettings.Location.X, UsedSettings.Location.Y);
+            //UsedSettings.PrintValues();
+
+            if (UsedSettings.LabelsNr > 0)
+            {
+                int number = UsedSettings.LabelsNr;
+                UsedSettings.LabelsNr = 0;
+                for (int i = 0; number > i; i++)
+                {
+                    AddNewLabel();
+                }
+            }
+            foreach (Label label in Controls.OfType<Label>())
+            {
+                label.BackColor = UsedSettings.BackColor;
+                dragbutton.SetButtonColor(UsedSettings.BackColor);
+            }
+            throwPing.Interval = UsedSettings.PingInterval;
+            LoadValidatedAdresses();
         }
         public static int RandNumber(int Low, int High)
         {
@@ -175,14 +204,14 @@ namespace pinger_csharp
         }
         public void RemoveLastLabel()
         {
-            if (labelsNr < 1)
+            if (UsedSettings.LabelsNr < 1)
                 return;
             else
             {
                 List<Label> lToRemove = new List<Label>();
                 foreach (Label label in Controls.OfType<Label>())
                 {
-                    string name = "" + labelsNr;
+                    string name = "" + UsedSettings.LabelsNr;
 
                     if (label.Name == name)
                     {
@@ -194,25 +223,25 @@ namespace pinger_csharp
                     Controls.Remove(label);
                     label.Dispose();
                 }
-                adressesToolStripMenuItem.DropDownItems.RemoveByKey("T"+labelsNr);
-                labelsNr--;
-                validatedAdresses.RemoveAt(labelsNr);
+                adressesToolStripMenuItem.DropDownItems.RemoveByKey("T"+ UsedSettings.LabelsNr);
+                UsedSettings.LabelsNr--;
+                validatedAdresses.RemoveAt(UsedSettings.LabelsNr);
             }
         }
         public System.Windows.Forms.Label AddNewLabel()
         {
             System.Windows.Forms.Label label = new System.Windows.Forms.Label();
             this.Controls.Add(label);
-            labelsNr++;
+            UsedSettings.LabelsNr++;
             ToolStripMenuItem item = new System.Windows.Forms.ToolStripMenuItem()
             {
-                Name = "T"+labelsNr,
-                Text = "(" + labelsNr + ")"
+                Name = "T"+ UsedSettings.LabelsNr,
+                Text = "(" + UsedSettings.LabelsNr + ")"
             };
             adressesToolStripMenuItem.DropDownItems.Add(item);
             ToolStripTextBox bar = new System.Windows.Forms.ToolStripTextBox()
             {
-                Name = "B" + labelsNr,
+                Name = "B" + UsedSettings.LabelsNr,
                 Text = ""
             };
             bar.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.bar_KeyPress);
@@ -221,11 +250,12 @@ namespace pinger_csharp
             item.DropDownItems.Add(bar);
             label.ForeColor = Color.White;
             label.BackColor = Color.FromArgb(64, 64, 64);
-            label.Name = "" + labelsNr;
+            label.Name = "" + UsedSettings.LabelsNr;
             label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
-            label.Location = new Point((labelsNr - 1) * label.Width+1, 0);
-            label.Text = "Ping " + labelsNr;
-            Size = new Size(label.Right, label.Height);
+            label.Location = new Point((UsedSettings.LabelsNr - 1) * label.Width+1, 0);
+            label.Text = "Ping " + UsedSettings.LabelsNr;
+            label.Font = UsedSettings.Font;
+            Size = new Size(label.Right, label.Height+5);
             graphPings.Add(new List<int> { 0 });
             // if (graphsActivated)
             //     DrawGraphs();
@@ -233,7 +263,7 @@ namespace pinger_csharp
             return label;
         }
         private double widthscale = 8.5;
-        private double heightscale = 1.5;
+        private double heightscale = 1.7;
         private void recalculateSize()
         {
 
@@ -246,7 +276,8 @@ namespace pinger_csharp
                 if (textbox != null)
                 {
                     int number = Int32.Parse(textbox.Name[1].ToString()) - 1;
-                    Checkipadress(number);
+                    Thread t = new Thread(() => Checkipadress(number));
+                    t.Start();
                 }
 
             }
@@ -255,8 +286,8 @@ namespace pinger_csharp
         {
             string name = "B" + (id + 1);
             ToolStripItem[] menu = adressesToolStripMenuItem.DropDownItems.Find(name, true);
-
             name = menu[0].Text;
+            menu[0].Text = "Validating!";
             IPAddress validated;
             if (IPAddress.TryParse(name, out validated))
             {
@@ -267,11 +298,13 @@ namespace pinger_csharp
             {
                 try
                 {
-                    name = Dns.GetHostAddresses(name)[0].ToString();
+                    validated = Dns.GetHostAddresses(name)[0];
+                    validatedAdresses[id] = validated;
+                    menu[0].Text = name;
                 }
                 catch (Exception)
                 {
-                    name = "Can't reach!";
+                    menu[0].Text = "Can't reach!";
                 }
             }
         }
@@ -279,7 +312,7 @@ namespace pinger_csharp
         {
             try
             {
-                if (labelsNr >= 1)
+                if (UsedSettings.LabelsNr >= 1)
                 {
                     foreach (Label label in Controls.OfType<Label>())
                     {
@@ -391,11 +424,10 @@ namespace pinger_csharp
             e.Graphics.FillRectangle(b, RandNumber(0, w), RandNumber(0, h), 1, 1);
             */
         }
-
         private void refresh_Tick(object sender, EventArgs e)
         {
             Refresh();
-            Location = new Point(dragbutton.Location.X-1 + dragbutton.Width, dragbutton.Location.Y+1);
+            Location = new Point(dragbutton.Location.X - 1 + dragbutton.Width, dragbutton.Location.Y + 1);
             //Update();
             //Invalidate();
         }
@@ -418,12 +450,76 @@ namespace pinger_csharp
 
         private void OverlayForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            UsedSettings.Location = dragbutton.Location ;
-            if(!UsedSettings.SaveSettings())
+            UsedSettings.Location = dragbutton.Location;
+            SaveValidatedAdresses();
+            if (!UsedSettings.SaveSettings())
                 MessageBox.Show("Cant save",
                 "About",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
+        }
+        private bool SaveValidatedAdresses()
+        {
+            try
+            {
+                //on close save everything
+                string[] settings = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",  "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+                //cause Im dumb and also lazy ^ DONT LOOK AT THAT LINE ^
+                int i;
+                for(i = 0;i<UsedSettings.LabelsNr-1;i++)
+                { 
+                    settings[i] = Location.X.ToString();
+                }
+
+                string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\validatedadresses.dat";
+                System.IO.FileInfo file = new System.IO.FileInfo(filepath);
+                file.Directory.Create();
+                System.IO.File.WriteAllLines(file.FullName, settings, Encoding.UTF8);
+                return true;
+            }
+            catch (Exception e)
+            {
+                //message zonk, cant save
+                return false;
+            }
+        }
+        private bool LoadValidatedAdresses()
+        {
+            return true;
+            //dokonczyc jak bezie stabilny net
+        }
+
+        private void fontToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FontDialog fontDialog1 = new FontDialog();
+            fontDialog1.Font = UsedSettings.Font;
+
+            if (fontDialog1.ShowDialog() != DialogResult.Cancel)
+            {
+                UsedSettings.Font = fontDialog1.Font;
+                foreach (Label label in Controls.OfType<Label>())
+                {
+                    label.Font = UsedSettings.Font;
+                    label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
+                }
+            }
+        }
+
+        private void backgroundColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog MyDialog = new ColorDialog();
+            MyDialog.AllowFullOpen = true;
+            MyDialog.Color = UsedSettings.BackColor;
+
+            if (MyDialog.ShowDialog() == DialogResult.OK)
+            {
+                UsedSettings.BackColor = MyDialog.Color;
+                foreach (Label label in Controls.OfType<Label>())
+                {
+                    label.BackColor = UsedSettings.BackColor;
+                    dragbutton.SetButtonColor(UsedSettings.BackColor);
+                }
+            }
         }
     }
 }
