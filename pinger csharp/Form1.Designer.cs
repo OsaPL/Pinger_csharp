@@ -417,7 +417,7 @@
             // checkifontop
             // 
             this.checkifontop.Enabled = true;
-            this.checkifontop.Interval = 30000;
+            this.checkifontop.Interval = 5000;
             this.checkifontop.Tick += new System.EventHandler(this.checkifontop_Tick);
             // 
             // Form1

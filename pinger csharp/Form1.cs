@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
+
 
 namespace pinger_csharp
 {
@@ -48,7 +51,7 @@ namespace pinger_csharp
                         {
                             OwnY.Text = "" + 0;
                             OwnX.Text = "" + 0;
-                        y = 0;
+                            y = 0;
                             x = 0;
                         Location = new Point(x, y);
                     }
@@ -817,16 +820,19 @@ namespace pinger_csharp
             refreshsize();   
         }
         private bool test = false;
-        private void debugWindow(object sender, EventArgs e) //debug window, for quick var checks
+        public void debugWindow(object sender, EventArgs e) //debug window, for quick var checks
         {
             if (test)
                 test = false;
             else
                 test = true;
+
+            var allProcs = Process.GetProcessesByName("pinger csharp");
             string text = ""
                 + sender.ToString() + "\n"
                 + e.ToString() + "\n"
-                + test.ToString() + "\n";
+                + test.ToString() + "\n"
+                + allProcs[0].ProcessName.ToString();
             MessageBox.Show(text,
             "About",
             MessageBoxButtons.OK,
@@ -972,17 +978,39 @@ namespace pinger_csharp
                 }
             }
         }
+        public bool ChildReallyVisible(Control child)
+        {
+            var pos = this.PointToClient(child.PointToScreen(Point.Empty));
+            if (this.GetChildAtPoint(pos) == child) return true;
+            if (this.GetChildAtPoint(new Point(pos.X + child.Width - 1, pos.Y)) == child) return true;
+            // two more to test
+            //...
+            return false;
+        }
+        [DllImport("user32.dll")]
+        static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+        static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        const UInt32 SWP_NOSIZE = 0x0001;
+        const UInt32 SWP_NOMOVE = 0x0002;
+        const UInt32 SWP_SHOWWINDOW = 0x0040;
+        const UInt32 SWP_NOACTIVATE = 0x0010;
 
         private void checkifontop_Tick(object sender, EventArgs e)
         {
             //doing EVRYTHING to make sure it stay on top
-            Show();
-            BringToFront();
-            TopLevel = true;
-            TopMost = true;
-            //form.Activate(); //gives it focus, I dont want that
+            //BringToFront();
+            //TopLevel = true;
+            //TopMost = true;
+            //debugWindow(sender, e);
+            //FRICKIN DOUBLE HACK
+            //this.Visible = true;
+            this.TopMost = true;
+            //Window_StateChanged();
+            //var processes = Process.GetProcessById(Process.GetCurrentProcess().Id);
+            //SetWindowPos(processes.MainWindowHandle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW | SWP_NOACTIVATE);
+            //checkifontop.Enabled = false;
         }
     }
 }
-
 
