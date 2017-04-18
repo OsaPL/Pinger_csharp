@@ -186,12 +186,8 @@ namespace pinger_csharp
                     AddNewLabel();
                 }
             }
-            foreach (Label label in Controls.OfType<Label>())
-            {
-                label.BackColor = UsedSettings.BackColor;
-                dragbutton.SetButtonColor(UsedSettings.BackColor);
-            }
-            throwPing.Interval = UsedSettings.PingInterval;
+            RefreshOverlay();
+            
             LoadValidatedAdresses();
         }
         public static int RandNumber(int Low, int High)
@@ -255,7 +251,10 @@ namespace pinger_csharp
             label.Location = new Point((UsedSettings.LabelsNr - 1) * label.Width+1, 0);
             label.Text = "Ping " + UsedSettings.LabelsNr;
             label.Font = UsedSettings.Font;
-            Size = new Size(label.Right, label.Height+5);
+            if (!UsedSettings.GraphActivated)
+                Size = new Size(label.Right, label.Height + 5);
+            else
+                Size = new Size(label.Right, (int)(UsedSettings.Font.SizeInPoints * (heightscale + 1)));
             graphPings.Add(new List<int> { 0 });
             // if (graphsActivated)
             //     DrawGraphs();
@@ -359,7 +358,14 @@ namespace pinger_csharp
                     {
                         int temp = (int)ping;
                         graphPings[id].Add(temp);
-                    } 
+                    }
+                    maxValue[id] = 1; //to make sure it wont try to use old maxvalue that is not in graphpings atm
+                    //also this line ^ is dangerous, data race! should be ok tho
+                    for (int k = 0; k < graphPings[id].Count; k++)
+                    {
+                        if (graphPings[id][k] > maxValue[id])
+                            maxValue[id] = graphPings[id][k];
+                    }
                 }
             }
             catch (Exception e)
@@ -410,6 +416,7 @@ namespace pinger_csharp
         }
         private void OverlayForm_Paint(object sender, PaintEventArgs e)
         {
+
             /*Graphics g = e.Graphics;
             Pen p = new Pen(Color.Red);
             int h = Height - 1;
@@ -497,11 +504,7 @@ namespace pinger_csharp
             if (fontDialog1.ShowDialog() != DialogResult.Cancel)
             {
                 UsedSettings.Font = fontDialog1.Font;
-                foreach (Label label in Controls.OfType<Label>())
-                {
-                    label.Font = UsedSettings.Font;
-                    label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
-                }
+                RefreshOverlay();
             }
         }
 
@@ -514,12 +517,22 @@ namespace pinger_csharp
             if (MyDialog.ShowDialog() == DialogResult.OK)
             {
                 UsedSettings.BackColor = MyDialog.Color;
-                foreach (Label label in Controls.OfType<Label>())
-                {
-                    label.BackColor = UsedSettings.BackColor;
-                    dragbutton.SetButtonColor(UsedSettings.BackColor);
-                }
+                RefreshOverlay();
             }
+        }
+        private void RefreshOverlay()
+        {
+            foreach (Label label in Controls.OfType<Label>())
+            {
+                label.Font = UsedSettings.Font;
+                label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
+                label.BackColor = UsedSettings.BackColor;
+                label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
+            }
+            throwPing.Interval = UsedSettings.PingInterval;
+            dragbutton.SetButtonColor(UsedSettings.BackColor);
+            //Size = new Size (Size.Width*UsedSettings.SizeMlt,Size.Height*UsedSettings.SizeMlt); //need things other than just this to scale overlay
+            //UsedSettings.SizeMlt = 1;
         }
     }
 }

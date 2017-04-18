@@ -556,7 +556,7 @@ namespace pinger_csharp
                 if (rightNotBottom)
                 {
                     pictureBox1.Width = (int)(label1.Font.SizeInPoints * widthscale);
-                    pictureBox1.Height = (int)(label1.Font.SizeInPoints * heightscale );
+                    pictureBox1.Height = (int)(label1.Font.SizeInPoints * heightscale);
                     pictureBox2.Size = pictureBox1.Size;
                     pictureBox1.Location = new Point((int)(label1.Font.SizeInPoints * widthscale*1.05) * 2, -1);
                     pictureBox2.Location = new Point(pictureBox1.Right+2, -1);
