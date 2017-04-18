@@ -14,6 +14,107 @@ using System.Windows.Forms;
 
 namespace pinger_csharp
 {
+    public struct Settings
+    {
+        public Point Location;
+        public double SizeMlt;
+        public Font Font;
+        public double Opacity;
+        public int PingInterval;
+        public int LabelsNr;
+        public Color BackColor;
+        public bool GraphActivated;
+        public int BarsWidth;
+        public int DotHeight;
+        public int BarsSpacing;
+        public bool WideAlignment;
+
+        public bool SaveSettings()
+        {
+            try
+            {
+                //on close save everything
+                string[] settings = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+                settings[0] = Location.X.ToString();
+                settings[1] = Location.Y.ToString();
+                settings[2] = SizeMlt.ToString();
+                var cvt = new FontConverter();
+                settings[3] = cvt.ConvertToString(Font);
+                settings[4] = Opacity.ToString();
+                settings[5] = PingInterval.ToString();
+                settings[6] = LabelsNr.ToString();
+                settings[7] = BackColor.R.ToString();
+                settings[8] = BackColor.G.ToString();
+                settings[9] = BackColor.B.ToString();
+                settings[10] = GraphActivated.ToString();
+                settings[11] = BarsWidth.ToString();
+                settings[12] = DotHeight.ToString();
+                settings[13] = BarsSpacing.ToString();
+                settings[14] = WideAlignment.ToString();
+
+                string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
+                System.IO.FileInfo file = new System.IO.FileInfo(filepath);
+                file.Directory.Create();
+                System.IO.File.WriteAllLines(file.FullName, settings, Encoding.UTF8);
+                return true;
+            }
+            catch (Exception e)
+            {
+                //message zonk, cant save
+                return false;
+            }
+
+        }
+        public bool LoadSettings()
+        {
+            try
+            {
+                string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
+                if (System.IO.File.Exists(filepath))  //if cfg file exists
+                {
+                    System.IO.FileInfo file = new System.IO.FileInfo(filepath);
+                    file.Directory.Create(); // if the directory already exists, this method does nothing, just a failsafe
+                    string[] settings = System.IO.File.ReadAllLines(file.FullName, Encoding.UTF8);
+                    Location = new Point(System.Convert.ToInt32(settings[0]), System.Convert.ToInt32(settings[1]));
+                    SizeMlt = System.Convert.ToDouble(settings[2]);
+                    var cvt = new FontConverter();
+                    Font = cvt.ConvertFromString(settings[3]) as Font;
+                    Opacity = Convert.ToDouble(settings[4]);
+                    LabelsNr = Convert.ToInt32(settings[6]);
+                    PingInterval = Convert.ToInt32(settings[5]);
+                    BackColor = Color.FromArgb(Convert.ToInt16(settings[7]), Convert.ToInt16(settings[8]), Convert.ToInt16(settings[9]));
+                    GraphActivated = Convert.ToBoolean(settings[10]);
+                    BarsWidth = Convert.ToInt32(settings[11]);
+                    DotHeight = Convert.ToInt32(settings[12]);
+                    BarsSpacing = Convert.ToInt32(settings[13]);
+                    WideAlignment = Convert.ToBoolean(settings[14]);
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            
+        }
+        public void DefaultValues()
+        {
+            Location = new Point(0, 0);
+            SizeMlt = 0;
+            Font = new Font(FontFamily.GenericSansSerif, (float)9.75);
+            Opacity = 0.8;
+            PingInterval = 300;
+            LabelsNr = 1;
+            BackColor = Color.FromArgb(64, 64, 64);
+            GraphActivated = false;
+            BarsWidth = 1;
+            DotHeight = 1;
+            BarsSpacing = 0;
+            WideAlignment = true;
+        }
+    }
     public partial class OverlayForm : Form
     {
         public OverlayForm()
@@ -36,15 +137,13 @@ namespace pinger_csharp
         [DllImport("user32.dll", SetLastError = true)]
         static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
-        string[] settings;
-        int size=50;
-        int labelsNr = 0;
-        int graphLimit = 5;
-        List<List<int>> graphPings = new List<List<int>>();
-        List<IPAddress> validatedAdresses = new List<IPAddress>();
-        List<int> maxValue = new List<int>();
-        bool graphsActivated = true;
-        DragButton dragbutton;
+        private Settings UsedSettings;
+        private int labelsNr = 0;
+        private List<List<int>> graphPings = new List<List<int>>();
+        private List<IPAddress> validatedAdresses = new List<IPAddress>();
+        private List<int> maxValue = new List<int>();
+        private int GraphLimit=1;
+        private DragButton dragbutton;
         private void OverlayForm_Load(object sender, EventArgs e)
         {
             BackColor = Color.Black;
@@ -53,12 +152,18 @@ namespace pinger_csharp
             FormBorderStyle = FormBorderStyle.None;
             ShowInTaskbar = false;
             Opacity = 60;
+            //prepare dragbutton
             dragbutton = new DragButton();
             dragbutton.Opacity = 60;
             dragbutton.Show();
             dragbutton.ContextMenuStrip = contextMenuStrip;
+            //make overlay not clickable
             int initialStyle = GetWindowLong(Handle, -20);
             SetWindowLong(Handle, -20, initialStyle | 0x80000 | 0x20);
+
+            if (!UsedSettings.LoadSettings())
+                UsedSettings.DefaultValues();
+            dragbutton.Location = new Point (UsedSettings.Location.X, UsedSettings.Location.Y);
         }
         public static int RandNumber(int Low, int High)
         {
@@ -123,7 +228,7 @@ namespace pinger_csharp
             Size = new Size(label.Right, label.Height);
             graphPings.Add(new List<int> { 0 });
             // if (graphsActivated)
-            //     AddNewGraphSpace();
+            //     DrawGraphs();
             recalculateSize();
             return label;
         }
@@ -131,22 +236,22 @@ namespace pinger_csharp
         private double heightscale = 1.5;
         private void recalculateSize()
         {
+
         }
         private void bar_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == (char)13)//on enter press, change location
+            if (e.KeyChar == (char)13)//on enter press
             {
-
                 ToolStripTextBox textbox = sender as ToolStripTextBox;
                 if (textbox != null)
                 {
                     int number = Int32.Parse(textbox.Name[1].ToString()) - 1;
-                    checkipadress(number);
+                    Checkipadress(number);
                 }
 
             }
         }
-        private void checkipadress(int id) //checks if address is valid, without pingin, if yes, convert to IP4/6
+        private void Checkipadress(int id) //checks if address is valid, without pingin, if yes, convert to IP4/6
         {
             string name = "B" + (id + 1);
             ToolStripItem[] menu = adressesToolStripMenuItem.DropDownItems.Find(name, true);
@@ -208,13 +313,13 @@ namespace pinger_csharp
 
                     label.ForeColor = pingColor(ping);
                 }
-                if (graphsActivated == true)
+                if (UsedSettings.GraphActivated == true)
                 {
                     if (ping == 0)
                         ping = 1;
-                    if (graphPings[id].Count > graphLimit - 1)
+                    if (graphPings[id].Count > GraphLimit - 1)
                     {
-                        graphPings[id].Insert(graphLimit, (int)ping);
+                        graphPings[id].Insert(GraphLimit, (int)ping);
                         graphPings[id].RemoveAt(0);
                     }
                     else
@@ -309,6 +414,16 @@ namespace pinger_csharp
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RemoveLastLabel();
+        }
+
+        private void OverlayForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            UsedSettings.Location = dragbutton.Location ;
+            if(!UsedSettings.SaveSettings())
+                MessageBox.Show("Cant save",
+                "About",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
         }
     }
 }
