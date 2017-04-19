@@ -153,11 +153,11 @@ namespace pinger_csharp
         private List<List<int>> graphPings = new List<List<int>>();
         private List<IPAddress> validatedAdresses = new List<IPAddress>();
         private List<int> maxValue = new List<int>();
-        private int GraphLimit=1;
+        private int GraphLimit=5;
         private DragButton dragbutton;
         private void OverlayForm_Load(object sender, EventArgs e)
         {
-            BackColor = Color.Black;
+            BackColor = Color.FromArgb(64,64,64);
             TransparencyKey = Color.Black;
             TopMost = true;
             FormBorderStyle = FormBorderStyle.None;
@@ -188,6 +188,11 @@ namespace pinger_csharp
                     AddNewLabel();
                 }
             }
+            this.SetStyle(
+            ControlStyles.AllPaintingInWmPaint |
+            ControlStyles.UserPaint |
+            ControlStyles.DoubleBuffer,
+            true);           //to avoid flickering (check if it works for lots of graphs!!
             RefreshOverlay();
         }
         public static int RandNumber(int Low, int High)
@@ -223,6 +228,7 @@ namespace pinger_csharp
                 UsedSettings.LabelsNr--;
                 validatedAdresses.RemoveAt(UsedSettings.LabelsNr);
             }
+            RefreshOverlay();
         }
         public System.Windows.Forms.Label AddNewLabel()
         {
@@ -241,7 +247,6 @@ namespace pinger_csharp
                 Text = ""
             };
             bar.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.bar_KeyPress);
-            MessageBox.Show("labelsnr:" + UsedSettings.LabelsNr + " validatedcount:" + validatedAdresses.Count);
             if (validatedAdresses.Count < UsedSettings.LabelsNr)
             {
                 validatedAdresses.Add(IPAddress.Parse("127.0.0.1"));
@@ -256,17 +261,18 @@ namespace pinger_csharp
             label.BackColor = Color.FromArgb(64, 64, 64);
             label.Name = "" + UsedSettings.LabelsNr;
             label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
-            label.Location = new Point((UsedSettings.LabelsNr - 1) * label.Width+1, 0);
+            label.Location = new Point((UsedSettings.LabelsNr - 1) * label.Width-1, 0);
             label.Text = "Ping " + UsedSettings.LabelsNr;
             label.Font = UsedSettings.Font;
             if (!UsedSettings.GraphActivated)
                 Size = new Size(label.Right, label.Height + 5);
             else
                 Size = new Size(label.Right, (int)(UsedSettings.Font.SizeInPoints * (heightscale + 1)));
-            graphPings.Add(new List<int> { 0 });
+            graphPings.Add(new List<int> { });
+            maxValue.Add(1);
             // if (graphsActivated)
             //     DrawGraphs();
-            recalculateSize();
+            RefreshOverlay();
             return label;
         }
         private double widthscale = 8.5;
@@ -424,21 +430,58 @@ namespace pinger_csharp
         }
         private void OverlayForm_Paint(object sender, PaintEventArgs e)
         {
+            foreach (Label label in Controls.OfType<Label>())
+            {
+                //Label label = this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label;
+                int number = Int32.Parse(label.Name) - 1;
+                Rectangle Canvas = new Rectangle(label.Left+1, label.Bottom, label.Width-(int)(widthscale/2), Height-label.Height-1);
+                //quitToolStripMenuItem.Text = "" + maxValue[number] + "list:" + string.Join(",", graphPings[number]); 
+                DrawGraph(number, e, Canvas); ;
 
-            /*Graphics g = e.Graphics;
-            Pen p = new Pen(Color.Red);
-            int h = Height - 1;
-            int w = Width - 1;
-            p.Width = 20;
-            g.DrawRectangle(p, 0, 0, w, h);
-            Brush b = (Brush)Brushes.Green;
-            e.Graphics.FillRectangle(b, RandNumber(0, w), RandNumber(0, h), 1, 1);
-            b = (Brush)Brushes.Yellow;
-            e.Graphics.FillRectangle(b, RandNumber(0, w), RandNumber(0, h), 1, 1);
-            b = (Brush)Brushes.Blue;
-            e.Graphics.FillRectangle(b, RandNumber(0, w), RandNumber(0, h), 1, 1);
-            */
+            }
         }
+        private void DrawGraph(int number, PaintEventArgs e, Rectangle Canvas)
+        {
+            Graphics g = e.Graphics;
+            Pen p = new Pen(Color.FromArgb(RandNumber(0, 255), RandNumber(0, 255), RandNumber(0, 255)));
+            float scale = (float)Canvas.Top / (float)maxValue[number];
+            Color c;
+            //g.DrawRectangle(p, Canvas);
+            int k;
+            for (k = 0; k < graphPings[number].Count; k++)
+            {
+                c = pingColor(graphPings[number][k]);
+
+                Pen pPen = new Pen(c, UsedSettings.BarsWidth);
+
+                if (graphPings[number][k] == 1) 
+                {
+                    g.DrawLine(pPen, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - Canvas.Height,
+                            Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom); 
+                }
+                else
+                {
+
+                        float pixelPerV = graphPings[number][k] * scale;
+                        g.DrawLine(pPen, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV,
+                                Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom);
+                        if (UsedSettings.DotHeight == 1) //drawline cant draw single pixels
+                        {
+                            Brush b = (Brush)Brushes.White;
+                            e.Graphics.FillRectangle(b, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k - 1, Canvas.Bottom - pixelPerV, UsedSettings.BarsWidth, 1);
+                        }
+                        else
+                        {
+                            pPen.Color = Color.White;
+                            g.DrawLine(pPen, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV,
+                                Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV + UsedSettings.DotHeight);
+                        }
+                }
+
+            }
+
+        }
+
         private void refresh_Tick(object sender, EventArgs e)
         {
             Refresh();
@@ -512,7 +555,6 @@ namespace pinger_csharp
                     while (settings[i] != "")
                     {
                         validatedAdresses.Add(IPAddress.Parse(settings[i]));
-                        MessageBox.Show(validatedAdresses.Last().ToString());
                         i++;
                     }
                     return true;
@@ -560,8 +602,11 @@ namespace pinger_csharp
                 label.BackColor = UsedSettings.BackColor;
                 label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
             }
+            Label last = this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label;
+            Size = new Size(last.Right,last.Height * 3);
             throwPing.Interval = UsedSettings.PingInterval;
             dragbutton.SetButtonColor(UsedSettings.BackColor);
+            GraphLimit = ((last.Width - (int)(widthscale / 2)) - 1) / UsedSettings.BarsWidth;
             //Size = new Size (Size.Width*UsedSettings.SizeMlt,Size.Height*UsedSettings.SizeMlt); //need things other than just this to scale overlay
             //UsedSettings.SizeMlt = 1;
         }
