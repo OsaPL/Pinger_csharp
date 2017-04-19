@@ -97,8 +97,9 @@ namespace pinger_csharp
             {
                 return false;
             }
-            
+
         }
+
         public void DefaultValues()
         {
             Location = new Point(0, 0);
@@ -177,6 +178,7 @@ namespace pinger_csharp
             dragbutton.Location = new Point (UsedSettings.Location.X, UsedSettings.Location.Y);
             //UsedSettings.PrintValues();
 
+            LoadValidatedAdresses();
             if (UsedSettings.LabelsNr > 0)
             {
                 int number = UsedSettings.LabelsNr;
@@ -187,8 +189,6 @@ namespace pinger_csharp
                 }
             }
             RefreshOverlay();
-            
-            LoadValidatedAdresses();
         }
         public static int RandNumber(int Low, int High)
         {
@@ -241,8 +241,16 @@ namespace pinger_csharp
                 Text = ""
             };
             bar.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.bar_KeyPress);
-            bar.Text = "127.0.0.1";
-            validatedAdresses.Add(IPAddress.Parse("127.0.0.1"));
+            MessageBox.Show("labelsnr:" + UsedSettings.LabelsNr + " validatedcount:" + validatedAdresses.Count);
+            if (validatedAdresses.Count < UsedSettings.LabelsNr)
+            {
+                validatedAdresses.Add(IPAddress.Parse("127.0.0.1"));
+                bar.Text = "127.0.0.1";
+            }
+            else
+            {
+                bar.Text = validatedAdresses[UsedSettings.LabelsNr - 1].ToString();
+            }
             item.DropDownItems.Add(bar);
             label.ForeColor = Color.White;
             label.BackColor = Color.FromArgb(64, 64, 64);
@@ -473,9 +481,9 @@ namespace pinger_csharp
                 string[] settings = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",  "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
                 //cause Im dumb and also lazy ^ DONT LOOK AT THAT LINE ^
                 int i;
-                for(i = 0;i<UsedSettings.LabelsNr-1;i++)
+                for(i = 0;i<UsedSettings.LabelsNr;i++)
                 { 
-                    settings[i] = Location.X.ToString();
+                    settings[i] = validatedAdresses[i].ToString();
                 }
 
                 string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\validatedadresses.dat";
@@ -492,7 +500,30 @@ namespace pinger_csharp
         }
         private bool LoadValidatedAdresses()
         {
-            return true;
+            try
+            {
+                string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\validatedadresses.dat";
+                if (System.IO.File.Exists(filepath))  //if cfg file exists
+                {
+                    System.IO.FileInfo file = new System.IO.FileInfo(filepath);
+                    file.Directory.Create(); // if the directory already exists, this method does nothing, just a failsafe
+                    string[] settings = System.IO.File.ReadAllLines(file.FullName, Encoding.UTF8);
+                    int i = 0;
+                    while (settings[i] != "")
+                    {
+                        validatedAdresses.Add(IPAddress.Parse(settings[i]));
+                        MessageBox.Show(validatedAdresses.Last().ToString());
+                        i++;
+                    }
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
             //dokonczyc jak bezie stabilny net
         }
 
