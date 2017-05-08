@@ -134,7 +134,7 @@ namespace pinger_csharp
         {
             InitializeComponent();
         }
-        
+
         protected override CreateParams CreateParams //to make it alt tab invisible
         {
             get
@@ -153,11 +153,11 @@ namespace pinger_csharp
         private List<List<int>> graphPings = new List<List<int>>();
         private List<IPAddress> validatedAdresses = new List<IPAddress>();
         private List<int> maxValue = new List<int>();
-        private int GraphLimit=5;
+        private int GraphLimit = 5;
         private DragButton dragbutton;
         private void OverlayForm_Load(object sender, EventArgs e)
         {
-            BackColor = Color.FromArgb(64,64,64);
+            BackColor = Color.FromArgb(64, 64, 64);
             TransparencyKey = Color.Black;
             TopMost = true;
             FormBorderStyle = FormBorderStyle.None;
@@ -175,7 +175,7 @@ namespace pinger_csharp
             if (!UsedSettings.LoadSettings())
                 UsedSettings.DefaultValues();
 
-            dragbutton.Location = new Point (UsedSettings.Location.X, UsedSettings.Location.Y);
+            dragbutton.Location = new Point(UsedSettings.Location.X, UsedSettings.Location.Y);
             //UsedSettings.PrintValues();
 
             LoadValidatedAdresses();
@@ -224,7 +224,7 @@ namespace pinger_csharp
                     Controls.Remove(label);
                     label.Dispose();
                 }
-                adressesToolStripMenuItem.DropDownItems.RemoveByKey("T"+ UsedSettings.LabelsNr);
+                adressesToolStripMenuItem.DropDownItems.RemoveByKey("T" + UsedSettings.LabelsNr);
                 UsedSettings.LabelsNr--;
                 validatedAdresses.RemoveAt(UsedSettings.LabelsNr);
             }
@@ -237,7 +237,7 @@ namespace pinger_csharp
             UsedSettings.LabelsNr++;
             ToolStripMenuItem item = new System.Windows.Forms.ToolStripMenuItem()
             {
-                Name = "T"+ UsedSettings.LabelsNr,
+                Name = "T" + UsedSettings.LabelsNr,
                 Text = "(" + UsedSettings.LabelsNr + ")"
             };
             adressesToolStripMenuItem.DropDownItems.Add(item);
@@ -261,13 +261,9 @@ namespace pinger_csharp
             label.BackColor = Color.FromArgb(64, 64, 64);
             label.Name = "" + UsedSettings.LabelsNr;
             label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
-            label.Location = new Point((UsedSettings.LabelsNr - 1) * label.Width-1, 0);
+            label.Location = new Point((UsedSettings.LabelsNr - 1) * label.Width - 1, 0);
             label.Text = "Ping " + UsedSettings.LabelsNr;
             label.Font = UsedSettings.Font;
-            if (!UsedSettings.GraphActivated)
-                Size = new Size(label.Right, label.Height + 5);
-            else
-                Size = new Size(label.Right, (int)(UsedSettings.Font.SizeInPoints * (heightscale + 1)));
             graphPings.Add(new List<int> { });
             maxValue.Add(1);
             // if (graphsActivated)
@@ -277,10 +273,6 @@ namespace pinger_csharp
         }
         private double widthscale = 8.5;
         private double heightscale = 1.7;
-        private void recalculateSize()
-        {
-
-        }
         private void bar_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == (char)13)//on enter press
@@ -336,7 +328,7 @@ namespace pinger_csharp
                     }
                 }
             }
-            catch(Exception er)
+            catch (Exception er)
             {
             }
         }
@@ -355,7 +347,7 @@ namespace pinger_csharp
                 }
                 else
                 {
-                    label.Text = "(" + (id+1) + ")" + ping + "ms";
+                    label.Text = "(" + (id + 1) + ")" + ping + "ms";
 
                     label.ForeColor = pingColor(ping);
                 }
@@ -384,7 +376,7 @@ namespace pinger_csharp
             }
             catch (Exception e)
             {
-                Label label = this.Controls.Find((id+1).ToString(), true).FirstOrDefault() as Label;
+                Label label = this.Controls.Find((id + 1).ToString(), true).FirstOrDefault() as Label;
                 label.Text = e.ToString();//"Unreachable!";
                 label.ForeColor = Color.White;
             }
@@ -432,62 +424,54 @@ namespace pinger_csharp
         {
             foreach (Label label in Controls.OfType<Label>())
             {
-                //Label label = this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label;
                 int number = Int32.Parse(label.Name) - 1;
-                Rectangle Canvas = new Rectangle(label.Left+1, label.Bottom, label.Width-(int)(widthscale/2), Height-label.Height-1);
-                //quitToolStripMenuItem.Text = "" + maxValue[number] + "list:" + string.Join(",", graphPings[number]); 
+                Rectangle Canvas = new Rectangle(label.Left + 1, label.Bottom, label.Width - (int)(widthscale / 2), Height - label.Height - 1);
                 DrawGraph(number, e, Canvas); ;
-
             }
         }
         private void DrawGraph(int number, PaintEventArgs e, Rectangle Canvas)
         {
-            Graphics g = e.Graphics;
-            Pen p = new Pen(Color.FromArgb(RandNumber(0, 255), RandNumber(0, 255), RandNumber(0, 255)));
-            float scale = (float)Canvas.Top / (float)maxValue[number];
-            Color c;
-            //g.DrawRectangle(p, Canvas);
-            int k;
-            for (k = 0; k < graphPings[number].Count; k++)
+            try //try catch IS NECESSARY, otherwise for  first paint event graphlimit is 0;
             {
-                c = pingColor(graphPings[number][k]);
-
-                Pen pPen = new Pen(c, UsedSettings.BarsWidth);
-
-                if (graphPings[number][k] == 1) 
+                Graphics g = e.Graphics;
+                Pen p = new Pen(Color.FromArgb(RandNumber(0, 255), RandNumber(0, 255), RandNumber(0, 255)));
+                float scale = (float)Canvas.Height / (float)maxValue[number];
+                Color c;
+                //g.DrawRectangle(p, Canvas); //debug canvas
+                int k;
+                for (k = 0; k < GraphLimit; k++)
                 {
-                    g.DrawLine(pPen, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - Canvas.Height,
-                            Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom); 
-                }
-                else
-                {
+                    c = pingColor(graphPings[number][k]);
 
+                    Pen pPen = new Pen(c, UsedSettings.BarsWidth);
+
+                    if (graphPings[number][k] == 1)
+                    {
+                        g.DrawLine(pPen, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - Canvas.Height,
+                                Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom);
+                    }
+                    else
+                    {
                         float pixelPerV = graphPings[number][k] * scale;
                         g.DrawLine(pPen, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV,
                                 Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom);
-                        if (UsedSettings.DotHeight == 1) //drawline cant draw single pixels
-                        {
-                            Brush b = (Brush)Brushes.White;
-                            e.Graphics.FillRectangle(b, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k - 1, Canvas.Bottom - pixelPerV, UsedSettings.BarsWidth, 1);
+                        pPen.Color = Color.White;
+                        g.DrawLine(pPen, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV,
+                                Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV - UsedSettings.DotHeight);
                         }
-                        else
-                        {
-                            pPen.Color = Color.White;
-                            g.DrawLine(pPen, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV,
-                                Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV + UsedSettings.DotHeight);
-                        }
+                        //g.DrawString("(" + (number + 1) + ")",
+                        //new Font("Arial", (int)(Font.SizeInPoints / 1.5)), System.Drawing.Brushes.DarkGray, new Point(Canvas.Left, Canvas.Top));
                 }
-
             }
-
+            catch (Exception er)
+            {
+            }
         }
 
         private void refresh_Tick(object sender, EventArgs e)
         {
             Refresh();
-            Location = new Point(dragbutton.Location.X - 1 + dragbutton.Width, dragbutton.Location.Y + 1);
-            //Update();
-            //Invalidate();
+            Location = new Point(dragbutton.Location.X - 1 + dragbutton.Width, dragbutton.Location.Y);
         }
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -495,7 +479,7 @@ namespace pinger_csharp
             Close();
         }
 
-       
+
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AddNewLabel();
@@ -521,11 +505,11 @@ namespace pinger_csharp
             try
             {
                 //on close save everything
-                string[] settings = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",  "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+                string[] settings = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
                 //cause Im dumb and also lazy ^ DONT LOOK AT THAT LINE ^
                 int i;
-                for(i = 0;i<UsedSettings.LabelsNr;i++)
-                { 
+                for (i = 0; i < UsedSettings.LabelsNr; i++)
+                {
                     settings[i] = validatedAdresses[i].ToString();
                 }
 
@@ -537,7 +521,7 @@ namespace pinger_csharp
             }
             catch (Exception e)
             {
-                //message zonk, cant save
+                //message zong, cant save
                 return false;
             }
         }
@@ -566,7 +550,6 @@ namespace pinger_csharp
             {
                 return false;
             }
-            //dokonczyc jak bezie stabilny net
         }
 
         private void fontToolStripMenuItem_Click(object sender, EventArgs e)
@@ -603,12 +586,113 @@ namespace pinger_csharp
                 label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
             }
             Label last = this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label;
-            Size = new Size(last.Right,last.Height * 3);
+            if (!UsedSettings.GraphActivated)
+                Size = new Size(last.Right, last.Height);
+            else
+                Size = new Size(last.Right, last.Height * 3);
             throwPing.Interval = UsedSettings.PingInterval;
             dragbutton.SetButtonColor(UsedSettings.BackColor);
-            GraphLimit = ((last.Width - (int)(widthscale / 2)) - 1) / UsedSettings.BarsWidth;
+            GraphLimit = ((last.Width - (int)(widthscale / 2)) - 1) / (UsedSettings.BarsWidth+UsedSettings.BarsSpacing);
+            barsWidthTextBox.Text = "" + UsedSettings.BarsWidth;
+            barsSpacingTextBox.Text = "" + UsedSettings.BarsSpacing;
+            dotsHeightTextBox.Text = "" + UsedSettings.DotHeight;
+            if (!UsedSettings.GraphActivated)
+            {
+                graphsToggleToolStripMenuItem.Text = "Graphs ON";
+                graphsToggleToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
+            }
+            else
+            {
+                graphsToggleToolStripMenuItem.Text = "Graphs OFF";
+                graphsToggleToolStripMenuItem.BackColor = Color.White;
+            }
+
             //Size = new Size (Size.Width*UsedSettings.SizeMlt,Size.Height*UsedSettings.SizeMlt); //need things other than just this to scale overlay
             //UsedSettings.SizeMlt = 1;
+        }
+
+        private void dotsHeightTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)//on enter press
+            {
+                try
+                {
+                    UsedSettings.DotHeight = Int32.Parse(dotsHeightTextBox.Text);
+                    if (UsedSettings.BarsSpacing > 10)
+                    {
+                        UsedSettings.DotHeight = 10;
+                    }
+                    if (UsedSettings.DotHeight < 0)
+                    {
+                        UsedSettings.DotHeight = 0;
+                    }
+                    RefreshOverlay();
+                }
+                catch (Exception er)
+                {
+                    dotsHeightTextBox.Text = "Not a number!";
+                }
+            }
+        }
+        private void barsWidthTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)//on enter press
+            {
+                try
+                {
+                    UsedSettings.BarsWidth = Int32.Parse(barsWidthTextBox.Text);
+                    if (UsedSettings.BarsWidth > 10)
+                    {
+                        UsedSettings.BarsWidth = 10;
+                    }
+                    if (UsedSettings.BarsWidth < 1)
+                    {
+                        UsedSettings.BarsWidth = 0;
+                    }
+                    RefreshOverlay();
+                }
+                catch (Exception er)
+                {
+                    barsWidthTextBox.Text = "Not a number!";
+                }
+            }
+        }
+        private void barsSpacingTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)//on enter press
+            {
+                try
+                {
+                    UsedSettings.BarsSpacing = Int32.Parse(barsSpacingTextBox.Text);
+                    if (UsedSettings.BarsSpacing > 10)
+                    {
+                        UsedSettings.BarsSpacing = 10;
+                    }
+                    if(UsedSettings.BarsSpacing < 0)
+                    {
+                        UsedSettings.BarsSpacing = 0;
+                    }
+                }
+                catch (Exception er)
+                {
+                    barsSpacingTextBox.Text = "Not a number!";
+                }
+            }
+        }
+
+        private void graphsToggleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (UsedSettings.GraphActivated)
+            {
+                System.Media.SystemSounds.Beep.Play();
+                UsedSettings.GraphActivated = false;
+            }
+            else
+            {
+                UsedSettings.GraphActivated = true;
+                System.Media.SystemSounds.Beep.Play();
+            }
+            RefreshOverlay();
         }
     }
 }
