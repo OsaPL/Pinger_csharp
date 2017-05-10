@@ -265,8 +265,18 @@ namespace pinger_csharp
             label.ForeColor = Color.White;
             label.BackColor = Color.FromArgb(64, 64, 64);
             label.Name = "" + UsedSettings.LabelsNr;
-            label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
-            label.Location = new Point((UsedSettings.LabelsNr - 1) * label.Width - 1, 0);
+            if (UsedSettings.LabelsNr == 1)
+            {
+                label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
+                label.Location = new Point((UsedSettings.LabelsNr - 1) * label.Width - 1, 0);
+            }
+            else
+            {
+                Label last = this.Controls.Find((UsedSettings.LabelsNr-1).ToString(), true).FirstOrDefault() as Label;
+                label.Size = last.Size;
+                label.Location = new Point((UsedSettings.LabelsNr - 1) * label.Width - 1, 0);
+            }
+            
             label.Text = "Ping " + UsedSettings.LabelsNr;
             label.Font = UsedSettings.Font;
             graphPings.Add(new List<int> { });
