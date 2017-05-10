@@ -231,7 +231,6 @@ namespace pinger_csharp
                 }
                 adressesToolStripMenuItem.DropDownItems.RemoveByKey("T" + UsedSettings.LabelsNr);
                 UsedSettings.LabelsNr--;
-                validatedAdresses.RemoveAt(UsedSettings.LabelsNr);
             }
             RefreshOverlay();
         }
