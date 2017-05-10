@@ -47,13 +47,14 @@
             this.barsSpacingTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.barsWidthToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.barsWidthTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.transferToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.notifyTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.throwPing = new System.Windows.Forms.Timer(this.components);
             this.bytesTimer = new System.Windows.Forms.Timer(this.components);
             this.bytesRLabel = new System.Windows.Forms.Label();
             this.bytesSLabel = new System.Windows.Forms.Label();
-            this.transferToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.netQualityBar = new System.Windows.Forms.ProgressBar();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -78,27 +79,27 @@
             // addToolStripMenuItem
             // 
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.addToolStripMenuItem.Text = "Add";
             this.addToolStripMenuItem.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
             // 
             // removeToolStripMenuItem
             // 
             this.removeToolStripMenuItem.Name = "removeToolStripMenuItem";
-            this.removeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.removeToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.removeToolStripMenuItem.Text = "Remove";
             this.removeToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
             // 
             // adressesToolStripMenuItem
             // 
             this.adressesToolStripMenuItem.Name = "adressesToolStripMenuItem";
-            this.adressesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.adressesToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.adressesToolStripMenuItem.Text = "Adresses";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(128, 6);
             // 
             // apperanceToolStripMenuItem
             // 
@@ -108,20 +109,20 @@
             this.graphsToolStripMenuItem,
             this.transferToolStripMenuItem});
             this.apperanceToolStripMenuItem.Name = "apperanceToolStripMenuItem";
-            this.apperanceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.apperanceToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.apperanceToolStripMenuItem.Text = "Apperance";
             // 
             // fontToolStripMenuItem
             // 
             this.fontToolStripMenuItem.Name = "fontToolStripMenuItem";
-            this.fontToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fontToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.fontToolStripMenuItem.Text = "Font";
             this.fontToolStripMenuItem.Click += new System.EventHandler(this.fontToolStripMenuItem_Click);
             // 
             // backgroundColorToolStripMenuItem
             // 
             this.backgroundColorToolStripMenuItem.Name = "backgroundColorToolStripMenuItem";
-            this.backgroundColorToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.backgroundColorToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.backgroundColorToolStripMenuItem.Text = "Color";
             this.backgroundColorToolStripMenuItem.Click += new System.EventHandler(this.backgroundColorToolStripMenuItem_Click);
             // 
@@ -133,7 +134,7 @@
             this.barsSpacingToolStripMenuItem,
             this.barsWidthToolStripMenuItem});
             this.graphsToolStripMenuItem.Name = "graphsToolStripMenuItem";
-            this.graphsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.graphsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.graphsToolStripMenuItem.Text = "Graphs";
             // 
             // graphsToggleToolStripMenuItem
@@ -185,10 +186,17 @@
             this.barsWidthTextBox.Size = new System.Drawing.Size(100, 23);
             this.barsWidthTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.barsWidthTextBox_KeyPress);
             // 
+            // transferToolStripMenuItem
+            // 
+            this.transferToolStripMenuItem.Name = "transferToolStripMenuItem";
+            this.transferToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.transferToolStripMenuItem.Text = "Transfer";
+            this.transferToolStripMenuItem.Click += new System.EventHandler(this.transferToolStripMenuItem_Click);
+            // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
@@ -226,18 +234,23 @@
             this.bytesSLabel.Size = new System.Drawing.Size(0, 13);
             this.bytesSLabel.TabIndex = 2;
             // 
-            // transferToolStripMenuItem
+            // netQualityBar
             // 
-            this.transferToolStripMenuItem.Name = "transferToolStripMenuItem";
-            this.transferToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.transferToolStripMenuItem.Text = "Transfer";
-            this.transferToolStripMenuItem.Click += new System.EventHandler(this.transferToolStripMenuItem_Click);
+            this.netQualityBar.Enabled = false;
+            this.netQualityBar.Location = new System.Drawing.Point(0, 0);
+            this.netQualityBar.Maximum = 230;
+            this.netQualityBar.Minimum = 25;
+            this.netQualityBar.Name = "netQualityBar";
+            this.netQualityBar.Size = new System.Drawing.Size(100, 23);
+            this.netQualityBar.TabIndex = 3;
+            this.netQualityBar.Value = 25;
             // 
             // OverlayForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(281, 261);
+            this.Controls.Add(this.netQualityBar);
             this.Controls.Add(this.bytesSLabel);
             this.Controls.Add(this.bytesRLabel);
             this.Name = "OverlayForm";
@@ -277,5 +290,6 @@
         private System.Windows.Forms.Label bytesRLabel;
         private System.Windows.Forms.Label bytesSLabel;
         private System.Windows.Forms.ToolStripMenuItem transferToolStripMenuItem;
+        private System.Windows.Forms.ProgressBar netQualityBar;
     }
 }

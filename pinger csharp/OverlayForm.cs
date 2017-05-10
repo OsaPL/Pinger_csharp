@@ -333,21 +333,52 @@ namespace pinger_csharp
                     }
                     if (UsedSettings.BytesActivated)
                     {
-                        long PingsSum = 0;
-                        for (int k = 0; k < graphPings.Count; k++)
-                        {
-                            PingsSum += graphPings[k].Sum();
-                        }
-                        PingsSum /= graphPings.Count*GraphLimit;
-                        bytesSLabel.ForeColor = pingColor(PingsSum);
+                        int avgping = averagePing();
+                        bytesSLabel.ForeColor = pingColor(avgping);
                         bytesRLabel.ForeColor = bytesSLabel.ForeColor;
+                        if (avgping < 25)
+                        {
+                            netQualityBar.Value = 230;
+                        }
+                        if(avgping>230)
+                        {
+                            netQualityBar.Value = 30;
+                        }
+                        if(avgping > 25 && avgping < 230)
+                        {
+                            netQualityBar.Value = 255-avgping;
+                        }
+                        netQualityBar.ForeColor = bytesRLabel.ForeColor;
                     }
                     }
             }
             
             catch (Exception er)
             {
+                quitToolStripMenuItem.Text = "" + er.ToString();
             }
+        }
+
+        private int averagePing()
+        {
+            long PingsSum = 0;
+            int avgpings;
+            int realpings = 0;
+            for (int j = 0; j < graphPings.Count; j++)
+            { 
+                for (int k = 0; k < graphPings[j].Count; k++)
+                {
+                    if (graphPings[j][k] != 0)
+                    {
+                        PingsSum += graphPings[j][k];
+                        realpings++;
+                    }
+                }
+            }
+            if (realpings == 0)
+                return 0;
+            avgpings = (int)(PingsSum / realpings);
+            return avgpings;
         }
         private void pingthread(int id)
         {
@@ -646,16 +677,7 @@ namespace pinger_csharp
                 graphsToggleToolStripMenuItem.Text = "Graphs OFF";
                 graphsToggleToolStripMenuItem.BackColor = Color.White;
             }
-            if (UsedSettings.BytesActivated)
-            {
-                transferToolStripMenuItem.Text = "Transfer ON";
-                transferToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
-            }
-            else
-            {
-                transferToolStripMenuItem.Text = "Transfer OFF";
-                transferToolStripMenuItem.BackColor = Color.White;
-            }
+
 
             if (UsedSettings.BytesActivated)
             {
@@ -679,6 +701,20 @@ namespace pinger_csharp
                     bytesRLabel.Location = new Point(bytesRLabel.Right, 0);
                     Size = new Size((int)(Size.Width + (bytesSLabel.Size.Width * widthscale / 3.5) * 2), Size.Height);
                 }
+            }
+            if (UsedSettings.BytesActivated)
+            {
+                netQualityBar.Location = new Point(last.Right, bytesRLabel.Bottom);
+                netQualityBar.Size = new Size(Size.Width - netQualityBar.Location.X - 1, Size.Height - bytesRLabel.Bottom - 1);
+                netQualityBar.Show();
+                transferToolStripMenuItem.Text = "Transfer ON";
+                transferToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
+            }
+            else
+            {
+                netQualityBar.Hide();
+                transferToolStripMenuItem.Text = "Transfer OFF";
+                transferToolStripMenuItem.BackColor = Color.White;
             }
             //Size = new Size (Size.Width*UsedSettings.SizeMlt,Size.Height*UsedSettings.SizeMlt); //need things other than just this to scale overlay
             //UsedSettings.SizeMlt = 1;
