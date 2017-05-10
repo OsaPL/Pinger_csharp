@@ -265,18 +265,6 @@ namespace pinger_csharp
             label.ForeColor = Color.White;
             label.BackColor = Color.FromArgb(64, 64, 64);
             label.Name = "" + UsedSettings.LabelsNr;
-            if (UsedSettings.LabelsNr == 1)
-            {
-                label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
-                label.Location = new Point((UsedSettings.LabelsNr - 1) * label.Width - 1, 0);
-            }
-            else
-            {
-                Label last = this.Controls.Find((UsedSettings.LabelsNr-1).ToString(), true).FirstOrDefault() as Label;
-                label.Size = last.Size;
-                label.Location = new Point((UsedSettings.LabelsNr - 1) * label.Width - 1, 0);
-            }
-            
             label.Text = "Ping " + UsedSettings.LabelsNr;
             label.Font = UsedSettings.Font;
             graphPings.Add(new List<int> { });
@@ -349,9 +337,9 @@ namespace pinger_csharp
                         long PingsSum = 0;
                         for (int k = 0; k < graphPings.Count; k++)
                         {
-                            PingsSum += graphPings[k].Last();
+                            PingsSum += graphPings[k].Sum();
                         }
-                        PingsSum /= graphPings.Count;
+                        PingsSum /= graphPings.Count*GraphLimit;
                         bytesSLabel.ForeColor = pingColor(PingsSum);
                         bytesRLabel.ForeColor = bytesSLabel.ForeColor;
                     }
@@ -616,6 +604,7 @@ namespace pinger_csharp
         }
         private void RefreshOverlay()
         {
+            Label last=null;
             foreach (Label label in Controls.OfType<Label>())
             {
                 if (!(label.Name == "bytesRLabel" || label.Name == "bytesSLabel"))
@@ -624,9 +613,20 @@ namespace pinger_csharp
                     label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
                     label.BackColor = UsedSettings.BackColor;
                     label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
+                    if (last == null)
+                    {
+                        label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
+                        label.Location = new Point((Int32.Parse(label.Name) - 1) * label.Width - 1, 0);
+                    }
+                    else
+                    {
+                        label.Size = last.Size;
+                        label.Location = new Point(last.Right, 0);
+                    }
+                    last = label;
                 }
             }
-            Label last = this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label;
+            last = this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label;
             if (!UsedSettings.GraphActivated)
                 Size = new Size(last.Right, last.Height);
             else
