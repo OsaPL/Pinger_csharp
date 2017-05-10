@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net.NetworkInformation;
 using System.Windows.Forms;
 
 namespace pinger_csharp
@@ -27,7 +28,7 @@ namespace pinger_csharp
         public int BarsWidth;
         public int DotHeight;
         public int BarsSpacing;
-        public bool WideAlignment;
+        public bool BytesActivated;
 
         public bool SaveSettings()
         {
@@ -50,7 +51,7 @@ namespace pinger_csharp
                 settings[11] = BarsWidth.ToString();
                 settings[12] = DotHeight.ToString();
                 settings[13] = BarsSpacing.ToString();
-                settings[14] = WideAlignment.ToString();
+                settings[14] = BytesActivated.ToString();
 
                 string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
                 System.IO.FileInfo file = new System.IO.FileInfo(filepath);
@@ -87,7 +88,7 @@ namespace pinger_csharp
                     BarsWidth = Convert.ToInt32(settings[11]);
                     DotHeight = Convert.ToInt32(settings[12]);
                     BarsSpacing = Convert.ToInt32(settings[13]);
-                    WideAlignment = Convert.ToBoolean(settings[14]);
+                    BytesActivated = Convert.ToBoolean(settings[14]);
                     return true;
                 }
                 else
@@ -113,7 +114,7 @@ namespace pinger_csharp
             BarsWidth = 1;
             DotHeight = 1;
             BarsSpacing = 0;
-            WideAlignment = true;
+            BytesActivated = false;
         }
         public void PrintValues()
         {
@@ -155,6 +156,7 @@ namespace pinger_csharp
         private List<int> maxValue = new List<int>();
         private int GraphLimit = 5;
         private DragButton dragbutton;
+
         private void OverlayForm_Load(object sender, EventArgs e)
         {
             BackColor = Color.FromArgb(64, 64, 64);
@@ -212,11 +214,14 @@ namespace pinger_csharp
                 List<Label> lToRemove = new List<Label>();
                 foreach (Label label in Controls.OfType<Label>())
                 {
-                    string name = "" + UsedSettings.LabelsNr;
-
-                    if (label.Name == name)
+                    if (!(label.Name == "bytesRLabel" || label.Name == "bytesSLabel"))
                     {
-                        lToRemove.Add(label);
+                        string name = "" + UsedSettings.LabelsNr;
+
+                        if (label.Name == name)
+                        {
+                            lToRemove.Add(label);
+                        }
                     }
                 }
                 foreach (Label label in lToRemove)
@@ -321,13 +326,28 @@ namespace pinger_csharp
                 {
                     foreach (Label label in Controls.OfType<Label>())
                     {
-                        int number;
-                        number = Int32.Parse(label.Name) - 1;
-                        Thread t = new Thread(() => pingthread(number));
-                        t.Start();
+                        if (!(label.Name == "bytesRLabel" || label.Name == "bytesSLabel"))
+                        {
+                            int number;
+                            number = Int32.Parse(label.Name) - 1;
+                            Thread t = new Thread(() => pingthread(number));
+                            t.Start();
+                        }
                     }
-                }
+                    if (UsedSettings.BytesActivated)
+                    {
+                        long PingsSum = 0;
+                        for (int k = 0; k < graphPings.Count; k++)
+                        {
+                            PingsSum += graphPings[k].Last();
+                        }
+                        PingsSum /= graphPings.Count;
+                        bytesSLabel.ForeColor = pingColor(PingsSum);
+                        bytesRLabel.ForeColor = bytesSLabel.ForeColor;
+                    }
+                    }
             }
+            
             catch (Exception er)
             {
             }
@@ -372,6 +392,11 @@ namespace pinger_csharp
                         if (graphPings[id][k] > maxValue[id])
                             maxValue[id] = graphPings[id][k];
                     }
+                }
+                else
+                {
+                    graphPings[id].Clear();
+                    graphPings[id].Add((int)ping);
                 }
             }
             catch (Exception e)
@@ -424,9 +449,12 @@ namespace pinger_csharp
         {
             foreach (Label label in Controls.OfType<Label>())
             {
-                int number = Int32.Parse(label.Name) - 1;
-                Rectangle Canvas = new Rectangle(label.Left + 1, label.Bottom, label.Width - (int)(widthscale / 2), Height - label.Height - 1);
-                DrawGraph(number, e, Canvas); ;
+                if (!(label.Name == "bytesRLabel" || label.Name == "bytesSLabel"))
+                {
+                    int number = Int32.Parse(label.Name) - 1;
+                    Rectangle Canvas = new Rectangle(label.Left + 1, label.Bottom, label.Width - (int)(widthscale / 2), Height - label.Height - 1);
+                    DrawGraph(number, e, Canvas); ;
+                }
             }
         }
         private void DrawGraph(int number, PaintEventArgs e, Rectangle Canvas)
@@ -580,10 +608,13 @@ namespace pinger_csharp
         {
             foreach (Label label in Controls.OfType<Label>())
             {
-                label.Font = UsedSettings.Font;
-                label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
-                label.BackColor = UsedSettings.BackColor;
-                label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
+                if (!(label.Name == "bytesRLabel" || label.Name == "bytesSLabel"))
+                {
+                    label.Font = UsedSettings.Font;
+                    label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
+                    label.BackColor = UsedSettings.BackColor;
+                    label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
+                }
             }
             Label last = this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label;
             if (!UsedSettings.GraphActivated)
@@ -596,7 +627,7 @@ namespace pinger_csharp
             barsWidthTextBox.Text = "" + UsedSettings.BarsWidth;
             barsSpacingTextBox.Text = "" + UsedSettings.BarsSpacing;
             dotsHeightTextBox.Text = "" + UsedSettings.DotHeight;
-            if (!UsedSettings.GraphActivated)
+            if (UsedSettings.GraphActivated)
             {
                 graphsToggleToolStripMenuItem.Text = "Graphs ON";
                 graphsToggleToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
@@ -606,7 +637,40 @@ namespace pinger_csharp
                 graphsToggleToolStripMenuItem.Text = "Graphs OFF";
                 graphsToggleToolStripMenuItem.BackColor = Color.White;
             }
+            if (UsedSettings.BytesActivated)
+            {
+                transferToolStripMenuItem.Text = "Transfer ON";
+                transferToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
+            }
+            else
+            {
+                transferToolStripMenuItem.Text = "Transfer OFF";
+                transferToolStripMenuItem.BackColor = Color.White;
+            }
 
+            if (UsedSettings.BytesActivated)
+            {
+                bytesSLabel.BackColor = Color.FromArgb(64, 64, 64);
+                bytesSLabel.Location = new Point(last.Right, 0);
+                bytesSLabel.Text = "Sent ";
+                bytesSLabel.Font = UsedSettings.Font;
+                bytesSLabel.Size = new Size((int)(bytesSLabel.Font.SizeInPoints * widthscale ), (int)(bytesSLabel.Font.SizeInPoints * heightscale));
+
+                bytesRLabel.BackColor = Color.FromArgb(64, 64, 64);
+                bytesRLabel.Size = bytesSLabel.Size;
+                bytesRLabel.Text = "Received ";
+                bytesRLabel.Font = UsedSettings.Font;
+                if (UsedSettings.GraphActivated)
+                {
+                    bytesRLabel.Location = new Point(last.Right, bytesSLabel.Bottom);
+                    Size = new Size((int)(Size.Width + bytesSLabel.Size.Width * widthscale / 3.5), Size.Height);
+                }
+                else
+                {
+                    bytesRLabel.Location = new Point(bytesRLabel.Right, 0);
+                    Size = new Size((int)(Size.Width + (bytesSLabel.Size.Width * widthscale / 3.5) * 2), Size.Height);
+                }
+            }
             //Size = new Size (Size.Width*UsedSettings.SizeMlt,Size.Height*UsedSettings.SizeMlt); //need things other than just this to scale overlay
             //UsedSettings.SizeMlt = 1;
         }
@@ -690,6 +754,106 @@ namespace pinger_csharp
             else
             {
                 UsedSettings.GraphActivated = true;
+                System.Media.SystemSounds.Beep.Play();
+            }
+            RefreshOverlay();
+        }
+
+        private long startBytesReceived;
+        private long startBytesSent;
+        private void netBytes()
+        {
+            if (startBytesSent == 0 && startBytesReceived == 0)
+            {
+                if (!NetworkInterface.GetIsNetworkAvailable())
+                    return;
+
+                NetworkInterface[] interfaces
+                    = NetworkInterface.GetAllNetworkInterfaces();
+                startBytesReceived = 0;
+                startBytesSent = 0;
+                foreach (NetworkInterface ni in interfaces)
+                {
+                    startBytesSent += ni.GetIPv4Statistics().BytesSent;
+                    startBytesReceived += ni.GetIPv4Statistics().BytesReceived;
+                }
+            }
+            else
+            {
+                double valueR = 0, valueS = 0;
+                long tempR = 0, tempS = 0;
+                if (!NetworkInterface.GetIsNetworkAvailable())
+                    return;
+
+                NetworkInterface[] interfaces
+                    = NetworkInterface.GetAllNetworkInterfaces();
+
+                foreach (NetworkInterface ni in interfaces)
+                {
+                    tempR += ni.GetIPv4Statistics().BytesReceived;
+                    tempS += ni.GetIPv4Statistics().BytesSent;
+                }
+                valueR = tempR - startBytesReceived;
+                valueS = tempS - startBytesSent;
+                startBytesReceived = tempR;
+                startBytesSent = tempS;
+                if (valueR > 1024)
+                 {
+                     valueR /= 1024;
+                    if (valueR > 1024)
+                     {
+                         valueR /= 1024;
+                         bytesRLabel.Text = "D:" + Math.Round(valueR, 2) + " MB/s";
+                     }
+                     else
+                     {
+                         bytesRLabel.Text = "D:" + Math.Round(valueR, 2) + " KB/s";
+                     }
+
+                 }
+                 else
+                 {
+                     bytesRLabel.Text = "D:" + valueR + " B/s";
+                 }
+
+                 if (valueS > 1024)
+                 {
+                     valueS /= 1024;
+                    if (valueS > 1024)
+                     {
+                         valueS /= 1024;
+                        bytesSLabel.Text = "U:" + Math.Round(valueS, 2) + " MB/s";
+                     }
+                     else
+                     {
+                         bytesSLabel.Text = "U:" + Math.Round(valueS, 2) + " KB/s";
+                     }
+                 }
+                 else
+                 {
+                     bytesSLabel.Text = "U:" + valueS + " B/s";
+                 }
+             
+            }
+        }
+
+        private void bytesTimer_Tick(object sender, EventArgs e)
+        {
+            if (UsedSettings.BytesActivated)
+                netBytes();
+            
+        }
+
+        private void transferToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (UsedSettings.BytesActivated)
+            {
+                System.Media.SystemSounds.Beep.Play();
+                UsedSettings.BytesActivated = false;
+            }
+            else
+            {
+                UsedSettings.BytesActivated = true;
                 System.Media.SystemSounds.Beep.Play();
             }
             RefreshOverlay();
