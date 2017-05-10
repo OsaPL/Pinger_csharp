@@ -355,7 +355,6 @@ namespace pinger_csharp
             
             catch (Exception er)
             {
-                quitToolStripMenuItem.Text = "" + er.ToString();
             }
         }
 
