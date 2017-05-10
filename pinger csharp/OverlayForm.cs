@@ -803,17 +803,17 @@ namespace pinger_csharp
                     if (valueR > 1024)
                      {
                          valueR /= 1024;
-                         bytesRLabel.Text = "D:" + Math.Round(valueR, 2) + " MB/s";
+                         bytesRLabel.Text = "↓ " + Math.Round(valueR, 2) + " MB/s";
                      }
                      else
                      {
-                         bytesRLabel.Text = "D:" + Math.Round(valueR, 2) + " KB/s";
+                         bytesRLabel.Text = "↓ " + Math.Round(valueR, 2) + " KB/s";
                      }
 
                  }
                  else
                  {
-                     bytesRLabel.Text = "D:" + valueR + " B/s";
+                     bytesRLabel.Text = "↓ " + valueR + " B/s";
                  }
 
                  if (valueS > 1024)
@@ -822,16 +822,16 @@ namespace pinger_csharp
                     if (valueS > 1024)
                      {
                          valueS /= 1024;
-                        bytesSLabel.Text = "U:" + Math.Round(valueS, 2) + " MB/s";
+                        bytesSLabel.Text = "↑ " + Math.Round(valueS, 2) + " MB/s";
                      }
                      else
                      {
-                         bytesSLabel.Text = "U:" + Math.Round(valueS, 2) + " KB/s";
+                         bytesSLabel.Text = "↑ " + Math.Round(valueS, 2) + " KB/s";
                      }
                  }
                  else
                  {
-                     bytesSLabel.Text = "U:" + valueS + " B/s";
+                     bytesSLabel.Text = "↑ " + valueS + " B/s";
                  }
              
             }
