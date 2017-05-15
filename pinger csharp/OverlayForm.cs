@@ -632,6 +632,7 @@ namespace pinger_csharp
         }
         private void RefreshOverlay()
         {
+            try { 
             Label last = null;
             foreach (Label label in Controls.OfType<Label>())
             {
@@ -719,8 +720,13 @@ namespace pinger_csharp
             dragbutton.Opacity = UsedSettings.Opacity;
             opacityTextBox.Text = "" + Opacity*100 + "%";
             intervalStripTextBox.Text = "" + UsedSettings.PingInterval + "ms";
-            //Size = new Size (Size.Width*UsedSettings.SizeMlt,Size.Height*UsedSettings.SizeMlt); //need things other than just this to scale overlay
-            //UsedSettings.SizeMlt = 1;
+                //Size = new Size (Size.Width*UsedSettings.SizeMlt,Size.Height*UsedSettings.SizeMlt); //need things other than just this to scale overlay
+                //UsedSettings.SizeMlt = 1;
+            }
+            catch(Exception er)
+            {
+                UsedSettings.DefaultValues();
+            }
         }
 
         private void dotsHeightTextBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -730,11 +736,11 @@ namespace pinger_csharp
                 try
                 {
                     UsedSettings.DotHeight = Int32.Parse(dotsHeightTextBox.Text);
-                    if (UsedSettings.BarsSpacing > 10)
+                    if (UsedSettings.DotHeight > 10)
                     {
                         UsedSettings.DotHeight = 10;
                     }
-                    if (UsedSettings.DotHeight < 0)
+                    if (UsedSettings.DotHeight <= 0)
                     {
                         UsedSettings.DotHeight = 0;
                     }
@@ -757,9 +763,9 @@ namespace pinger_csharp
                     {
                         UsedSettings.BarsWidth = 10;
                     }
-                    if (UsedSettings.BarsWidth < 1)
+                    if (UsedSettings.BarsWidth <= 1)
                     {
-                        UsedSettings.BarsWidth = 0;
+                        UsedSettings.BarsWidth = 1;
                     }
                     RefreshOverlay();
                 }
@@ -780,7 +786,7 @@ namespace pinger_csharp
                     {
                         UsedSettings.BarsSpacing = 10;
                     }
-                    if (UsedSettings.BarsSpacing < 0)
+                    if (UsedSettings.BarsSpacing <= 0)
                     {
                         UsedSettings.BarsSpacing = 0;
                     }
