@@ -14,7 +14,7 @@ namespace pinger_csharp
         [STAThread]
         static void Main()
         {
-            //Application.EnableVisualStyles();
+            //Application.EnableVisualStyles(); //to make the bar colorable
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new OverlayForm());
         }

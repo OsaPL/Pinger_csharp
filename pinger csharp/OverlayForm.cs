@@ -167,7 +167,6 @@ namespace pinger_csharp
             Opacity = 0.6;
             //prepare dragbutton
             dragbutton = new DragButton();
-            dragbutton.Opacity = 60;
             dragbutton.Show();
             dragbutton.ContextMenuStrip = contextMenuStrip;
             //make overlay not clickable
@@ -340,19 +339,19 @@ namespace pinger_csharp
                         {
                             netQualityBar.Value = 230;
                         }
-                        if(avgping>230)
+                        if (avgping > 230)
                         {
                             netQualityBar.Value = 30;
                         }
-                        if(avgping > 25 && avgping < 230)
+                        if (avgping > 25 && avgping < 230)
                         {
-                            netQualityBar.Value = 255-avgping;
+                            netQualityBar.Value = 255 - avgping;
                         }
                         netQualityBar.ForeColor = bytesRLabel.ForeColor;
                     }
-                    }
+                }
             }
-            
+
             catch (Exception er)
             {
             }
@@ -364,7 +363,7 @@ namespace pinger_csharp
             int avgpings;
             int realpings = 0;
             for (int j = 0; j < graphPings.Count; j++)
-            { 
+            {
                 for (int k = 0; k < graphPings[j].Count; k++)
                 {
                     if (graphPings[j][k] != 0)
@@ -513,9 +512,9 @@ namespace pinger_csharp
                         pPen.Color = Color.White;
                         g.DrawLine(pPen, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV,
                                 Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV - UsedSettings.DotHeight);
-                        }
-                        //g.DrawString("(" + (number + 1) + ")",
-                        //new Font("Arial", (int)(Font.SizeInPoints / 1.5)), System.Drawing.Brushes.DarkGray, new Point(Canvas.Left, Canvas.Top));
+                    }
+                    //g.DrawString("(" + (number + 1) + ")",
+                    //new Font("Arial", (int)(Font.SizeInPoints / 1.5)), System.Drawing.Brushes.DarkGray, new Point(Canvas.Left, Canvas.Top));
                 }
             }
             catch (Exception er)
@@ -633,7 +632,7 @@ namespace pinger_csharp
         }
         private void RefreshOverlay()
         {
-            Label last=null;
+            Label last = null;
             foreach (Label label in Controls.OfType<Label>())
             {
                 if (!(label.Name == "bytesRLabel" || label.Name == "bytesSLabel"))
@@ -662,7 +661,7 @@ namespace pinger_csharp
                 Size = new Size(last.Right, last.Height * 3);
             throwPing.Interval = UsedSettings.PingInterval;
             dragbutton.SetButtonColor(UsedSettings.BackColor);
-            GraphLimit = ((last.Width - (int)(widthscale / 2)) - 1) / (UsedSettings.BarsWidth+UsedSettings.BarsSpacing);
+            GraphLimit = ((last.Width - (int)(widthscale / 2)) - 1) / (UsedSettings.BarsWidth + UsedSettings.BarsSpacing);
             barsWidthTextBox.Text = "" + UsedSettings.BarsWidth;
             barsSpacingTextBox.Text = "" + UsedSettings.BarsSpacing;
             dotsHeightTextBox.Text = "" + UsedSettings.DotHeight;
@@ -684,7 +683,7 @@ namespace pinger_csharp
                 bytesSLabel.Location = new Point(last.Right, 0);
                 bytesSLabel.Text = "Sent ";
                 bytesSLabel.Font = UsedSettings.Font;
-                bytesSLabel.Size = new Size((int)(bytesSLabel.Font.SizeInPoints * widthscale ), (int)(bytesSLabel.Font.SizeInPoints * heightscale));
+                bytesSLabel.Size = new Size((int)(bytesSLabel.Font.SizeInPoints * widthscale), (int)(bytesSLabel.Font.SizeInPoints * heightscale));
 
                 bytesRLabel.BackColor = Color.FromArgb(64, 64, 64);
                 bytesRLabel.Size = bytesSLabel.Size;
@@ -715,6 +714,11 @@ namespace pinger_csharp
                 transferToolStripMenuItem.Text = "Transfer OFF";
                 transferToolStripMenuItem.BackColor = Color.White;
             }
+            throwPing.Interval = UsedSettings.PingInterval;
+            Opacity = UsedSettings.Opacity;
+            dragbutton.Opacity = UsedSettings.Opacity;
+            opacityTextBox.Text = "" + Opacity*100 + "%";
+            intervalStripTextBox.Text = "" + UsedSettings.PingInterval + "ms";
             //Size = new Size (Size.Width*UsedSettings.SizeMlt,Size.Height*UsedSettings.SizeMlt); //need things other than just this to scale overlay
             //UsedSettings.SizeMlt = 1;
         }
@@ -738,7 +742,7 @@ namespace pinger_csharp
                 }
                 catch (Exception er)
                 {
-                    dotsHeightTextBox.Text = "Not a number!";
+                    dotsHeightTextBox.Text = "Wrong value!";
                 }
             }
         }
@@ -761,7 +765,7 @@ namespace pinger_csharp
                 }
                 catch (Exception er)
                 {
-                    barsWidthTextBox.Text = "Not a number!";
+                    barsWidthTextBox.Text = "Wrong value!";
                 }
             }
         }
@@ -776,14 +780,14 @@ namespace pinger_csharp
                     {
                         UsedSettings.BarsSpacing = 10;
                     }
-                    if(UsedSettings.BarsSpacing < 0)
+                    if (UsedSettings.BarsSpacing < 0)
                     {
                         UsedSettings.BarsSpacing = 0;
                     }
                 }
                 catch (Exception er)
                 {
-                    barsSpacingTextBox.Text = "Not a number!";
+                    barsSpacingTextBox.Text = "Wrong value!";
                 }
             }
         }
@@ -842,50 +846,58 @@ namespace pinger_csharp
                 startBytesReceived = tempR;
                 startBytesSent = tempS;
                 if (valueR > 1024)
-                 {
-                     valueR /= 1024;
+                {
+                    valueR /= 1024;
                     if (valueR > 1024)
-                     {
-                         valueR /= 1024;
-                         bytesRLabel.Text = "↓ " + Math.Round(valueR, 2) + " MB/s";
-                     }
-                     else
-                     {
-                         bytesRLabel.Text = "↓ " + Math.Round(valueR, 2) + " KB/s";
-                     }
+                    {
+                        valueR /= 1024;
+                        bytesRLabel.Text = "↓ " + Math.Round(valueR, 2) + " MB/s";
+                    }
+                    else
+                    {
+                        bytesRLabel.Text = "↓ " + Math.Round(valueR, 2) + " KB/s";
+                    }
 
-                 }
-                 else
-                 {
-                     bytesRLabel.Text = "↓ " + valueR + " B/s";
-                 }
+                }
+                else
+                {
+                    bytesRLabel.Text = "↓ " + valueR + " B/s";
+                }
 
-                 if (valueS > 1024)
-                 {
-                     valueS /= 1024;
+                if (valueS > 1024)
+                {
+                    valueS /= 1024;
                     if (valueS > 1024)
-                     {
-                         valueS /= 1024;
+                    {
+                        valueS /= 1024;
                         bytesSLabel.Text = "↑ " + Math.Round(valueS, 2) + " MB/s";
-                     }
-                     else
-                     {
-                         bytesSLabel.Text = "↑ " + Math.Round(valueS, 2) + " KB/s";
-                     }
-                 }
-                 else
-                 {
-                     bytesSLabel.Text = "↑ " + valueS + " B/s";
-                 }
-             
+                    }
+                    else
+                    {
+                        bytesSLabel.Text = "↑ " + Math.Round(valueS, 2) + " KB/s";
+                    }
+                }
+                else
+                {
+                    bytesSLabel.Text = "↑ " + valueS + " B/s";
+                }
+
             }
         }
 
         private void bytesTimer_Tick(object sender, EventArgs e)
         {
             if (UsedSettings.BytesActivated)
+            {
                 netBytes();
-            
+                //temporary workaround to the placing of the rlabel when graphs off, fix it!
+                if (!UsedSettings.GraphActivated)
+                {
+                    bytesRLabel.Location = new Point(bytesSLabel.Right, 0);
+                    Width = bytesRLabel.Right;
+                }
+            }
+
         }
 
         private void transferToolStripMenuItem_Click(object sender, EventArgs e)
@@ -901,6 +913,91 @@ namespace pinger_csharp
                 System.Media.SystemSounds.Beep.Play();
             }
             RefreshOverlay();
+        }
+
+        private void intervalStripTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)//on enter press
+            {
+                if (intervalStripTextBox.Text.Contains("ms"))
+                {
+                    intervalStripTextBox.Text = intervalStripTextBox.Text.Replace("ms", "");
+                }
+                int i = 0;
+                if (Int32.TryParse(intervalStripTextBox.Text, out i))
+                {
+                    if (i < 50)
+                    {
+                        intervalStripTextBox.Text = "Wrong value!";
+                    }
+                    else
+                    {
+                        UsedSettings.PingInterval = i;
+                        RefreshOverlay();
+                    }
+                }
+                else
+                {
+                    intervalStripTextBox.Text = "Wrong value!";
+                }
+            }
+            else
+            {
+                wrongValue_Click(sender, null);
+            }
+            if (!intervalStripTextBox.Text.Contains("ms") && intervalStripTextBox.Text != "Wrong value!")
+            {
+                int t = intervalStripTextBox.SelectionStart;
+                intervalStripTextBox.Text += "ms";
+                intervalStripTextBox.SelectionStart = t;
+            }
+        }
+
+        private void opacityTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)//on enter press
+            {
+                if (opacityTextBox.Text.Contains("%"))
+                {
+                    opacityTextBox.Text = opacityTextBox.Text.Replace("%", "");
+                }
+                double i = 0;
+                if (Double.TryParse(opacityTextBox.Text, out i) )
+                {
+                    i /= 100;
+                    if (i < 0.2 || i > 1)
+                    {
+                        opacityTextBox.Text = "Wrong value!";
+                    }
+                    else
+                    {
+                        UsedSettings.Opacity = i;
+                        RefreshOverlay();
+                    }
+                }
+                else
+                {
+                    opacityTextBox.Text = "Wrong value!";
+                }
+            }
+            else
+            {
+                wrongValue_Click(sender, null);
+            }
+            if (!opacityTextBox.Text.Contains("%") && opacityTextBox.Text != "Wrong value!")
+            {
+                int t = opacityTextBox.SelectionStart;
+                opacityTextBox.Text += "%";
+                opacityTextBox.SelectionStart = t;
+            }
+        }
+        private void wrongValue_Click(object sender, EventArgs e)
+        {
+            if ((sender as ToolStripTextBox).Text == "Wrong value!")
+            {
+                (sender as ToolStripTextBox).Text = "";
+            }
+
         }
     }
 }
