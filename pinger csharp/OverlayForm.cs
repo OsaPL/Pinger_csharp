@@ -29,6 +29,7 @@ namespace pinger_csharp
         public int DotHeight;
         public int BarsSpacing;
         public bool BytesActivated;
+        public bool MoveButton;
 
         public bool SaveSettings()
         {
@@ -52,6 +53,7 @@ namespace pinger_csharp
                 settings[12] = DotHeight.ToString();
                 settings[13] = BarsSpacing.ToString();
                 settings[14] = BytesActivated.ToString();
+                settings[15] = MoveButton.ToString();
 
                 string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
                 System.IO.FileInfo file = new System.IO.FileInfo(filepath);
@@ -89,6 +91,7 @@ namespace pinger_csharp
                     DotHeight = Convert.ToInt32(settings[12]);
                     BarsSpacing = Convert.ToInt32(settings[13]);
                     BytesActivated = Convert.ToBoolean(settings[14]);
+                    MoveButton = Convert.ToBoolean(settings[15]);
                     return true;
                 }
                 else
@@ -115,6 +118,7 @@ namespace pinger_csharp
             DotHeight = 1;
             BarsSpacing = 0;
             BytesActivated = false;
+            MoveButton = false;
         }
         public void PrintValues()
         {
@@ -525,7 +529,7 @@ namespace pinger_csharp
         private void refresh_Tick(object sender, EventArgs e)
         {
             Refresh();
-            Location = new Point(dragbutton.Location.X - 1 + dragbutton.Width, dragbutton.Location.Y);
+            Location = new Point(dragbutton.Location.X - 1 , dragbutton.Location.Y);
         }
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -632,36 +636,41 @@ namespace pinger_csharp
         }
         private void RefreshOverlay()
         {
-            try { 
-            Label last = null;
-            foreach (Label label in Controls.OfType<Label>())
+            try
             {
-                if (!(label.Name == "bytesRLabel" || label.Name == "bytesSLabel"))
+                Label last = null;
+                foreach (Label label in Controls.OfType<Label>())
                 {
-                    label.Font = UsedSettings.Font;
-                    label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
-                    label.BackColor = UsedSettings.BackColor;
-                    label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
-                    if (last == null)
+                    if (!(label.Name == "bytesRLabel" || label.Name == "bytesSLabel"))
                     {
+                        label.Font = UsedSettings.Font;
                         label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
-                        label.Location = new Point((Int32.Parse(label.Name) - 1) * label.Width - 1, 0);
+                        label.BackColor = UsedSettings.BackColor;
+                        label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
+                        if (last == null)
+                        {
+                            label.Size = new Size((int)(label.Font.SizeInPoints * widthscale), (int)(label.Font.SizeInPoints * heightscale));
+                            label.Location = new Point((Int32.Parse(label.Name) - 1) * label.Width - 1, 0);
+                        }
+                        else
+                        {
+                            label.Size = last.Size;
+                            label.Location = new Point(last.Right, 0);
+                        }
+                        last = label;
                     }
-                    else
-                    {
-                        label.Size = last.Size;
-                        label.Location = new Point(last.Right, 0);
-                    }
-                    last = label;
                 }
-            }
-            last = this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label;
-            if (!UsedSettings.GraphActivated)
-                Size = new Size(last.Right, last.Height);
+                last = this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label;
+                if (!UsedSettings.GraphActivated)
+                    Size = new Size(last.Right, last.Height);
+                else
+                    Size = new Size(last.Right, last.Height * 3);
+                throwPing.Interval = UsedSettings.PingInterval;
+            if (UsedSettings.BackColor == Color.FromArgb(255,0,0,0))
+                dragbutton.SetButtonColor(Color.FromArgb(64, 64, 64));
             else
-                Size = new Size(last.Right, last.Height * 3);
-            throwPing.Interval = UsedSettings.PingInterval;
-            dragbutton.SetButtonColor(UsedSettings.BackColor);
+                dragbutton.SetButtonColor(UsedSettings.BackColor);
+            BackColor = UsedSettings.BackColor;
             GraphLimit = ((last.Width - (int)(widthscale / 2)) - 1) / (UsedSettings.BarsWidth + UsedSettings.BarsSpacing);
             barsWidthTextBox.Text = "" + UsedSettings.BarsWidth;
             barsSpacingTextBox.Text = "" + UsedSettings.BarsSpacing;
@@ -680,13 +689,13 @@ namespace pinger_csharp
 
             if (UsedSettings.BytesActivated)
             {
-                bytesSLabel.BackColor = Color.FromArgb(64, 64, 64);
+                bytesSLabel.BackColor = UsedSettings.BackColor;
                 bytesSLabel.Location = new Point(last.Right, 0);
                 bytesSLabel.Text = "Sent ";
                 bytesSLabel.Font = UsedSettings.Font;
                 bytesSLabel.Size = new Size((int)(bytesSLabel.Font.SizeInPoints * widthscale), (int)(bytesSLabel.Font.SizeInPoints * heightscale));
 
-                bytesRLabel.BackColor = Color.FromArgb(64, 64, 64);
+                bytesRLabel.BackColor = UsedSettings.BackColor;
                 bytesRLabel.Size = bytesSLabel.Size;
                 bytesRLabel.Text = "Received ";
                 bytesRLabel.Font = UsedSettings.Font;
@@ -706,6 +715,7 @@ namespace pinger_csharp
                 netQualityBar.Location = new Point(last.Right, bytesRLabel.Bottom);
                 netQualityBar.Size = new Size(Size.Width - netQualityBar.Location.X - 1, Size.Height - bytesRLabel.Bottom - 1);
                 netQualityBar.Show();
+                netQualityBar.ForeColor = UsedSettings.BackColor;
                 transferToolStripMenuItem.Text = "Transfer ON";
                 transferToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
             }
@@ -717,11 +727,24 @@ namespace pinger_csharp
             }
             throwPing.Interval = UsedSettings.PingInterval;
             Opacity = UsedSettings.Opacity;
-            dragbutton.Opacity = UsedSettings.Opacity;
+            dragbutton.Opacity = 0.1;
+            dragbutton.SetButtonSize(last.Width,last.Height);
             opacityTextBox.Text = "" + Opacity*100 + "%";
             intervalStripTextBox.Text = "" + UsedSettings.PingInterval + "ms";
                 //Size = new Size (Size.Width*UsedSettings.SizeMlt,Size.Height*UsedSettings.SizeMlt); //need things other than just this to scale overlay
                 //UsedSettings.SizeMlt = 1;
+                if (UsedSettings.MoveButton)
+                {
+                    dragbutton.Show();
+                    moveToolStripMenuItem.Text = "Lock ON";
+                    moveToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
+                }
+                else
+                {
+                    dragbutton.Hide();
+                    moveToolStripMenuItem.Text = "Lock OFF";
+                    moveToolStripMenuItem.BackColor = Color.White;
+                }
             }
             catch(Exception er)
             {
@@ -1004,6 +1027,19 @@ namespace pinger_csharp
                 (sender as ToolStripTextBox).Text = "";
             }
 
+        }
+
+        private void moveToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            if (UsedSettings.MoveButton)
+            {
+                UsedSettings.MoveButton = false;
+            }
+            else
+            {
+                UsedSettings.MoveButton = true;
+            }
+            RefreshOverlay();
         }
     }
 }

@@ -59,6 +59,7 @@
             this.bytesRLabel = new System.Windows.Forms.Label();
             this.bytesSLabel = new System.Windows.Forms.Label();
             this.netQualityBar = new System.Windows.Forms.ProgressBar();
+            this.moveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -108,6 +109,7 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.moveToolStripMenuItem,
             this.fontToolStripMenuItem,
             this.backgroundColorToolStripMenuItem,
             this.opacityToolStripMenuItem,
@@ -176,7 +178,7 @@
             // graphsToggleToolStripMenuItem
             // 
             this.graphsToggleToolStripMenuItem.Name = "graphsToggleToolStripMenuItem";
-            this.graphsToggleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.graphsToggleToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.graphsToggleToolStripMenuItem.Text = "Graphs Toggle";
             this.graphsToggleToolStripMenuItem.Click += new System.EventHandler(this.graphsToggleToolStripMenuItem_Click);
             // 
@@ -185,7 +187,7 @@
             this.dotsHeightToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.dotsHeightTextBox});
             this.dotsHeightToolStripMenuItem.Name = "dotsHeightToolStripMenuItem";
-            this.dotsHeightToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dotsHeightToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.dotsHeightToolStripMenuItem.Text = "Dots height";
             // 
             // dotsHeightTextBox
@@ -200,7 +202,7 @@
             this.barsSpacingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.barsSpacingTextBox});
             this.barsSpacingToolStripMenuItem.Name = "barsSpacingToolStripMenuItem";
-            this.barsSpacingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.barsSpacingToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.barsSpacingToolStripMenuItem.Text = "Bars spacing";
             // 
             // barsSpacingTextBox
@@ -215,7 +217,7 @@
             this.barsWidthToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.barsWidthTextBox});
             this.barsWidthToolStripMenuItem.Name = "barsWidthToolStripMenuItem";
-            this.barsWidthToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.barsWidthToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.barsWidthToolStripMenuItem.Text = "Bars width";
             // 
             // barsWidthTextBox
@@ -284,6 +286,13 @@
             this.netQualityBar.TabIndex = 3;
             this.netQualityBar.Value = 25;
             // 
+            // moveToolStripMenuItem
+            // 
+            this.moveToolStripMenuItem.Name = "moveToolStripMenuItem";
+            this.moveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.moveToolStripMenuItem.Text = "Move";
+            this.moveToolStripMenuItem.Click += new System.EventHandler(this.moveToolStripMenuItem_Click_1);
+            // 
             // OverlayForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -334,5 +343,6 @@
         private System.Windows.Forms.ToolStripMenuItem opacityToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox opacityTextBox;
         private System.Windows.Forms.ToolStripTextBox intervalStripTextBox;
+        private System.Windows.Forms.ToolStripMenuItem moveToolStripMenuItem;
     }
 }

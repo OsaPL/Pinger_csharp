@@ -38,6 +38,7 @@ namespace pinger_csharp
         private bool mouseDown;
         private Point lastPos;
         private Point lastFormPos;
+        private double lastopacity;
         private void button_MouseUp(object sender, MouseEventArgs e)
         {
             mouseDown = false;
@@ -66,10 +67,33 @@ namespace pinger_csharp
             }
             return false;
         }
+        public void SetButtonSize(int xSize,int ySize)
+        {
+            button.Size = new System.Drawing.Size(xSize, ySize+1);
+            Size = button.Size;
+        }
         private void button_MouseMove(object sender, MouseEventArgs e)
         {
+            Point p = PointToClient(Control.MousePosition);
+            int h = Screen.PrimaryScreen.WorkingArea.Bottom;
+            int w = Screen.PrimaryScreen.WorkingArea.Right;
+            p.X -= w / 64;
+            p.Y -= h / 64;
+            Rectangle r = new Rectangle(p, new Size(w / 32, h / 32));
+            if (ClientRectangle.IntersectsWith(r))
+            {
+                Opacity = 0.1;
+                button.BackColor = Color.White;
+                button.ForeColor = Color.White;
+            }
+            else
+            {
+                button.BackColor = Color.Black;
+                button.ForeColor = Color.Black;
+            }
             if (mouseDown)
             {
+                Opacity = 0.05;
                 int xoffset = MousePosition.X - lastPos.X;
                 int yoffset = MousePosition.Y - lastPos.Y;
                 Left += xoffset;
@@ -84,6 +108,7 @@ namespace pinger_csharp
                     this.Focus();
                 }
             }
+
         }
 
         private void follow_Tick(object sender, EventArgs e)

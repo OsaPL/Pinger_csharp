@@ -39,7 +39,7 @@
             this.button.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button.ForeColor = System.Drawing.SystemColors.Highlight;
             this.button.Location = new System.Drawing.Point(0, 0);
-            this.button.Name = "button1";
+            this.button.Name = "button";
             this.button.Size = new System.Drawing.Size(14, 14);
             this.button.TabIndex = 1;
             this.button.UseVisualStyleBackColor = false;
@@ -61,6 +61,7 @@
             this.Controls.Add(this.button);
             this.Name = "DragButton";
             this.Text = "DragButton";
+            this.TransparencyKey = System.Drawing.Color.Black;
             this.Load += new System.EventHandler(this.DragButton_Load);
             this.ResumeLayout(false);
 
