@@ -17,6 +17,7 @@ namespace pinger_csharp
             //Application.EnableVisualStyles(); //to make the bar colorable
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new OverlayForm());
+
         }
     }
 }
