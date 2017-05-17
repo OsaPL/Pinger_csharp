@@ -539,7 +539,12 @@ namespace pinger_csharp
             Rectangle r = new Rectangle(p, new Size(w / 32, h / 32));
             if (Opacity != UsedSettings.Opacity && (!ClientRectangle.IntersectsWith(r) || dragbutton.ContainsFocus))
             {
-                Opacity = UsedSettings.Opacity;
+                if (Opacity <= UsedSettings.Opacity)
+                {
+                    Opacity += 0.03;
+                    if(Opacity > UsedSettings.Opacity)
+                        Opacity = UsedSettings.Opacity;
+                }
             }
             if (!dragbutton.ContainsFocus)
             {
