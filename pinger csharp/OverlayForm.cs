@@ -851,6 +851,7 @@ namespace pinger_csharp
                 {
                     barsSpacingTextBox.Text = "Wrong value!";
                 }
+                RefreshOverlay();
             }
         }
 
