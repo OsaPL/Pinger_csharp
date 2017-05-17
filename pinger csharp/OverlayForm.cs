@@ -211,7 +211,7 @@ namespace pinger_csharp
         }
         public void RemoveLastLabel()
         {
-            if (UsedSettings.LabelsNr < 1)
+            if (UsedSettings.LabelsNr <= 1)
                 return;
             else
             {
@@ -316,7 +316,7 @@ namespace pinger_csharp
                 {
                     menu[0].Text = "Can't reach!";
                 }
-                    Log("("+id+")" + menu[0].Text);
+                Log("("+id+")" + menu[0].Text);
             }
             
 
@@ -675,6 +675,10 @@ namespace pinger_csharp
         {
             try
             {
+                if (UsedSettings.LabelsNr == 1)
+                    removeToolStripMenuItem.ForeColor = Color.Gray;
+                else
+                    removeToolStripMenuItem.ForeColor = SystemColors.ControlText;
                 Label last = null;
                 foreach (Label label in Controls.OfType<Label>())
                 {
@@ -720,7 +724,7 @@ namespace pinger_csharp
             else
             {
                 graphsToggleToolStripMenuItem.Text = "Graphs OFF";
-                graphsToggleToolStripMenuItem.BackColor = Color.White;
+                graphsToggleToolStripMenuItem.BackColor = SystemColors.Control;
             }
 
 
@@ -760,7 +764,7 @@ namespace pinger_csharp
             {
                 netQualityBar.Hide();
                 transferToolStripMenuItem.Text = "Transfer OFF";
-                transferToolStripMenuItem.BackColor = Color.White;
+                transferToolStripMenuItem.BackColor = SystemColors.Control;
             }
             throwPing.Interval = UsedSettings.PingInterval;
             Opacity = UsedSettings.Opacity;
@@ -774,7 +778,7 @@ namespace pinger_csharp
                 {
                     dragbutton.Show();
                     moveToolStripMenuItem.Text = "Lock OFF";
-                    moveToolStripMenuItem.BackColor = Color.White;
+                    moveToolStripMenuItem.BackColor = SystemColors.Control;
                 }
                 else
                 {

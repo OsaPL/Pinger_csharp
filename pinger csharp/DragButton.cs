@@ -38,7 +38,6 @@ namespace pinger_csharp
         public bool mouseDown;
         private Point lastPos;
         private Point lastFormPos;
-        private double lastopacity;
         private void button_MouseUp(object sender, MouseEventArgs e)
         {
             mouseDown = false;
@@ -82,14 +81,11 @@ namespace pinger_csharp
             Rectangle r = new Rectangle(p, new Size(w / 32, h / 32));
             if (ClientRectangle.IntersectsWith(r))
             {
-                Opacity = 0.1;
-                button.BackColor = Color.White;
-                button.ForeColor = Color.White;
+                SetButtonColor(Color.White);
             }
             else
             {
-                button.BackColor = Color.Black;
-                button.ForeColor = Color.Black;
+                SetButtonColor(Color.Black);
             }
             if (mouseDown)
             {
@@ -108,6 +104,10 @@ namespace pinger_csharp
                     this.Focus();
                 }
                 */
+            }
+            else
+            {
+                Opacity = 0.1;
             }
 
         }
