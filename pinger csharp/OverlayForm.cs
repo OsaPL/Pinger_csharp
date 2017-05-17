@@ -859,13 +859,11 @@ namespace pinger_csharp
         {
             if (UsedSettings.GraphActivated)
             {
-                System.Media.SystemSounds.Beep.Play();
                 UsedSettings.GraphActivated = false;
             }
             else
             {
                 UsedSettings.GraphActivated = true;
-                System.Media.SystemSounds.Beep.Play();
             }
             RefreshOverlay();
         }
@@ -967,13 +965,11 @@ namespace pinger_csharp
         {
             if (UsedSettings.BytesActivated)
             {
-                System.Media.SystemSounds.Beep.Play();
                 UsedSettings.BytesActivated = false;
             }
             else
             {
                 UsedSettings.BytesActivated = true;
-                System.Media.SystemSounds.Beep.Play();
             }
             RefreshOverlay();
         }
