@@ -319,7 +319,7 @@ namespace pinger_csharp
                 }
                
             }
-            Log("(" + id + ")" + menu[0].Text);
+            Log("(" + (id+1) + ")" + menu[0].Text);
 
         }
         private void throwPing_Tick(object sender, EventArgs e)
