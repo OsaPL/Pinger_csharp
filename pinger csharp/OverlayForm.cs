@@ -289,6 +289,7 @@ namespace pinger_csharp
                     int number = Int32.Parse(textbox.Name[1].ToString()) - 1;
                     Thread t = new Thread(() => Checkipadress(number));
                     t.Start();
+                    graphPings[number].Clear();
                 }
             }
         }
@@ -392,8 +393,11 @@ namespace pinger_csharp
             {
                 Label label = this.Controls.Find((id + 1).ToString(), true).FirstOrDefault() as Label;
                 Ping pingClass = new Ping();
+                string usedip = validatedAdresses[id].ToString();
                 PingReply pingReply = pingClass.Send(validatedAdresses[id].ToString());
                 long ping = pingReply.RoundtripTime;
+                if (usedip != validatedAdresses[id].ToString()) //if ip change before ping was able to finish
+                    return;
                 if (ping == 0)
                 {
                     label.Text = "Timeout!";
