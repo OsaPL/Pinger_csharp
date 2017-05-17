@@ -317,9 +317,9 @@ namespace pinger_csharp
                 {
                     menu[0].Text = "Can't reach!";
                 }
-               
+
             }
-            Log("(" + (id+1) + ")" + menu[0].Text);
+            Log("(" + (id + 1) + ")" + menu[0].Text);
 
         }
         private void throwPing_Tick(object sender, EventArgs e)
@@ -522,10 +522,10 @@ namespace pinger_csharp
                         g.DrawLine(pPen, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV,
                                 Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom);
                         pPen.Color = Color.White;
-                        if(UsedSettings.DotHeight == 1) //drawline cant draw single pixels
+                        if (UsedSettings.DotHeight == 1) //drawline cant draw single pixels
                         {
                             SolidBrush brush = new SolidBrush(pPen.Color);
-                            e.Graphics.FillRectangle(brush, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV -1, 1, 1);
+                            e.Graphics.FillRectangle(brush, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV - 1, 1, 1);
                         }
                         else
                         {
@@ -558,7 +558,7 @@ namespace pinger_csharp
                 if (Opacity <= UsedSettings.Opacity)
                 {
                     Opacity += 0.03;
-                    if(Opacity > UsedSettings.Opacity)
+                    if (Opacity > UsedSettings.Opacity)
                         Opacity = UsedSettings.Opacity;
                 }
             }
@@ -566,11 +566,11 @@ namespace pinger_csharp
             {
                 if (ClientRectangle.IntersectsWith(r))
                 {
-                    if(Opacity >= UsedSettings.Opacity * 0.3)
+                    if (Opacity >= UsedSettings.Opacity * 0.3)
                         Opacity -= 0.03;
                 }
             }
-            dragbutton.AnchorToCorners(h,w,p,Size);
+            dragbutton.AnchorToCorners(h, w, p, Size);
         }
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -711,71 +711,71 @@ namespace pinger_csharp
                 else
                     Size = new Size(last.Right, last.Height * 3);
                 throwPing.Interval = UsedSettings.PingInterval;
-            if (UsedSettings.BackColor == Color.FromArgb(255,0,0,0))
-                dragbutton.SetButtonColor(Color.FromArgb(64, 64, 64));
-            else
-                dragbutton.SetButtonColor(UsedSettings.BackColor);
-            BackColor = UsedSettings.BackColor;
-            GraphLimit = ((last.Width - (int)(widthscale / 2)) - 1) / (UsedSettings.BarsWidth + UsedSettings.BarsSpacing);
-            barsWidthTextBox.Text = "" + UsedSettings.BarsWidth;
-            barsSpacingTextBox.Text = "" + UsedSettings.BarsSpacing;
-            dotsHeightTextBox.Text = "" + UsedSettings.DotHeight;
-            if (UsedSettings.GraphActivated)
-            {
-                graphsToggleToolStripMenuItem.Text = "Graphs ON";
-                graphsToggleToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
-            }
-            else
-            {
-                graphsToggleToolStripMenuItem.Text = "Graphs OFF";
-                graphsToggleToolStripMenuItem.BackColor = SystemColors.Control;
-            }
-
-
-            if (UsedSettings.BytesActivated)
-            {
-                bytesSLabel.BackColor = UsedSettings.BackColor;
-                bytesSLabel.Location = new Point(last.Right, 0);
-                bytesSLabel.Text = "Sent ";
-                bytesSLabel.Font = UsedSettings.Font;
-                bytesSLabel.Size = new Size((int)(bytesSLabel.Font.SizeInPoints * widthscale), (int)(bytesSLabel.Font.SizeInPoints * heightscale));
-
-                bytesRLabel.BackColor = UsedSettings.BackColor;
-                bytesRLabel.Size = bytesSLabel.Size;
-                bytesRLabel.Text = "Received ";
-                bytesRLabel.Font = UsedSettings.Font;
+                if (UsedSettings.BackColor == Color.FromArgb(255, 0, 0, 0))
+                    dragbutton.SetButtonColor(Color.FromArgb(64, 64, 64));
+                else
+                    dragbutton.SetButtonColor(UsedSettings.BackColor);
+                BackColor = UsedSettings.BackColor;
+                GraphLimit = ((last.Width - (int)(widthscale / 2)) - 1) / (UsedSettings.BarsWidth + UsedSettings.BarsSpacing);
+                barsWidthTextBox.Text = "" + UsedSettings.BarsWidth;
+                barsSpacingTextBox.Text = "" + UsedSettings.BarsSpacing;
+                dotsHeightTextBox.Text = "" + UsedSettings.DotHeight;
                 if (UsedSettings.GraphActivated)
                 {
-                    bytesRLabel.Location = new Point(last.Right, bytesSLabel.Bottom);
-                    Size = new Size((int)(Size.Width + bytesSLabel.Size.Width * widthscale / 3.5), Size.Height);
+                    graphsToggleToolStripMenuItem.Text = "Graphs ON";
+                    graphsToggleToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
                 }
                 else
                 {
-                    bytesRLabel.Location = new Point(bytesRLabel.Right, 0);
-                    Size = new Size((int)(Size.Width + (bytesSLabel.Size.Width * widthscale / 3.5) * 2), Size.Height);
+                    graphsToggleToolStripMenuItem.Text = "Graphs OFF";
+                    graphsToggleToolStripMenuItem.BackColor = SystemColors.Control;
                 }
-            }
-            if (UsedSettings.BytesActivated)
-            {
-                netQualityBar.Location = new Point(last.Right, bytesRLabel.Bottom);
-                netQualityBar.Size = new Size(Size.Width - netQualityBar.Location.X - 1, Size.Height - bytesRLabel.Bottom - 1);
-                netQualityBar.Show();
-                netQualityBar.ForeColor = UsedSettings.BackColor;
-                transferToolStripMenuItem.Text = "Transfer ON";
-                transferToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
-            }
-            else
-            {
-                netQualityBar.Hide();
-                transferToolStripMenuItem.Text = "Transfer OFF";
-                transferToolStripMenuItem.BackColor = SystemColors.Control;
-            }
-            throwPing.Interval = UsedSettings.PingInterval;
-            Opacity = UsedSettings.Opacity;
-            dragbutton.Opacity = 0.1;
-            dragbutton.SetButtonSize(last.Width,last.Height);
-            opacityTextBox.Text = "" + Opacity*100 + "%";
-            intervalStripTextBox.Text = "" + UsedSettings.PingInterval + "ms";
+
+
+                if (UsedSettings.BytesActivated)
+                {
+                    bytesSLabel.BackColor = UsedSettings.BackColor;
+                    bytesSLabel.Location = new Point(last.Right, 0);
+                    bytesSLabel.Text = "Sent ";
+                    bytesSLabel.Font = UsedSettings.Font;
+                    bytesSLabel.Size = new Size((int)(bytesSLabel.Font.SizeInPoints * widthscale), (int)(bytesSLabel.Font.SizeInPoints * heightscale));
+
+                    bytesRLabel.BackColor = UsedSettings.BackColor;
+                    bytesRLabel.Size = bytesSLabel.Size;
+                    bytesRLabel.Text = "Received ";
+                    bytesRLabel.Font = UsedSettings.Font;
+                    if (UsedSettings.GraphActivated)
+                    {
+                        bytesRLabel.Location = new Point(last.Right, bytesSLabel.Bottom);
+                        Size = new Size((int)(Size.Width + bytesSLabel.Size.Width * widthscale / 3.5), Size.Height);
+                    }
+                    else
+                    {
+                        bytesRLabel.Location = new Point(bytesRLabel.Right, 0);
+                        Size = new Size((int)(Size.Width + (bytesSLabel.Size.Width * widthscale / 3.5) * 2), Size.Height);
+                    }
+                }
+                if (UsedSettings.BytesActivated)
+                {
+                    netQualityBar.Location = new Point(last.Right, bytesRLabel.Bottom);
+                    netQualityBar.Size = new Size(Size.Width - netQualityBar.Location.X - 1, Size.Height - bytesRLabel.Bottom - 1);
+                    netQualityBar.Show();
+                    netQualityBar.ForeColor = UsedSettings.BackColor;
+                    transferToolStripMenuItem.Text = "Transfer ON";
+                    transferToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
+                }
+                else
+                {
+                    netQualityBar.Hide();
+                    transferToolStripMenuItem.Text = "Transfer OFF";
+                    transferToolStripMenuItem.BackColor = SystemColors.Control;
+                }
+                throwPing.Interval = UsedSettings.PingInterval;
+                Opacity = UsedSettings.Opacity;
+                dragbutton.Opacity = 0.1;
+                dragbutton.SetButtonSize(last.Width, last.Height);
+                opacityTextBox.Text = "" + Opacity * 100 + "%";
+                intervalStripTextBox.Text = "" + UsedSettings.PingInterval + "ms";
                 //Size = new Size (Size.Width*UsedSettings.SizeMlt,Size.Height*UsedSettings.SizeMlt); //need things other than just this to scale overlay
                 //UsedSettings.SizeMlt = 1;
                 if (UsedSettings.MoveButton)
@@ -791,7 +791,7 @@ namespace pinger_csharp
                     moveToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
                 }
             }
-            catch(Exception er)
+            catch (Exception er)
             {
                 UsedSettings.DefaultValues();
             }
@@ -1033,7 +1033,7 @@ namespace pinger_csharp
                     opacityTextBox.Text = opacityTextBox.Text.Replace("%", "");
                 }
                 double i = 0;
-                if (Double.TryParse(opacityTextBox.Text, out i) )
+                if (Double.TryParse(opacityTextBox.Text, out i))
                 {
                     i /= 100;
                     if (i < 0.2 || i > 1)
@@ -1085,25 +1085,25 @@ namespace pinger_csharp
         }
         private void LogPings()
         {
-                string ting = "";
-                string tmp = "";
-                string repl = "";
-                foreach (Label label in Controls.OfType<Label>())
+            string ting = "";
+            string tmp = "";
+            string repl = "";
+            foreach (Label label in Controls.OfType<Label>())
+            {
+                if (!(label.Name == "bytesRLabel" || label.Name == "bytesSLabel"))
                 {
-                    if (!(label.Name == "bytesRLabel" || label.Name == "bytesSLabel"))
-                    {
-                        int number = Int32.Parse(label.Name);
-                        tmp = label.Text;
-                        repl = "(" + number + ")";
-                        tmp = tmp.Replace(repl, "");
+                    int number = Int32.Parse(label.Name);
+                    tmp = label.Text;
+                    repl = "(" + number + ")";
+                    tmp = tmp.Replace(repl, "");
 
-                        repl = "ms";
-                        tmp = tmp.Replace(repl, "");
+                    repl = "ms";
+                    tmp = tmp.Replace(repl, "");
 
-                        ting += " " + tmp   ;
-                    }
+                    ting += " " + tmp;
                 }
-                Log(ting);
+            }
+            Log(ting);
         }
 
         private static void Log(string logMessage)
@@ -1115,7 +1115,6 @@ namespace pinger_csharp
                 DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString(), logMessage);
             }
         }
-
     }
 }
 
