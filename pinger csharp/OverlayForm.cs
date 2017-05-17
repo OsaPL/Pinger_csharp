@@ -316,9 +316,9 @@ namespace pinger_csharp
                 {
                     menu[0].Text = "Can't reach!";
                 }
-                Log("("+id+")" + menu[0].Text);
+               
             }
-            
+            Log("(" + id + ")" + menu[0].Text);
 
         }
         private void throwPing_Tick(object sender, EventArgs e)
