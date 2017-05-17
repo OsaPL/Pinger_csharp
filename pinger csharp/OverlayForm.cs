@@ -514,8 +514,16 @@ namespace pinger_csharp
                         g.DrawLine(pPen, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV,
                                 Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom);
                         pPen.Color = Color.White;
-                        g.DrawLine(pPen, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV,
+                        if(UsedSettings.DotHeight == 1) //drawline cant draw single pixels
+                        {
+                            SolidBrush brush = new SolidBrush(pPen.Color);
+                            e.Graphics.FillRectangle(brush, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV -1, 1, 1);
+                        }
+                        else
+                        {
+                            g.DrawLine(pPen, Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV,
                                 Canvas.Left + (UsedSettings.BarsWidth + UsedSettings.BarsSpacing) * k, Canvas.Bottom - pixelPerV - UsedSettings.DotHeight);
+                        }
                     }
                     //g.DrawString("(" + (number + 1) + ")",
                     //new Font("Arial", (int)(Font.SizeInPoints / 1.5)), System.Drawing.Brushes.DarkGray, new Point(Canvas.Left, Canvas.Top));
