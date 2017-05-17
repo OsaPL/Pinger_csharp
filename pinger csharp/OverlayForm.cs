@@ -177,9 +177,12 @@ namespace pinger_csharp
             //make overlay not clickable
             int initialStyle = GetWindowLong(Handle, -20);
             SetWindowLong(Handle, -20, initialStyle | 0x80000 | 0x20);
+
             string filepath = Environment.GetEnvironmentVariable("APPDATA") ;
             File.Delete(filepath + "\\Pinger\\logback.txt");
-            File.Move(filepath + "\\Pinger\\log.txt", filepath + "\\Pinger\\logback.txt");
+            if (File.Exists(filepath + "\\Pinger\\log.txt"))
+                File.Move(filepath + "\\Pinger\\log.txt", filepath + "\\Pinger\\logback.txt");
+
             if (!UsedSettings.LoadSettings())
                 UsedSettings.DefaultValues();
 
