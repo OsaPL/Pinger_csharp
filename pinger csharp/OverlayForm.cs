@@ -529,7 +529,27 @@ namespace pinger_csharp
         private void refresh_Tick(object sender, EventArgs e)
         {
             Refresh();
-            Location = new Point(dragbutton.Location.X - 1 , dragbutton.Location.Y);
+            Location = new Point(dragbutton.Location.X - 1, dragbutton.Location.Y);
+
+            int h = Screen.PrimaryScreen.WorkingArea.Bottom;
+            int w = Screen.PrimaryScreen.WorkingArea.Right;
+            Point p = PointToClient(Control.MousePosition);
+            p.X -= w / 64;
+            p.Y -= h / 64;
+            Rectangle r = new Rectangle(p, new Size(w / 32, h / 32));
+            if (Opacity != UsedSettings.Opacity && (!ClientRectangle.IntersectsWith(r) || dragbutton.ContainsFocus))
+            {
+                Opacity = UsedSettings.Opacity;
+            }
+            if (!dragbutton.ContainsFocus)
+            {
+                if (ClientRectangle.IntersectsWith(r))
+                {
+                    if(Opacity >= UsedSettings.Opacity * 0.3)
+                        Opacity -= 0.03;
+                }
+            }
+            dragbutton.AnchorToCorners(h,w,p,Size);
         }
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -736,14 +756,14 @@ namespace pinger_csharp
                 if (UsedSettings.MoveButton)
                 {
                     dragbutton.Show();
-                    moveToolStripMenuItem.Text = "Lock ON";
-                    moveToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
+                    moveToolStripMenuItem.Text = "Lock OFF";
+                    moveToolStripMenuItem.BackColor = Color.White;
                 }
                 else
                 {
                     dragbutton.Hide();
-                    moveToolStripMenuItem.Text = "Lock OFF";
-                    moveToolStripMenuItem.BackColor = Color.White;
+                    moveToolStripMenuItem.Text = "Lock ON";
+                    moveToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
                 }
             }
             catch(Exception er)

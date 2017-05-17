@@ -35,7 +35,7 @@ namespace pinger_csharp
             }
         }
         // mouse dragging by button
-        private bool mouseDown;
+        public bool mouseDown;
         private Point lastPos;
         private Point lastFormPos;
         private double lastopacity;
@@ -101,12 +101,13 @@ namespace pinger_csharp
                 lastPos = MousePosition;
                 //OwnX.Text = "" + Location.X;
                 //OwnY.Text = "" + Location.Y;
-                if (!IsOnScreen())
+                /*if (!IsOnScreen())//not needed cause anchor now manages it
                 {
                     Location = lastFormPos;
                     mouseDown = false;
                     this.Focus();
                 }
+                */
             }
 
         }
@@ -119,6 +120,35 @@ namespace pinger_csharp
         {
             button.BackColor = color;
         }
-
+        public void AnchorToCorners(int h, int w, Point p, Size size)
+        {
+            if (!mouseDown)
+            {
+                if (Location.X < w / 64 && Location.Y < h / 64)
+                {
+                    Location = new Point(0, 0);
+                }
+                if (Location.X > w - size.Width - w / 64 && Location.Y > h - size.Height - h / 64)
+                {
+                    Location = new Point(w-size.Width, h-size.Height);
+                }
+                if (Location.X > w - size.Width - w / 64)
+                {
+                    Location = new Point(w - size.Width, Location.Y);
+                }
+                if (Location.X < w / 64)
+                {
+                    Location = new Point(0,Location.Y);
+                }
+                if (Location.Y > h - size.Height - h / 64)
+                {
+                    Location = new Point(Location.X, h - size.Height);
+                }
+                if (Location.Y < h / 64)
+                {
+                    Location = new Point(Location.X,0);
+                }
+            }
+        }
     }
 }
