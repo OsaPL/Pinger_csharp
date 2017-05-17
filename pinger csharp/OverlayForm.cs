@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net.NetworkInformation;
 using System.Windows.Forms;
+using System.IO;
 
 namespace pinger_csharp
 {
@@ -289,7 +290,6 @@ namespace pinger_csharp
                     Thread t = new Thread(() => Checkipadress(number));
                     t.Start();
                 }
-
             }
         }
         private void Checkipadress(int id) //checks if address is valid, without pingin, if yes, convert to IP4/6
@@ -316,7 +316,10 @@ namespace pinger_csharp
                 {
                     menu[0].Text = "Can't reach!";
                 }
+                    Log("("+id+")" + menu[0].Text);
             }
+            
+
         }
         private void throwPing_Tick(object sender, EventArgs e)
         {
@@ -353,6 +356,7 @@ namespace pinger_csharp
                         }
                         netQualityBar.ForeColor = bytesRLabel.ForeColor;
                     }
+                    LogPings();
                 }
             }
 
@@ -1071,6 +1075,39 @@ namespace pinger_csharp
             }
             RefreshOverlay();
         }
+        private void LogPings()
+        {
+                string ting = "";
+                string tmp = "";
+                string repl = "";
+                foreach (Label label in Controls.OfType<Label>())
+                {
+                    if (!(label.Name == "bytesRLabel" || label.Name == "bytesSLabel"))
+                    {
+                        int number = Int32.Parse(label.Name);
+                        tmp = label.Text;
+                        repl = "(" + number + ")";
+                        tmp = tmp.Replace(repl, "");
+
+                        repl = "ms";
+                        tmp = tmp.Replace(repl, "");
+
+                        ting += " " + tmp   ;
+                    }
+                }
+                Log(ting);
+        }
+
+        private static void Log(string logMessage)
+        {
+            string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\log.txt";  //using "using" to ensure no memory leaks while writing
+            using (StreamWriter w = File.AppendText(filepath))
+            {
+                w.WriteLine("[{0}]{1} - {2}",
+                DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString(), logMessage);
+            }
+        }
+
     }
 }
 
