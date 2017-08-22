@@ -109,7 +109,7 @@ namespace pinger_csharp
         {
             Location = new Point(0, 0);
             SizeMlt = 0;
-            Font = new Font(FontFamily.GenericSansSerif, (float)9.75);
+            Font = new Font("Consolas", (float)8.75);
             Opacity = 0.8;
             PingInterval = 300;
             LabelsNr = 1;
@@ -119,7 +119,7 @@ namespace pinger_csharp
             DotHeight = 1;
             BarsSpacing = 0;
             BytesActivated = false;
-            MoveButton = false;
+            MoveButton = true;
         }
         public void PrintValues()
         {
@@ -178,8 +178,9 @@ namespace pinger_csharp
             int initialStyle = GetWindowLong(Handle, -20);
             SetWindowLong(Handle, -20, initialStyle | 0x80000 | 0x20);
 
-            string filepath = Environment.GetEnvironmentVariable("APPDATA") ;
-            File.Delete(filepath + "\\Pinger\\logback.txt");
+            string filepath = Environment.GetEnvironmentVariable("APPDATA");
+            if (File.Exists(filepath + "\\Pinger\\logback.txt"))
+                File.Delete(filepath + "\\Pinger\\logback.txt");
             if (File.Exists(filepath + "\\Pinger\\log.txt"))
                 File.Move(filepath + "\\Pinger\\log.txt", filepath + "\\Pinger\\logback.txt");
 
@@ -300,31 +301,36 @@ namespace pinger_csharp
         }
         private void Checkipadress(int id) //checks if address is valid, without pingin, if yes, convert to IP4/6
         {
-            string name = "B" + (id + 1);
-            ToolStripItem[] menu = adressesToolStripMenuItem.DropDownItems.Find(name, true);
-            name = menu[0].Text;
-            menu[0].Text = "Validating!";
-            IPAddress validated;
-            if (IPAddress.TryParse(name, out validated))
+            try
             {
-                validatedAdresses[id] = validated;
-                menu[0].Text = validatedAdresses[id].ToString();
-            }
-            else
-            {
-                try
+                string name = "B" + (id + 1);
+                ToolStripItem[] menu = adressesToolStripMenuItem.DropDownItems.Find(name, true);
+                name = menu[0].Text;
+                menu[0].Text = "Validating!";
+                IPAddress validated;
+                if (IPAddress.TryParse(name, out validated))
                 {
-                    validated = Dns.GetHostAddresses(name)[0];
                     validatedAdresses[id] = validated;
-                    menu[0].Text = name;
+                    menu[0].Text = validatedAdresses[id].ToString();
                 }
-                catch (Exception)
+                else
                 {
-                    menu[0].Text = "Can't reach!";
-                }
+                    try
+                    {
+                        validated = Dns.GetHostAddresses(name)[0];
+                        validatedAdresses[id] = validated;
+                        menu[0].Text = name;
+                    }
+                    catch (Exception)
+                    {
+                        menu[0].Text = "Can't reach!";
+                    }
 
+                }
+                Log("(" + (id + 1) + ")" + menu[0].Text);
             }
-            Log("(" + (id + 1) + ")" + menu[0].Text);
+            catch (Exception e)
+            { }
 
         }
         private void throwPing_Tick(object sender, EventArgs e)
@@ -403,21 +409,29 @@ namespace pinger_csharp
                 long ping = pingReply.RoundtripTime;
                 if (usedip != validatedAdresses[id].ToString()) //if ip change before ping was able to finish
                     return;
-                if (ping == 0)
+                if (pingReply.Status != IPStatus.Success)
                 {
                     label.Text = "Timeout!";
-                    label.ForeColor = Color.White;
+                    label.ForeColor = Color.DarkOrange;
                 }
                 else
                 {
-                    label.Text = "(" + (id + 1) + ")" + ping + "ms";
+                    if (ping < 1)
+                    {
+                        label.Text = "(" + (id + 1) + ")<1ms";
+                    }
+                    else
+                    {
+                        label.Text = "(" + (id + 1) + ")" + ping + "ms";
+                    }
+
 
                     label.ForeColor = pingColor(ping);
                 }
                 if (UsedSettings.GraphActivated == true)
                 {
-                    if (ping == 0)
-                        ping = 1;
+                    //if (ping == 0)
+                    //   ping = -1;
                     if (graphPings[id].Count > GraphLimit - 1)
                     {
                         graphPings[id].Insert(GraphLimit, (int)ping);
@@ -445,15 +459,19 @@ namespace pinger_csharp
             catch (Exception e)
             {
                 Label label = this.Controls.Find((id + 1).ToString(), true).FirstOrDefault() as Label;
-                label.Text = e.ToString();//"Unreachable!";
+                //label.Text = e.ToString();//"Unreachable!";
                 label.ForeColor = Color.White;
             }
         }
         private Color pingColor(long ping) //using 2 diffrent functions to create green to yellow to red spectrum for the ranges 25 to 230 ms.
         {
+            if (ping == -1)
+            {
+                return Color.DarkOrange;
+            }
             if (ping <= 1)
             {
-                return Color.FromArgb(255, 255, 255);
+                return Color.Aqua;
             }
             else
             {
