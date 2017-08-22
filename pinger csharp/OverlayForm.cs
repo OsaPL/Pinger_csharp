@@ -412,7 +412,7 @@ namespace pinger_csharp
                 if (pingReply.Status != IPStatus.Success)
                 {
                     label.Text = "Timeout!";
-                    label.ForeColor = Color.DarkOrange;
+                    label.ForeColor = Color.White;
                 }
                 else
                 {
