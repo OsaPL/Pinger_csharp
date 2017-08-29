@@ -1138,6 +1138,12 @@ namespace pinger_csharp
                 DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString(), logMessage);
             }
         }
+
+        private void notifyTrayIcon_MouseClick(object sender, MouseEventArgs e)
+        {
+            this.Activate();
+            this.BringToFront();
+        }
     }
 }
 

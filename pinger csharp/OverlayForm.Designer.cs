@@ -255,6 +255,7 @@
             this.notifyTrayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyTrayIcon.Icon")));
             this.notifyTrayIcon.Text = "Pinger";
             this.notifyTrayIcon.Visible = true;
+            this.notifyTrayIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyTrayIcon_MouseClick);
             // 
             // throwPing
             // 
