@@ -60,6 +60,7 @@
             this.bytesRLabel = new System.Windows.Forms.Label();
             this.bytesSLabel = new System.Windows.Forms.Label();
             this.netQualityBar = new System.Windows.Forms.ProgressBar();
+            this.gameModeTimer = new System.Windows.Forms.Timer(this.components);
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -295,6 +296,11 @@
             this.netQualityBar.TabIndex = 3;
             this.netQualityBar.Value = 25;
             // 
+            // gameModeTimer
+            // 
+            this.gameModeTimer.Interval = 5000;
+            this.gameModeTimer.Tick += new System.EventHandler(this.gameModeTimer_Tick);
+            // 
             // OverlayForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -346,5 +352,6 @@
         private System.Windows.Forms.ToolStripTextBox opacityTextBox;
         private System.Windows.Forms.ToolStripTextBox intervalStripTextBox;
         private System.Windows.Forms.ToolStripMenuItem moveToolStripMenuItem;
+        private System.Windows.Forms.Timer gameModeTimer;
     }
 }

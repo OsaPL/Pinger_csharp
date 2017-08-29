@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 using System.Net.NetworkInformation;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
+
+using IPHelper;
 
 namespace pinger_csharp
 {
@@ -1144,6 +1147,65 @@ namespace pinger_csharp
             this.Activate();
             this.BringToFront();
         }
+
+        #region autoIpdetecion
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out uint ProcessId);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        string GetActiveProcessFileName()
+        {
+            IntPtr hwnd = GetForegroundWindow();
+            uint pid;
+            GetWindowThreadProcessId(hwnd, out pid);
+            Process p = Process.GetProcessById((int)pid);
+            return p.MainModule.FileName;
+        }
+        uint GetActiveProcessId()
+        {
+            IntPtr hwnd = GetForegroundWindow();
+            uint pid;
+            GetWindowThreadProcessId(hwnd, out pid);
+            return pid;
+        }
+
+        List<string> connectedAdresses = new List<string>();
+        string activeProcess=String.Empty;
+
+        private void GetActiveProcessesConnections()
+        {
+            try
+            {
+                string name = GetActiveProcessFileName();
+                uint id = GetActiveProcessId();
+
+                var tcpArray = Functions.GetExtendedTcpTable(true, Win32Funcs.TcpTableType.OwnerPidAll).ToList();
+                connectedAdresses.Clear();
+                foreach (TcpRow tcp in tcpArray)
+                {
+                    if (tcp.ProcessId == id && !tcp.LocalEndPoint.ToString().Contains("127.0.0.1"))
+                    {
+                        connectedAdresses.Add(tcp.ToString());
+                    }
+                }
+            }
+            catch (Exception er)
+            {
+                //handle this
+            }
+        }
+
+        private void gameModeTimer_Tick(object sender, EventArgs e)
+        {
+            //first ask user for the processes that will be games
+            //second keeps checking till one of the processes start
+            //when they start seek an IP adress that is keept open for more than 30 seconds (?)
+            //when such an IP is found add it as a label and keep it till 60 seconds (?) pass after disconnecting (in case of connecting again)
+
+        }
+        #endregion
     }
 }
 
