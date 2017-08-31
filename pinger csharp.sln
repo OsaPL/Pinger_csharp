@@ -1,20 +1,36 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pinger csharp", "pinger csharp\pinger csharp.csproj", "{A233CA05-82B8-4411-8DFE-BC4F8F0C844C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartAdressIpDetectionTest", "WindowsFormsApplication2\SmartAdressIpDetectionTest.csproj", "{15D2176C-2EF4-4484-8089-DD96394D9148}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A233CA05-82B8-4411-8DFE-BC4F8F0C844C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A233CA05-82B8-4411-8DFE-BC4F8F0C844C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A233CA05-82B8-4411-8DFE-BC4F8F0C844C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A233CA05-82B8-4411-8DFE-BC4F8F0C844C}.Debug|x64.Build.0 = Debug|Any CPU
 		{A233CA05-82B8-4411-8DFE-BC4F8F0C844C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A233CA05-82B8-4411-8DFE-BC4F8F0C844C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A233CA05-82B8-4411-8DFE-BC4F8F0C844C}.Release|x64.ActiveCfg = Release|Any CPU
+		{A233CA05-82B8-4411-8DFE-BC4F8F0C844C}.Release|x64.Build.0 = Release|Any CPU
+		{15D2176C-2EF4-4484-8089-DD96394D9148}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15D2176C-2EF4-4484-8089-DD96394D9148}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15D2176C-2EF4-4484-8089-DD96394D9148}.Debug|x64.ActiveCfg = Debug|x64
+		{15D2176C-2EF4-4484-8089-DD96394D9148}.Debug|x64.Build.0 = Debug|x64
+		{15D2176C-2EF4-4484-8089-DD96394D9148}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15D2176C-2EF4-4484-8089-DD96394D9148}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15D2176C-2EF4-4484-8089-DD96394D9148}.Release|x64.ActiveCfg = Release|x64
+		{15D2176C-2EF4-4484-8089-DD96394D9148}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
