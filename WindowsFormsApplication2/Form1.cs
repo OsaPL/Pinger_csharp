@@ -102,7 +102,7 @@ namespace WindowsFormsApplication2
                                 maxip = ip.Ip;
                             }
                         }
-                        if(max > 200)
+                        if (max > 20)
                         {
                             ip = maxip;
                         }
@@ -112,6 +112,35 @@ namespace WindowsFormsApplication2
                         textBox2.Text = ip;
                     }
                 }
+
+                for (int i = IpCounting.Count-1; i>=0; i--)
+                {
+                    bool found = false;
+                    foreach (TcpRow tcp in listBox1.Items)
+                    {
+                        if (IpCounting[i].Ip == tcp.RemoteEndPoint.ToString().Substring(0, tcp.RemoteEndPoint.ToString().IndexOf(":")))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        IpCounting.RemoveAt(i);
+                    }
+                }
+
+                listBox2.Items.Clear();
+                foreach(IPcounter ip in IpCounting)
+                {
+                    listBox2.Items.Add(ip);
+                }
+
+                if(listBox1.Items.Count < 1)
+                {
+                    ip = String.Empty;
+                }
+
             }
             catch (Exception er)
             {
@@ -128,7 +157,7 @@ namespace WindowsFormsApplication2
                     string temp = tcp.RemoteEndPoint.ToString().Substring(
                                     0, tcp.RemoteEndPoint.ToString().IndexOf(":"));
                     bool found = false;
-                    if (IpCounting.Count > 1)
+                    if (IpCounting.Count >= 1)
                     {
                         foreach (IPcounter ip in IpCounting)
                         {
@@ -156,6 +185,11 @@ namespace WindowsFormsApplication2
         public IPcounter(string Ip)
         {
             this.Ip = Ip;
+        }
+
+        public override string ToString()
+        {
+            return "IP:" + Ip + " Count:" + Count;
         }
     }
 }
