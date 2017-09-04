@@ -47,8 +47,12 @@ namespace WindowsFormsApplication2
         {
             button1.PerformClick();
 
-            Thread thread = new Thread(new ThreadStart(SendPing));
-            thread.Start();
+            if (!checkBox1.Checked)
+            {
+                Thread thread = new Thread(new ThreadStart(SendPing));
+                thread.Start();
+            }
+
         }
 
         private void SendPing()
@@ -85,61 +89,79 @@ namespace WindowsFormsApplication2
                 textBox2.Clear();
 
                 var tcpArray = Functions.GetExtendedTcpTable(true, Win32Funcs.TcpTableType.OwnerPidAll).ToList();
+                var updArray = Functions.GetExtendedUdpTable(true, Win32Funcs.UdpTableType.OwnerPid).ToList();
                 listBox1.Items.Clear();
-                foreach (TcpRow tcp in tcpArray)
-                {
-                    if (tcp.ProcessId == id && !tcp.RemoteEndPoint.ToString().Contains("127.0.0.1") && !tcp.RemoteEndPoint.ToString().Contains("0.0.0.0"))
-                    {
-                        listBox1.Items.Add(tcp);
 
-                        int max = 0;
-                        string maxip = "";
-                        foreach (IPcounter ip in IpCounting)
+                if (checkBox2.Checked)
+                {
+                    timer1.Interval = 5000;
+                    foreach (UdpRow udp in updArray)
+                    {
+                        //if (udp.ProcessId == id)
+                            listBox1.Items.Add(udp);
+                    }
+                }
+                else
+                {
+                    foreach (TcpRow tcp in tcpArray)
+                    {
+                        if (tcp.ProcessId == id)
                         {
-                            if (ip.Count > max)
+                            if ((!tcp.RemoteEndPoint.ToString().Contains("127.0.0.1") && !tcp.RemoteEndPoint.ToString().Contains("0.0.0.0")) || checkBox1.Checked)
                             {
-                                max = ip.Count;
-                                maxip = ip.Ip;
+                                listBox1.Items.Add(tcp);
+
+                                int max = 0;
+                                string maxip = "";
+                                foreach (IPcounter ip in IpCounting)
+                                {
+                                    if (ip.Count > max)
+                                    {
+                                        max = ip.Count;
+                                        maxip = ip.Ip;
+                                    }
+                                }
+                                if (max > 20)
+                                {
+                                    ip = maxip;
+                                }
+
+                                textBox1.Text += "\r\n" + ip + " Count:" + max;
+
+                                textBox2.Text = ip;
                             }
                         }
-                        if (max > 20)
-                        {
-                            ip = maxip;
-                        }
-
-                        textBox1.Text += "\r\n" + ip + " Count:" + max;
-
-                        textBox2.Text = ip;
                     }
-                }
 
-                for (int i = IpCounting.Count-1; i>=0; i--)
-                {
-                    bool found = false;
-                    foreach (TcpRow tcp in listBox1.Items)
+                    for (int i = IpCounting.Count - 1; i >= 0; i--)
                     {
-                        if (IpCounting[i].Ip == tcp.RemoteEndPoint.ToString().Substring(0, tcp.RemoteEndPoint.ToString().IndexOf(":")))
+                        bool found = false;
+                        foreach (TcpRow tcp in listBox1.Items)
                         {
-                            found = true;
-                            break;
+                            if (IpCounting[i].Ip == tcp.RemoteEndPoint.ToString().Substring(0, tcp.RemoteEndPoint.ToString().IndexOf(":")))
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found)
+                        {
+                            IpCounting.RemoveAt(i);
                         }
                     }
-                    if (!found)
+
+                    listBox2.Items.Clear();
+                    foreach (IPcounter ip in IpCounting)
                     {
-                        IpCounting.RemoveAt(i);
+                        listBox2.Items.Add(ip);
+                    }
+
+                    if (listBox1.Items.Count < 1)
+                    {
+                        ip = String.Empty;
                     }
                 }
 
-                listBox2.Items.Clear();
-                foreach(IPcounter ip in IpCounting)
-                {
-                    listBox2.Items.Add(ip);
-                }
-
-                if(listBox1.Items.Count < 1)
-                {
-                    ip = String.Empty;
-                }
 
             }
             catch (Exception er)
@@ -150,6 +172,10 @@ namespace WindowsFormsApplication2
         List<IPcounter> IpCounting = new List<IPcounter>();
         private void timer2_Tick(object sender, EventArgs e)
         {
+            if (checkBox2.Checked)
+            {
+                return;
+            }
             if (listBox1.Items.Count >= 1)
             {
                 foreach (TcpRow tcp in listBox1.Items)
@@ -171,7 +197,8 @@ namespace WindowsFormsApplication2
                     }
                     if (!found)
                     {
-                        IpCounting.Add(new IPcounter(temp));
+                        if (tcp.State == TcpState.Established)
+                            IpCounting.Add(new IPcounter(temp));
                     }
                 }
             }

@@ -403,6 +403,7 @@ namespace pinger_csharp
         }
         private void pingthread(int id)
         {
+            //add invoking methods to ensure thread safeness
             try
             {
                 Label label = this.Controls.Find((id + 1).ToString(), true).FirstOrDefault() as Label;
