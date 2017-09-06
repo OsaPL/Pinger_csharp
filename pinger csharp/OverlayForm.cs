@@ -401,6 +401,19 @@ namespace pinger_csharp
             avgpings = (int)(PingsSum / realpings);
             return avgpings;
         }
+
+        private string FormatPingText(long ping, int id)
+        {
+            if (ping < 1)
+            {
+                return "(" + (id + 1) + ")<1ms";
+            }
+            else
+            {
+                return "(" + (id + 1) + ")" + ping + "ms";
+            }
+        }
+
         private void pingthread(int id)
         {
             //add invoking methods to ensure thread safeness
@@ -420,15 +433,7 @@ namespace pinger_csharp
                 }
                 else
                 {
-                    if (ping < 1)
-                    {
-                        label.Text = "(" + (id + 1) + ")<1ms";
-                    }
-                    else
-                    {
-                        label.Text = "(" + (id + 1) + ")" + ping + "ms";
-                    }
-
+                    label.Text = FormatPingText(ping, id);
 
                     label.ForeColor = pingColor(ping);
                 }
@@ -1173,7 +1178,7 @@ namespace pinger_csharp
         }
 
         List<string> connectedAdresses = new List<string>();
-        string activeProcess=String.Empty;
+        string activeProcess = String.Empty;
 
         private void GetActiveProcessesConnections()
         {

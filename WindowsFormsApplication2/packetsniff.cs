@@ -31,7 +31,7 @@ namespace WindowsFormsApplication2
         string ipstr;
         private void FindBestInterface()
         {
-            IPAddress ipv4Address = new IPAddress(134744072);
+            IPAddress ipv4Address = new IPAddress(134744072); //its 8.8.8.8
             UInt32 ipv4AddressAsUInt32 = BitConverter.ToUInt32(ipv4Address.GetAddressBytes(), 0);
             UInt32 index;
             GetBestInterface(ipv4AddressAsUInt32, out index);
@@ -154,6 +154,8 @@ namespace WindowsFormsApplication2
 
             }
         }
+
+
     }
 
     public class ProcessPorts
