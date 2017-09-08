@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pinger csharp", "pinger csh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartAdressIpDetectionTest", "WindowsFormsApplication2\SmartAdressIpDetectionTest.csproj", "{15D2176C-2EF4-4484-8089-DD96394D9148}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPHelper", "IPHelper\IPHelper.csproj", "{640B925B-8F4C-4891-84FC-648DA3DB3625}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{15D2176C-2EF4-4484-8089-DD96394D9148}.Release|Any CPU.Build.0 = Release|Any CPU
 		{15D2176C-2EF4-4484-8089-DD96394D9148}.Release|x64.ActiveCfg = Release|x64
 		{15D2176C-2EF4-4484-8089-DD96394D9148}.Release|x64.Build.0 = Release|x64
+		{640B925B-8F4C-4891-84FC-648DA3DB3625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{640B925B-8F4C-4891-84FC-648DA3DB3625}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{640B925B-8F4C-4891-84FC-648DA3DB3625}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{640B925B-8F4C-4891-84FC-648DA3DB3625}.Debug|x64.Build.0 = Debug|Any CPU
+		{640B925B-8F4C-4891-84FC-648DA3DB3625}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{640B925B-8F4C-4891-84FC-648DA3DB3625}.Release|Any CPU.Build.0 = Release|Any CPU
+		{640B925B-8F4C-4891-84FC-648DA3DB3625}.Release|x64.ActiveCfg = Release|Any CPU
+		{640B925B-8F4C-4891-84FC-648DA3DB3625}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

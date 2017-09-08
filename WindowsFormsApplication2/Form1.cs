@@ -7,10 +7,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using IPHelper;
 using System.Diagnostics;
 using System.Threading;
 using System.Net.NetworkInformation;
+using IPHelper;
 
 namespace WindowsFormsApplication2
 {
