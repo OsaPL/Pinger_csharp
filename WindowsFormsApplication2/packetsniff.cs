@@ -310,9 +310,6 @@ namespace WindowsFormsApplication2
             {
                 MessageBox.Show(ex.Message, "parseData", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            
-
-
         }
 
         private void newPacketParse(Packet packet)
@@ -322,7 +319,11 @@ namespace WindowsFormsApplication2
                 List<Packet> copy = packetsList;
                 if (packet.IP.SourceAddress.ToString() == ipstr || packet.IP.DestinationAddress.ToString() == ipstr)
                 {
-
+                    if(listBox1.Items.Count> 20)
+                    {
+                        listBox1.Items.RemoveAt(0);
+                    }
+                    listBox1.Items.Add(packet);
                     foreach (Packet other in copy)
                     {
                         if (other.IP.SourceAddress.ToString() == packet.IP.SourceAddress.ToString() && other.IP.DestinationAddress.ToString() == packet.IP.DestinationAddress.ToString())
@@ -532,7 +533,11 @@ namespace WindowsFormsApplication2
             {
                 info += "[TCP]";
             }
-            info += "(" + Count + ")";
+            if (Count > 0)
+            {
+                info += "(" + Count + ")";
+            }
+
             return info;
         }
     }
