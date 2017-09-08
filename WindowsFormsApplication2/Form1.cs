@@ -161,8 +161,6 @@ namespace WindowsFormsApplication2
                         ip = String.Empty;
                     }
                 }
-
-
             }
             catch (Exception er)
             {

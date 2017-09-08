@@ -16,7 +16,6 @@ namespace WindowsFormsApplication2
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new packetsniff());
-            Application.Run(new Form1());
         }
     }
 }
