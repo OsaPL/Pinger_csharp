@@ -30,7 +30,7 @@ namespace WindowsFormsApplication2
         {
             FindBestInterface();
         }
-        string ipstr;
+        string ipstr;//active interfaces' ip
         private void FindBestInterface()
         {
             IPAddress ipv4Address = new IPAddress(134744072); //its 8.8.8.8
@@ -173,7 +173,7 @@ namespace WindowsFormsApplication2
         {
             if (button1.Text == String.Empty)
             {
-                button1.PerformClick();
+                button1_Click(this, null);
             }
             try
             {
@@ -371,20 +371,14 @@ namespace WindowsFormsApplication2
                 packetsList.Clear();
                 //Thread.Sleep(200);
 
-                if (button1.BackColor != Color.Gray)
-                {
-                    button1.BackColor = Color.Gray;
-                }
-                else
-                {
-                    button1.BackColor = SystemColors.Control;
-                }
+                blinktimer.Enabled = true;
             }
         }
 
         private void timer3_Tick(object sender, EventArgs e)
         {
-            SendPing();
+            Thread t1 = new Thread(SendPing);
+            t1.Start();
         }
 
         private void SendPing()
@@ -411,16 +405,24 @@ namespace WindowsFormsApplication2
                         }
                     }
                 }
-                if (maxip != String.Empty && max > secondmax * 10)
+                if (maxip != String.Empty )//&& max > secondmax * 10) add something similar!
                 {
                     Ping pingClass = new Ping();
                     PingReply pingReply = pingClass.Send(maxip);
-                    label1.Text = pingReply.RoundtripTime.ToString();
+                    long ping = pingReply.RoundtripTime;
+                    label1.Text = ping.ToString();
                     button2.Text = maxip;
                     if (pingReply.Status != IPStatus.Success)
                     {
                         maxip = String.Empty;
                     }
+                    label1.ForeColor = pingColor(ping);
+                }
+                else
+                {
+                    label1.ForeColor = Color.White;
+                    label1.Text = "Ping";
+                    button2.Text = "IP Detected";
                 }
             }
             catch (Exception ex)
@@ -428,6 +430,63 @@ namespace WindowsFormsApplication2
                 MessageBox.Show(ex.Message, "sendPing", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
+        }
+
+        private Color pingColor(long ping) //using 2 diffrent functions to create green to yellow to red spectrum for the ranges 25 to 230 ms.
+        {
+            if (ping == -1)
+            {
+                return Color.DarkOrange;
+            }
+            if (ping <= 1)
+            {
+                return Color.Aqua;
+            }
+            else
+            {
+                if (ping > 230)
+                    ping = 230;
+
+                int r = 0, g = 0;
+                if (ping < 25)
+                {
+                    r = 0;
+                    g = 255;
+                }
+                if (ping < 120)
+                {
+                    r = (int)(2.55 * ping - 51);
+                    if (r > 255)
+                        r = 255;
+                    if (r < 0)
+                        r = 0;
+                    g = 255;
+                }
+                if (ping >= 120)
+                {
+                    r = 255;
+                    g = (int)(-2.125 * ping + 510);
+                    if (g > 255)
+                        g = 255;
+                    if (g < 0)
+                        g = 0;
+                }
+
+                return Color.FromArgb(r, g, 0);
+            }
+        }
+
+        private void blinktimer_Tick(object sender, EventArgs e)
+        {
+            if(button1.BackColor == Color.White)
+            {
+                button1.BackColor = Color.GreenYellow;
+            }
+            else
+            {
+                button1.BackColor = Color.White;
+                blinktimer.Enabled = false;
+            }
         }
     }
 

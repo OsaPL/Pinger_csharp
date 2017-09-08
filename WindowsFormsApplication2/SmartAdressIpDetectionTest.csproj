@@ -117,6 +117,7 @@
     <ProjectReference Include="..\IPHelper\IPHelper.csproj">
       <Project>{640b925b-8f4c-4891-84fc-648da3db3625}</Project>
       <Name>IPHelper</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
