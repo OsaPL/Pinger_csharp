@@ -73,6 +73,13 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="IPHeader.cs" />
+    <Compile Include="netstatform.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="netstatform.Designer.cs">
+      <DependentUpon>netstatform.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NetStatPortsAndProcessNames.cs" />
     <Compile Include="packetsniff.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,6 +92,9 @@
     <Compile Include="UDPHeader.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="netstatform.resx">
+      <DependentUpon>netstatform.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="packetsniff.resx">
       <DependentUpon>packetsniff.cs</DependentUpon>
