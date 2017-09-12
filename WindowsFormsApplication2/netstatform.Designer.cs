@@ -43,6 +43,7 @@
             this.textBoxPing = new System.Windows.Forms.TextBox();
             this.timerPing = new System.Windows.Forms.Timer(this.components);
             this.timerIgnoreCheck = new System.Windows.Forms.Timer(this.components);
+            this.labelIgnored = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBoxProcess
@@ -153,11 +154,22 @@
             // 
             this.timerIgnoreCheck.Tick += new System.EventHandler(this.timerIgnoreCheck_Tick);
             // 
+            // labelIgnored
+            // 
+            this.labelIgnored.AutoSize = true;
+            this.labelIgnored.ForeColor = System.Drawing.SystemColors.Control;
+            this.labelIgnored.Location = new System.Drawing.Point(196, 19);
+            this.labelIgnored.Name = "labelIgnored";
+            this.labelIgnored.Size = new System.Drawing.Size(46, 13);
+            this.labelIgnored.TabIndex = 10;
+            this.labelIgnored.Text = "Ignored!";
+            // 
             // netstatform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(901, 230);
+            this.Controls.Add(this.labelIgnored);
             this.Controls.Add(this.textBoxPing);
             this.Controls.Add(this.textBoxIp);
             this.Controls.Add(this.listBoxSummed);
@@ -192,5 +204,6 @@
         private System.Windows.Forms.TextBox textBoxPing;
         private System.Windows.Forms.Timer timerPing;
         private System.Windows.Forms.Timer timerIgnoreCheck;
+        private System.Windows.Forms.Label labelIgnored;
     }
 }

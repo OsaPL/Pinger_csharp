@@ -315,7 +315,7 @@ namespace WindowsFormsApplication2
                 if (UDP != null)
                 {
                     info += "[UDP] ";
-                    info += IP.SourceAddress+":"+ UDP.SourcePort + " -> " + IP.DestinationAddress+":" + UDP.DestinationPort;
+                    info += IP.SourceAddress + ":" + UDP.SourcePort + " -> " + IP.DestinationAddress + ":" + UDP.DestinationPort;
                 }
                 else if (TCP != null)
                 {
@@ -426,6 +426,7 @@ namespace WindowsFormsApplication2
                 ToggleSniffing();
                 timerShowPackets.Enabled = true;
                 timerPing.Enabled = true;
+                timerIgnoreCheck.Enabled = true;
 
                 buttonStart.Text = "Staph";
             }
@@ -436,6 +437,7 @@ namespace WindowsFormsApplication2
                 ToggleSniffing();
                 timerShowPackets.Enabled = false;
                 timerPing.Enabled = false;
+                timerIgnoreCheck.Enabled = false;
 
                 buttonStart.Text = "Sturt";
             }
@@ -476,6 +478,38 @@ namespace WindowsFormsApplication2
             FindBestDestinationIp();
 
             Packets.Clear();
+        }
+
+        private void timerPing_Tick(object sender, EventArgs e)
+        {
+            Thread t1 = new Thread(SendPing);
+            t1.Start();
+        }
+        private void timerIgnoreCheck_Tick(object sender, EventArgs e)
+        {
+            //checks if app should be ignored, add remebering last process active
+            foreach (string process in ignored)
+            {
+                if (textBoxPath.Text.ToLower().Contains(process))
+                {
+                    labelIgnored.ForeColor = Color.Red;
+                    return;
+                }
+            }
+            labelIgnored.ForeColor = SystemColors.Control;
+        }
+
+        private void E_Load(object sender, EventArgs e)
+        {
+            //example ignore list
+            ignored.Add("explorer.exe");
+            ignored.Add("cmd.exe");
+            ignored.Add("iexplore.exe");
+
+            ignored.Add("winrar.exe");
+            ignored.Add("chrome.exe");
+            ignored.Add("vlc.exe");
+            ignored.Add("devenv.exe");
         }
 
         private void FindProcessPackets()
@@ -526,6 +560,7 @@ namespace WindowsFormsApplication2
                     }
                 }
             }
+
         }
 
         private void FindBestDestinationIp()
@@ -551,23 +586,5 @@ namespace WindowsFormsApplication2
             textBoxIp.Text = maxIp;
         }
 
-        private void timerPing_Tick(object sender, EventArgs e)
-        {
-            Thread t1 = new Thread(SendPing);
-            t1.Start();
-        }
-
-        private void E_Load(object sender, EventArgs e)
-        {
-            //example ignore list
-            ignored.Add("explorer.exe");
-        }
-
-        private void timerIgnoreCheck_Tick(object sender, EventArgs e)
-        {
-            //checks if app should be ignored, add remebering last process active
-        }
     }
-
-
 }
