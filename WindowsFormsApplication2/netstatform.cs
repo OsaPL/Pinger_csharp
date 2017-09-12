@@ -312,14 +312,19 @@ namespace WindowsFormsApplication2
             {
                 string info = String.Empty;
 
-                info += IP.SourceAddress + " -> " + IP.DestinationAddress;
                 if (UDP != null)
                 {
-                    info += "[UDP] " + UDP.SourcePort + " -> " + UDP.DestinationPort;
+                    info += "[UDP] ";
+                    info += IP.SourceAddress+":"+ UDP.SourcePort + " -> " + IP.DestinationAddress+":" + UDP.DestinationPort;
                 }
-                if (TCP != null)
+                else if (TCP != null)
                 {
-                    info += "[TCP] " + TCP.SourcePort + " -> " + TCP.DestinationPort;
+                    info += "[TCP] ";
+                    info += IP.SourceAddress + ":" + TCP.SourcePort + " -> " + IP.DestinationAddress + ":" + TCP.DestinationPort;
+                }
+                else
+                {
+                    info += IP.SourceAddress + " -> " + IP.DestinationAddress;
                 }
                 if (Count > 0)
                 {
@@ -466,6 +471,15 @@ namespace WindowsFormsApplication2
         private void timerShowPackets_Tick(object sender, EventArgs e) //separate this into methods!!
         {
             listBoxSummed.Items.Clear();
+
+            FindProcessPackets();
+            FindBestDestinationIp();
+
+            Packets.Clear();
+        }
+
+        private void FindProcessPackets()
+        {
             List<Packet> copy = Packets;
 
             foreach (Packet packet in copy)
@@ -512,7 +526,10 @@ namespace WindowsFormsApplication2
                     }
                 }
             }
+        }
 
+        private void FindBestDestinationIp()
+        {
             string maxIp = String.Empty;
             int maxcount = 0;
             foreach (Packet packet in listBoxSummed.Items)
@@ -531,9 +548,7 @@ namespace WindowsFormsApplication2
                     }
                 }
             }
-
             textBoxIp.Text = maxIp;
-            Packets.Clear();
         }
 
         private void timerPing_Tick(object sender, EventArgs e)
