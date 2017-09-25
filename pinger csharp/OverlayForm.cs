@@ -16,6 +16,8 @@ using System.IO;
 using System.Diagnostics;
 
 using IPHelper;
+using System.Net.Sockets;
+using System.Security.Principal;
 
 namespace pinger_csharp
 {
@@ -419,13 +421,37 @@ namespace pinger_csharp
             //add invoking methods to ensure thread safeness
             try
             {
+                //if we wanna show process name if autopi
                 Label label = this.Controls.Find((id + 1).ToString(), true).FirstOrDefault() as Label;
                 Ping pingClass = new Ping();
                 string usedip = validatedAdresses[id].ToString();
                 PingReply pingReply = pingClass.Send(validatedAdresses[id].ToString());
                 long ping = pingReply.RoundtripTime;
+
                 if (usedip != validatedAdresses[id].ToString()) //if ip change before ping was able to finish
                     return;
+
+
+
+                if (gameModeTimer.Enabled)
+                {
+                    if(id == UsedSettings.LabelsNr - 1)
+                    {
+                        if (timeout < 20)
+                        {
+                            label.ForeColor = Color.Aqua;
+                            return;
+                        }
+                        else if (usedip == "127.0.0.1")
+                        {
+                            label.ForeColor = Color.Aqua;
+                            label.Text = "No IP";
+                            return;
+                        }
+                    }
+
+                }
+
                 if (pingReply.Status != IPStatus.Success)
                 {
                     label.Text = "Timeout!";
@@ -437,6 +463,9 @@ namespace pinger_csharp
 
                     label.ForeColor = pingColor(ping);
                 }
+
+
+
                 if (UsedSettings.GraphActivated == true)
                 {
                     //if (ping == 0)
@@ -1155,6 +1184,7 @@ namespace pinger_csharp
         }
 
         #region autoIpdetecion
+        #region getprocess
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out uint ProcessId);
 
@@ -1163,56 +1193,478 @@ namespace pinger_csharp
 
         string GetActiveProcessFileName()
         {
-            IntPtr hwnd = GetForegroundWindow();
-            uint pid;
-            GetWindowThreadProcessId(hwnd, out pid);
-            Process p = Process.GetProcessById((int)pid);
-            return p.MainModule.FileName;
+            try
+            {
+                IntPtr hwnd = GetForegroundWindow();
+                uint pid;
+                GetWindowThreadProcessId(hwnd, out pid);
+                Process p = Process.GetProcessById((int)pid);
+                return p.MainModule.FileName;
+            }
+            catch (Exception ex)
+            {
+                return String.Empty;
+            }
         }
         uint GetActiveProcessId()
         {
-            IntPtr hwnd = GetForegroundWindow();
-            uint pid;
-            GetWindowThreadProcessId(hwnd, out pid);
-            return pid;
+            try
+            {
+                IntPtr hwnd = GetForegroundWindow();
+                uint pid;
+                GetWindowThreadProcessId(hwnd, out pid);
+                return pid;
+            }
+            catch (Exception ex)
+            {
+                return 9999;
+            }
         }
+        #endregion
+        #region getbestinterface
+        [DllImport("iphlpapi.dll", CharSet = CharSet.Auto)]
+        public static extern int GetBestInterface(UInt32 destAddr, out UInt32 bestIfIndex);
 
-        List<string> connectedAdresses = new List<string>();
-        string activeProcess = String.Empty;
-
-        private void GetActiveProcessesConnections()
+        private string FindBestInterface()
         {
             try
             {
-                string name = GetActiveProcessFileName();
-                uint id = GetActiveProcessId();
-
-                var tcpArray = Functions.GetExtendedTcpTable(true, Win32Funcs.TcpTableType.OwnerPidAll).ToList();
-                connectedAdresses.Clear();
-                foreach (TcpRow tcp in tcpArray)
+                IPAddress ipv4Address = new IPAddress(134744072); //its 8.8.8.8
+                UInt32 ipv4AddressAsUInt32 = BitConverter.ToUInt32(ipv4Address.GetAddressBytes(), 0);
+                UInt32 index;
+                GetBestInterface(ipv4AddressAsUInt32, out index);
+                string ipstr = String.Empty;
+                foreach (UnicastIPAddressInformation ip in GetNetworkInterfaceByIndex(index).GetIPProperties().UnicastAddresses)
                 {
-                    if (tcp.ProcessId == id && !tcp.LocalEndPoint.ToString().Contains("127.0.0.1"))
+                    if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                     {
-                        connectedAdresses.Add(tcp.ToString());
+                        ipstr = ip.Address.ToString();
                     }
                 }
+
+                return ipstr;
             }
-            catch (Exception er)
+            catch(Exception ex)
             {
-                //handle this
+                return String.Empty;
             }
         }
+        private static NetworkInterface GetNetworkInterfaceByIndex(uint index)
+        {
+            // Search in all network interfaces that support IPv4.
+            NetworkInterface ipv4Interface = (from thisInterface in NetworkInterface.GetAllNetworkInterfaces()
+                                              where thisInterface.Supports(NetworkInterfaceComponent.IPv4)
+                                              let ipv4Properties = thisInterface.GetIPProperties().GetIPv4Properties()
+                                              where ipv4Properties != null && ipv4Properties.Index == index
+                                              select thisInterface).SingleOrDefault();
+            if (ipv4Interface != null)
+                return ipv4Interface;
+
+            // Search in all network interfaces that support IPv6.
+            NetworkInterface ipv6Interface = (from thisInterface in NetworkInterface.GetAllNetworkInterfaces()
+                                              where thisInterface.Supports(NetworkInterfaceComponent.IPv6)
+                                              let ipv6Properties = thisInterface.GetIPProperties().GetIPv6Properties()
+                                              where ipv6Properties != null && ipv6Properties.Index == index
+                                              select thisInterface).SingleOrDefault();
+
+            return ipv6Interface;
+        }
+        #endregion
+        #region packetshiffer
+        private Socket mainSocket;                          //The socket which captures all incoming packets
+        private byte[] byteData = new byte[8192];
+        private bool continueCapturing = false;
+        private List<Packet> Packets = new List<Packet>();
+        public void ToggleSniffing()
+        {
+            try
+            {
+                if (!continueCapturing)
+                {
+                    //Start capturing the packets...
+
+                    continueCapturing = true;
+
+                    //For sniffing the socket to capture the packets has to be a raw socket, with the
+                    //address family being of type internetwork, and protocol being IP
+                    mainSocket = new Socket(AddressFamily.InterNetwork,
+                        SocketType.Raw, ProtocolType.IP);
+
+                    //Bind the socket to the selected IP address
+                    mainSocket.Bind(new IPEndPoint(IPAddress.Parse(bestIp), 0));
+
+                    //Set the socket  options
+                    mainSocket.SetSocketOption(SocketOptionLevel.IP,            //Applies only to IP packets
+                                               SocketOptionName.HeaderIncluded, //Set the include the header
+                                               true);                           //option to true
+
+                    byte[] byTrue = new byte[4] { 1, 0, 0, 0 };
+                    byte[] byOut = new byte[4] { 1, 0, 0, 0 }; //Capture outgoing packets
+
+                    //Socket.IOControl is analogous to the WSAIoctl method of Winsock 2
+                    mainSocket.IOControl(IOControlCode.ReceiveAll,              //Equivalent to SIO_RCVALL constant
+                                                                                //of Winsock 2
+                                         byTrue,
+                                         byOut);
+
+                    //Start receiving the packets asynchronously
+                    mainSocket.BeginReceive(byteData, 0, byteData.Length, SocketFlags.None,
+                        new AsyncCallback(OnReceive), null);
+                }
+                else
+                {
+                    continueCapturing = false;
+                    //To stop capturing the packets close the socket
+                    mainSocket.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "sniff", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void OnReceive(IAsyncResult ar)
+        {
+            try
+            {
+                int nReceived = mainSocket.EndReceive(ar);
+
+                //Analyze the bytes received...
+
+                ParseData(byteData, nReceived);
+
+                if (continueCapturing)
+                {
+                    byteData = new byte[8192];
+
+                    //Another call to BeginReceive so that we continue to receive the incoming
+                    //packets
+                    mainSocket.BeginReceive(byteData, 0, byteData.Length, SocketFlags.None,
+                        new AsyncCallback(OnReceive), null);
+                }
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "OnReceive", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ParseData(byte[] byteData, int nReceived)
+        {
+            try
+            {
+                //Since all protocol packets are encapsulated in the IP datagram
+                //so we start by parsing the IP header and see what protocol data
+                //is being carried by it
+                IPHeader ipHeader = new IPHeader(byteData, nReceived);
+
+                //Now according to the protocol being carried by the IP datagram we parse 
+                //the data field of the datagram
+                switch (ipHeader.ProtocolType)
+                {
+                    case Protocol.TCP:
+
+                        TCPHeader tcpHeader = new TCPHeader(ipHeader.Data,              //IPHeader.Data stores the data being 
+                                                                                        //carried by the IP datagram
+                                                            ipHeader.MessageLength);//Length of the data field                    
+
+
+                        //If the port is equal to 53 then the underlying protocol is DNS
+                        //Note: DNS can use either TCP or UDP thats why the check is done twice
+                        if (tcpHeader.DestinationPort == "53" || tcpHeader.SourcePort == "53")
+                        {
+
+                        }
+                        newPacketParse(new Packet(ipHeader, tcpHeader));
+                        break;
+
+                    case Protocol.UDP:
+
+                        UDPHeader udpHeader = new UDPHeader(ipHeader.Data,              //IPHeader.Data stores the data being 
+                                                                                        //carried by the IP datagram
+                                                           (int)ipHeader.MessageLength);//Length of the data field                    
+
+                        //If the port is equal to 53 then the underlying protocol is DNS
+                        //Note: DNS can use either TCP or UDP thats why the check is done twice
+                        if (udpHeader.DestinationPort == "53" || udpHeader.SourcePort == "53")
+                        {
+                            //Length of UDP header is always eight bytes so we subtract that out of the total 
+                            //length to find the length of the data
+                        }
+                        newPacketParse(new Packet(ipHeader, udpHeader));
+                        break;
+
+                    case Protocol.Unknown:
+                        break;
+
+                        //Thread safe adding of the packets!!
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "parseData", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void newPacketParse(Packet packet)
+        {
+            try
+            {
+                List<Packet> copy = Packets;
+                if (packet.IP.SourceAddress.ToString() == bestIp || packet.IP.DestinationAddress.ToString() == bestIp)
+                {
+                    foreach (Packet other in copy)
+                    {
+                        if (other.IP.SourceAddress.ToString() == packet.IP.SourceAddress.ToString() && other.IP.DestinationAddress.ToString() == packet.IP.DestinationAddress.ToString())
+                        {
+                            other.Count++;
+                            return;
+                        }
+                        else if (other.IP.SourceAddress.ToString() == packet.IP.DestinationAddress.ToString() && other.IP.DestinationAddress.ToString() == packet.IP.SourceAddress.ToString())
+                        {
+                            other.Count++;
+                            return;
+                        }
+                    }
+                    Packets = copy;
+                    Packets.Add(packet);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "newPacketParse", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public class Packet
+        {
+            public IPHeader IP;
+            public UDPHeader UDP;
+            public TCPHeader TCP;
+            public DNSHeader DNS;
+            public int Count = 0;
+
+            public Packet(IPHeader IP, UDPHeader UDP)
+            {
+                this.IP = IP;
+                this.UDP = UDP;
+            }
+            public Packet(IPHeader IP, TCPHeader TCP)
+            {
+                this.IP = IP;
+                this.TCP = TCP;
+            }
+            public Packet(IPHeader IP)
+            {
+                this.IP = IP;
+            }
+            public override string ToString()
+            {
+                string info = String.Empty;
+
+                if (UDP != null)
+                {
+                    info += "[UDP] ";
+                    info += IP.SourceAddress + ":" + UDP.SourcePort + " -> " + IP.DestinationAddress + ":" + UDP.DestinationPort;
+                }
+                else if (TCP != null)
+                {
+                    info += "[TCP] ";
+                    info += IP.SourceAddress + ":" + TCP.SourcePort + " -> " + IP.DestinationAddress + ":" + TCP.DestinationPort;
+                }
+                else
+                {
+                    info += IP.SourceAddress + " -> " + IP.DestinationAddress;
+                }
+                if (Count > 0)
+                {
+                    info += "(" + Count + ")";
+                }
+
+                return info;
+            }
+        }
+        #endregion
+
+        string bestIp;
+        uint processId;
+        List<Port> Ports;
+        List<Packet> ProcessPackets=new List<Packet>();
+        string maxIp;
 
         private void gameModeTimer_Tick(object sender, EventArgs e)
         {
-            //first ask user for the processes that will be games
-            //second keeps checking till one of the processes start
-            //when they start seek an IP adress that is keept open for more than 30 seconds (?)
-            //when such an IP is found add it as a label and keep it till 60 seconds (?) pass after disconnecting (in case of connecting again)
+            ProcessPackets.Clear();
+
+            FindProcessPackets();
+            FindBestDestinationIp();
+
+            Packets.Clear();
+
+            if(maxIp != String.Empty)
+            {
+                validatedAdresses[UsedSettings.LabelsNr-1] = IPAddress.Parse(maxIp);
+            }
+            else
+            {
+                validatedAdresses[UsedSettings.LabelsNr - 1] = IPAddress.Parse("127.0.0.1");
+            }
+        }
+        int timeout = 20;
+        private void activeProcessTimer_Tick(object sender, EventArgs e)
+        {
+            uint newprocess = GetActiveProcessId();
+            if (newprocess != processId)
+            {
+                processId = newprocess;
+                timeout = 0;
+                graphPings[UsedSettings.LabelsNr - 1] = new List<int>();
+            }
+            if(timeout < 20)
+            {
+                (this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label).Text = NetStatPorts.LookupProcess(Convert.ToInt16(processId));
+                timeout++;
+            }
+            bestIp = FindBestInterface();
+        }
+
+        private void autoPingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (IsAdministrator() == false)
+            {
+                DialogResult dialogResult = MessageBox.Show("This option requires admin rights.\nDo You want to restart as admin?", "Auto ping enable prompt", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.No)
+                {
+                    return;
+                }
+
+                // Restart program and run as admin
+                var exeName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                ProcessStartInfo startInfo = new ProcessStartInfo(exeName);
+                startInfo.Verb = "runas";
+                System.Diagnostics.Process.Start(startInfo);
+
+                Close();
+                return;
+            }
+
+            if (!continueCapturing)
+            {
+                string name = "B" + (UsedSettings.LabelsNr);
+                ToolStripItem[] menu = adressesToolStripMenuItem.DropDownItems.Find(name, true);
+                menu[0].Enabled = false;
+                menu[0].Text = "Auto Ping";
+                bestIp = FindBestInterface();
+                activeProcessTimer.Enabled = true;
+                gameModeTimer.Enabled = true;
+                Ports = NetStatPorts.GetNetStatPorts();
+                ToggleSniffing();
+
+                autoPingToolStripMenuItem.Text = "Staph";
+            }
+            else
+            {
+                string name = "B" + (UsedSettings.LabelsNr);
+                ToolStripItem[] menu = adressesToolStripMenuItem.DropDownItems.Find(name, true);
+                menu[0].Enabled = true;
+                menu[0].Text = validatedAdresses.Last().ToString();
+                activeProcessTimer.Enabled = false;
+                gameModeTimer.Enabled = false;
+                ToggleSniffing();
+
+                autoPingToolStripMenuItem.Text = "Sturt";
+            }
+        }
+        private static bool IsAdministrator()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+
+        // To run as admin, alter exe manifest file after building.
+        // Or create shortcut with "as admin" checked.
+        // Or ShellExecute(C# Process.Start) can elevate - use verb "runas".
+        // Or an elevate vbs script can launch programs as admin.
+        // (does not work: "runas /user:admin" from cmd-line prompts for admin pass)
+
+        private void FindProcessPackets()
+        {
+            List<Packet> copy = Packets;
+
+            foreach (Packet packet in copy)
+            {
+                bool found = false;
+                string foundPort = String.Empty;
+
+                foreach (Port port in Ports)
+                {
+                    if (packet.IP.ProtocolType == Protocol.TCP)
+                    {
+                        if (packet.IP.SourceAddress.ToString() == bestIp)
+                        {
+                            foundPort = packet.TCP.SourcePort;
+
+                            found = true;
+                        }
+                        else if (packet.IP.DestinationAddress.ToString() == bestIp)
+                        {
+                            foundPort = packet.TCP.DestinationPort;
+                            found = true;
+                        }
+                    }
+                    else if (packet.IP.ProtocolType == Protocol.UDP)
+                    {
+                        if (packet.IP.SourceAddress.ToString() == bestIp)
+                        {
+                            foundPort = packet.UDP.SourcePort;
+                            found = true;
+                        }
+                        else if (packet.IP.DestinationAddress.ToString() == bestIp)
+                        {
+                            foundPort = packet.UDP.DestinationPort;
+                            found = true;
+                        }
+                    }
+                    if (found)
+                    {
+                        if (port.port_number == foundPort && port.process_pid == processId.ToString())
+                        {
+                            ProcessPackets.Add(packet);
+                            break;
+                        }
+                    }
+                }
+            }
 
         }
-        #endregion
+
+        private void FindBestDestinationIp()
+        {
+            maxIp = String.Empty;
+            int maxcount = 0;
+            foreach (Packet packet in ProcessPackets)
+            {
+                if (maxcount < packet.Count)
+                {
+                    maxcount = packet.Count;
+
+                    if (packet.IP.SourceAddress.ToString() == bestIp)
+                    {
+                        maxIp = packet.IP.DestinationAddress.ToString();
+                    }
+                    else if (packet.IP.DestinationAddress.ToString() == bestIp)
+                    {
+                        maxIp = packet.IP.SourceAddress.ToString();
+                    }
+                }
+            }
+        }
     }
+    #endregion
 }
-
-

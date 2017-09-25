@@ -123,7 +123,7 @@ namespace WindowsFormsApplication2
                 if (!continueCapturing)
                 {
                     //Start capturing the packets...
-
+                    bestIp = FindBestInterface();
                     continueCapturing = true;
 
                     //For sniffing the socket to capture the packets has to be a raw socket, with the
