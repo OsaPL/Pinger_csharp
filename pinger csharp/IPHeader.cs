@@ -93,8 +93,7 @@ namespace pinger_csharp
             }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "MJsniffer", MessageBoxButtons.OK, 
-                MessageBoxIcon.Error);
+            //MessageBox.Show(ex.Message, "MJsniffer", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         }
 
