@@ -421,7 +421,7 @@ namespace pinger_csharp
             //add invoking methods to ensure thread safeness
             try
             {
-                //if we wanna show process name if autopi
+                
                 Label label = this.Controls.Find((id + 1).ToString(), true).FirstOrDefault() as Label;
                 Ping pingClass = new Ping();
                 string usedip = validatedAdresses[id].ToString();
@@ -432,7 +432,7 @@ namespace pinger_csharp
                     return;
 
 
-
+                //if we wanna show process name if autoping
                 if (gameModeTimer.Enabled)
                 {
                     if(id == UsedSettings.LabelsNr - 1)
@@ -1320,7 +1320,7 @@ namespace pinger_csharp
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "sniff", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //MessageBox.Show(ex.Message, "sniff", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1349,7 +1349,7 @@ namespace pinger_csharp
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "OnReceive", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //MessageBox.Show(ex.Message, "OnReceive", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1406,7 +1406,7 @@ namespace pinger_csharp
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "parseData", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //MessageBox.Show(ex.Message, "parseData", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1436,7 +1436,7 @@ namespace pinger_csharp
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "newPacketParse", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //MessageBox.Show(ex.Message, "newPacketParse", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1523,6 +1523,9 @@ namespace pinger_csharp
                 processId = newprocess;
                 timeout = 0;
                 graphPings[UsedSettings.LabelsNr - 1] = new List<int>();
+                //Poopy workaround, change it!
+                autoPingToolStripMenuItem.PerformClick();
+                autoPingToolStripMenuItem.PerformClick();
             }
             if(timeout < 20)
             {
@@ -1536,7 +1539,7 @@ namespace pinger_csharp
         {
             if (IsAdministrator() == false)
             {
-                DialogResult dialogResult = MessageBox.Show("This option requires admin rights.\nDo You want to restart as admin?", "Auto ping enable prompt", MessageBoxButtons.YesNo);
+                DialogResult dialogResult = MessageBox.Show("This option requires admin rights.\nDo you want to restart as admin?", "Auto ping enable prompt", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.No)
                 {
                     return;
@@ -1546,6 +1549,7 @@ namespace pinger_csharp
                 var exeName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
                 ProcessStartInfo startInfo = new ProcessStartInfo(exeName);
                 startInfo.Verb = "runas";
+                startInfo.Arguments = "-a";
                 System.Diagnostics.Process.Start(startInfo);
 
                 Close();
@@ -1665,6 +1669,20 @@ namespace pinger_csharp
                 }
             }
         }
+
+        private void OverlayForm_Shown(object sender, EventArgs e)
+        {
+            List<string> args = new List<string>(Environment.GetCommandLineArgs());
+
+            if (args.Count > 1)
+            {
+                if (args.Contains("-a"))
+                {
+                    autoPingToolStripMenuItem.PerformClick();
+                }
+            }
+        }
+
     }
     #endregion
 }
