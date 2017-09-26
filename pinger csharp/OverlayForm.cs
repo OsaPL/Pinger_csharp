@@ -454,7 +454,6 @@ namespace pinger_csharp
             //add invoking methods to ensure thread safeness
             try
             {
-
                 Label label = this.Controls.Find((id + 1).ToString(), true).FirstOrDefault() as Label;
                 Ping pingClass = new Ping();
                 string usedip = validatedAdresses[id].ToString();
@@ -485,19 +484,20 @@ namespace pinger_csharp
 
                 }
 
-                if (pingReply.Status != IPStatus.Success)
+                lock (label)
                 {
-                    label.Text = "Timeout!";
-                    label.ForeColor = Color.White;
+                    if (pingReply.Status != IPStatus.Success)
+                    {
+                        label.Text = "Timeout!";
+                        label.ForeColor = Color.White;
+                    }
+                    else
+                    {
+                        label.Text = FormatPingText(ping, id);
+
+                        label.ForeColor = pingColor(ping);
+                    }
                 }
-                else
-                {
-                    label.Text = FormatPingText(ping, id);
-
-                    label.ForeColor = pingColor(ping);
-                }
-
-
 
                 if (UsedSettings.GraphActivated == true)
                 {
@@ -1476,31 +1476,28 @@ namespace pinger_csharp
 
         private void newPacketParse(Packet packet)
         {
-            try
+            List<Packet> copy = new List<Packet>();
+            lock (Packets)
             {
-                List<Packet> copy = Packets;
-                if (packet.IP.SourceAddress.ToString() == bestIp || packet.IP.DestinationAddress.ToString() == bestIp)
-                {
-                    foreach (Packet other in copy)
-                    {
-                        if (other.IP.SourceAddress.ToString() == packet.IP.SourceAddress.ToString() && other.IP.DestinationAddress.ToString() == packet.IP.DestinationAddress.ToString())
-                        {
-                            other.Count++;
-                            return;
-                        }
-                        else if (other.IP.SourceAddress.ToString() == packet.IP.DestinationAddress.ToString() && other.IP.DestinationAddress.ToString() == packet.IP.SourceAddress.ToString())
-                        {
-                            other.Count++;
-                            return;
-                        }
-                    }
-                    Packets = copy;
-                    Packets.Add(packet);
-                }
+                copy = Packets;
             }
-            catch (Exception ex)
+            if (packet.IP.SourceAddress.ToString() == bestIp || packet.IP.DestinationAddress.ToString() == bestIp)
             {
-                //MessageBox.Show(ex.Message, "newPacketParse", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                foreach (Packet other in copy)
+                {
+                    if (other.IP.SourceAddress.ToString() == packet.IP.SourceAddress.ToString() && other.IP.DestinationAddress.ToString() == packet.IP.DestinationAddress.ToString())
+                    {
+                        other.Count++;
+                        return;
+                    }
+                    else if (other.IP.SourceAddress.ToString() == packet.IP.DestinationAddress.ToString() && other.IP.DestinationAddress.ToString() == packet.IP.SourceAddress.ToString())
+                    {
+                        other.Count++;
+                        return;
+                    }
+                }
+                Packets = copy;
+                Packets.Add(packet);
             }
         }
 
@@ -1671,8 +1668,11 @@ namespace pinger_csharp
 
         private void FindProcessPackets()
         {
-            List<Packet> copy = Packets;
-
+            List<Packet> copy = new List<Packet>();
+            lock (Packets)
+            {
+                copy = Packets;
+            }
             foreach (Packet packet in copy)
             {
                 bool found = false;
@@ -1711,7 +1711,11 @@ namespace pinger_csharp
                     {
                         if (port.port_number == foundPort && port.process_pid == processId.ToString())
                         {
-                            ProcessPackets.Add(packet);
+                            lock (ProcessPackets)
+                            {
+                                ProcessPackets.Add(packet);
+                            }
+                            
                             break;
                         }
                     }
