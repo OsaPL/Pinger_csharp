@@ -222,7 +222,6 @@ namespace pinger_csharp
 
             //and visible again
             Visible = true;
-            dragbutton.Visible = true;
         }
         public static int RandNumber(int Low, int High)
         {
