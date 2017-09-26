@@ -68,7 +68,7 @@ namespace WindowsFormsApplication2
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "MJsniff TCP" + (nReceived), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //MessageBox.Show(ex.Message, "MJsniff TCP" + (nReceived), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

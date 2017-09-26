@@ -87,8 +87,7 @@ namespace WindowsFormsApplication2
             }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "MJsniffer", MessageBoxButtons.OK, 
-                MessageBoxIcon.Error);
+            //MessageBox.Show(ex.Message, "MJsniffer", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         }
 
