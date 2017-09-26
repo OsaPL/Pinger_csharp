@@ -36,6 +36,7 @@ namespace pinger_csharp
         public int BarsSpacing;
         public bool BytesActivated;
         public bool MoveButton;
+        public bool AutoPing;
 
         public bool SaveSettings()
         {
@@ -60,6 +61,7 @@ namespace pinger_csharp
                 settings[13] = BarsSpacing.ToString();
                 settings[14] = BytesActivated.ToString();
                 settings[15] = MoveButton.ToString();
+                settings[16] = AutoPing.ToString();
 
                 string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
                 System.IO.FileInfo file = new System.IO.FileInfo(filepath);
@@ -98,6 +100,7 @@ namespace pinger_csharp
                     BarsSpacing = Convert.ToInt32(settings[13]);
                     BytesActivated = Convert.ToBoolean(settings[14]);
                     MoveButton = Convert.ToBoolean(settings[15]);
+                    AutoPing = Convert.ToBoolean(settings[16]);
                     return true;
                 }
                 else
@@ -169,6 +172,9 @@ namespace pinger_csharp
 
         private void OverlayForm_Load(object sender, EventArgs e)
         {
+            //not vivible for time of resizing
+            Visible = false;
+
             BackColor = Color.FromArgb(64, 64, 64);
             TransparencyKey = Color.Black;
             TopMost = true;
@@ -178,6 +184,8 @@ namespace pinger_csharp
             //prepare dragbutton
             dragbutton = new DragButton();
             dragbutton.Show();
+            dragbutton.Size = new Size(0, 0);
+            dragbutton.Visible = false;
             dragbutton.ContextMenuStrip = contextMenuStrip;
             //make overlay not clickable
             int initialStyle = GetWindowLong(Handle, -20);
@@ -211,6 +219,10 @@ namespace pinger_csharp
             ControlStyles.DoubleBuffer,
             true);           //to avoid flickering (check if it works for lots of graphs!!
             RefreshOverlay();
+
+            //and visible again
+            Visible = true;
+            dragbutton.Visible = true;
         }
         public static int RandNumber(int Low, int High)
         {
@@ -222,6 +234,7 @@ namespace pinger_csharp
         }
         public void RemoveLastLabel()
         {
+
             if (UsedSettings.LabelsNr <= 1)
                 return;
             else
@@ -286,6 +299,7 @@ namespace pinger_csharp
             // if (graphsActivated)
             //     DrawGraphs();
             RefreshOverlay();
+
             return label;
         }
         private double widthscale = 8.5;
@@ -433,7 +447,7 @@ namespace pinger_csharp
 
 
                 //if we wanna show process name if autoping
-                if (gameModeTimer.Enabled)
+                if (UsedSettings.AutoPing)
                 {
                     if(id == UsedSettings.LabelsNr - 1)
                     {
@@ -642,12 +656,36 @@ namespace pinger_csharp
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            bool autoping = false;
+            if (UsedSettings.AutoPing)
+            {
+                autoPingToolStripMenuItem.PerformClick();
+                autoping = true;
+            }
+
             AddNewLabel();
+
+            if (autoping)
+            {
+                autoPingToolStripMenuItem.PerformClick();
+            }
         }
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            bool autoping = false;
+            if (UsedSettings.AutoPing)
+            {
+                autoPingToolStripMenuItem.PerformClick();
+                autoping = true;
+            }
+
             RemoveLastLabel();
+
+            if (autoping)
+            {
+                autoPingToolStripMenuItem.PerformClick();
+            }
         }
 
         private void OverlayForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -1542,6 +1580,10 @@ namespace pinger_csharp
                 DialogResult dialogResult = MessageBox.Show("This option requires admin rights.\nDo you want to restart as admin?", "Auto ping enable prompt", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.No)
                 {
+                    if (UsedSettings.AutoPing)
+                    {
+                        UsedSettings.AutoPing = false;
+                    }
                     return;
                 }
 
@@ -1558,6 +1600,7 @@ namespace pinger_csharp
 
             if (!continueCapturing)
             {
+                UsedSettings.AutoPing = true;
                 string name = "B" + (UsedSettings.LabelsNr);
                 ToolStripItem[] menu = adressesToolStripMenuItem.DropDownItems.Find(name, true);
                 menu[0].Enabled = false;
@@ -1568,10 +1611,12 @@ namespace pinger_csharp
                 Ports = NetStatPorts.GetNetStatPorts();
                 ToggleSniffing();
 
-                autoPingToolStripMenuItem.Text = "Staph";
+                autoPingToolStripMenuItem.Text = "AutoPing ON";
+                autoPingToolStripMenuItem.BackColor = Color.FromArgb(150, 210, 150);
             }
             else
             {
+                UsedSettings.AutoPing = false;
                 string name = "B" + (UsedSettings.LabelsNr);
                 ToolStripItem[] menu = adressesToolStripMenuItem.DropDownItems.Find(name, true);
                 menu[0].Enabled = true;
@@ -1580,7 +1625,8 @@ namespace pinger_csharp
                 gameModeTimer.Enabled = false;
                 ToggleSniffing();
 
-                autoPingToolStripMenuItem.Text = "Sturt";
+                autoPingToolStripMenuItem.Text = "AutoPing OFF";
+                autoPingToolStripMenuItem.BackColor = SystemColors.Control;
             }
         }
         private static bool IsAdministrator()
@@ -1680,6 +1726,10 @@ namespace pinger_csharp
                 {
                     autoPingToolStripMenuItem.PerformClick();
                 }
+            }
+            else if (UsedSettings.AutoPing)
+            {
+                autoPingToolStripMenuItem.PerformClick();
             }
         }
 
