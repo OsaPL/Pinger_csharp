@@ -14,8 +14,6 @@ using System.Net.NetworkInformation;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
-
-using IPHelper;
 using System.Net.Sockets;
 using System.Security.Principal;
 
