@@ -419,14 +419,24 @@ namespace pinger_csharp
 
         private string FormatPingText(long ping, int id)
         {
-            if (ping < 1)
+            string txt = String.Empty;
+            if (UsedSettings.AutoPing && id == UsedSettings.LabelsNr - 1)
             {
-                return "(" + (id + 1) + ")<1ms";
+                txt += "(A)";
             }
             else
             {
-                return "(" + (id + 1) + ")" + ping + "ms";
+                txt += "(" + (id + 1) + ")";
             }
+            if (ping < 1)
+            {
+                txt += "<1ms";
+            }
+            else
+            {
+                txt += ping + "ms";
+            }
+            return txt;
         }
 
         private void pingthread(int id)
@@ -434,7 +444,7 @@ namespace pinger_csharp
             //add invoking methods to ensure thread safeness
             try
             {
-                
+
                 Label label = this.Controls.Find((id + 1).ToString(), true).FirstOrDefault() as Label;
                 Ping pingClass = new Ping();
                 string usedip = validatedAdresses[id].ToString();
@@ -448,7 +458,7 @@ namespace pinger_csharp
                 //if we wanna show process name if autoping
                 if (UsedSettings.AutoPing)
                 {
-                    if(id == UsedSettings.LabelsNr - 1)
+                    if (id == UsedSettings.LabelsNr - 1)
                     {
                         if (timeout < 20)
                         {
@@ -1281,7 +1291,7 @@ namespace pinger_csharp
 
                 return ipstr;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return String.Empty;
             }
@@ -1530,7 +1540,7 @@ namespace pinger_csharp
         string bestIp;
         uint processId;
         List<Port> Ports;
-        List<Packet> ProcessPackets=new List<Packet>();
+        List<Packet> ProcessPackets = new List<Packet>();
         string maxIp;
 
         private void gameModeTimer_Tick(object sender, EventArgs e)
@@ -1542,9 +1552,9 @@ namespace pinger_csharp
 
             Packets.Clear();
 
-            if(maxIp != String.Empty)
+            if (maxIp != String.Empty)
             {
-                validatedAdresses[UsedSettings.LabelsNr-1] = IPAddress.Parse(maxIp);
+                validatedAdresses[UsedSettings.LabelsNr - 1] = IPAddress.Parse(maxIp);
             }
             else
             {
@@ -1564,7 +1574,7 @@ namespace pinger_csharp
                 autoPingToolStripMenuItem.PerformClick();
                 autoPingToolStripMenuItem.PerformClick();
             }
-            if(timeout < 20)
+            if (timeout < 20)
             {
                 (this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label).Text = NetStatPorts.LookupProcess(Convert.ToInt16(processId));
                 timeout++;
