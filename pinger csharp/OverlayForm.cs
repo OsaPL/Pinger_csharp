@@ -9,7 +9,6 @@ using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Net.NetworkInformation;
 using System.Windows.Forms;
 using System.IO;
@@ -275,6 +274,7 @@ namespace pinger_csharp
                 Text = ""
             };
             bar.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.bar_KeyPress);
+            bar.LostFocus += Bar_LostFocus;
             if (validatedAdresses.Count < UsedSettings.LabelsNr)
             {
                 validatedAdresses.Add(IPAddress.Parse("127.0.0.1"));
@@ -298,6 +298,19 @@ namespace pinger_csharp
 
             return label;
         }
+
+        private void Bar_LostFocus(object sender, EventArgs e)
+        {
+            ToolStripTextBox textbox = sender as ToolStripTextBox;
+            if (textbox != null)
+            {
+                int number = Int32.Parse(textbox.Name[1].ToString()) - 1;
+                Thread t = new Thread(() => Checkipadress(number));
+                t.Start();
+                graphPings[number].Clear();
+            }
+        }
+
         private double widthscale = 8.5;
         private double heightscale = 1.7;
         private void bar_KeyPress(object sender, KeyPressEventArgs e)
