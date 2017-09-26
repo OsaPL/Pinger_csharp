@@ -185,7 +185,6 @@ namespace pinger_csharp
             dragbutton = new DragButton();
             dragbutton.Show();
             dragbutton.Size = new Size(0, 0);
-            dragbutton.Visible = false;
             dragbutton.ContextMenuStrip = contextMenuStrip;
             //make overlay not clickable
             int initialStyle = GetWindowLong(Handle, -20);
@@ -1226,8 +1225,15 @@ namespace pinger_csharp
 
         private void notifyTrayIcon_MouseClick(object sender, MouseEventArgs e)
         {
+            //if they somehow lose frontness, a click on icon fixes that
             this.Activate();
             this.BringToFront();
+
+            if (UsedSettings.MoveButton)
+            {
+                dragbutton.Activate();
+                dragbutton.BringToFront();
+            }
         }
 
         #region autoIpdetecion
