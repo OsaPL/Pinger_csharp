@@ -414,7 +414,7 @@ namespace pinger_csharp
             {
                 for (int k = 0; k < graphPings[j].Count; k++)
                 {
-                    if (graphPings[j][k] != 0)
+                    if (graphPings[j][k] >= 0)
                     {
                         PingsSum += graphPings[j][k];
                         realpings++;
@@ -469,7 +469,7 @@ namespace pinger_csharp
                 {
                     if (id == UsedSettings.LabelsNr - 1)
                     {
-                        if (timeout < 20)
+                        if (timeout < 2000 / activeProcessTimer.Interval)
                         {
                             label.ForeColor = Color.Aqua;
                             return;
@@ -1589,9 +1589,19 @@ namespace pinger_csharp
             }
         }
         int timeout = 20;
+        private void getPorts()
+        {
+            Ports = NetStatPorts.GetNetStatPorts();
+        }
+        private void getPortsTimer_Tick(object sender, EventArgs e)
+        {
+            Thread t = new Thread(getPorts);
+            t.Start();
+        }
         private void activeProcessTimer_Tick(object sender, EventArgs e)
         {
             uint newprocess = GetActiveProcessId();
+
             if (newprocess != processId)
             {
                 processId = newprocess;
@@ -1601,7 +1611,7 @@ namespace pinger_csharp
                 autoPingToolStripMenuItem.PerformClick();
                 autoPingToolStripMenuItem.PerformClick();
             }
-            if (timeout < 20)
+            if (timeout < 2000/activeProcessTimer.Interval)
             {
                 (this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label).Text = NetStatPorts.LookupProcess(Convert.ToInt16(processId));
                 timeout++;
@@ -1650,7 +1660,8 @@ namespace pinger_csharp
                 bestIp = FindBestInterface();
                 activeProcessTimer.Enabled = true;
                 gameModeTimer.Enabled = true;
-                Ports = NetStatPorts.GetNetStatPorts();
+                getPortsTimer.Enabled = true;
+                getPorts();
                 ToggleSniffing();
 
                 autoPingToolStripMenuItem.Text = "AutoPing ON";
@@ -1665,6 +1676,7 @@ namespace pinger_csharp
                 menu[0].Text = validatedAdresses.Last().ToString();
                 activeProcessTimer.Enabled = false;
                 gameModeTimer.Enabled = false;
+                getPortsTimer.Enabled = false;
                 ToggleSniffing();
 
                 autoPingToolStripMenuItem.Text = "AutoPing OFF";
@@ -1781,6 +1793,7 @@ namespace pinger_csharp
                 autoPingToolStripMenuItem.PerformClick();
             }
         }
+
 
     }
     #endregion

@@ -63,6 +63,7 @@
             this.netQualityBar = new System.Windows.Forms.ProgressBar();
             this.gameModeTimer = new System.Windows.Forms.Timer(this.components);
             this.activeProcessTimer = new System.Windows.Forms.Timer(this.components);
+            this.getPortsTimer = new System.Windows.Forms.Timer(this.components);
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -315,6 +316,11 @@
             // 
             this.activeProcessTimer.Tick += new System.EventHandler(this.activeProcessTimer_Tick);
             // 
+            // getPortsTimer
+            // 
+            this.getPortsTimer.Interval = 5000;
+            this.getPortsTimer.Tick += new System.EventHandler(this.getPortsTimer_Tick);
+            // 
             // OverlayForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -371,5 +377,6 @@
         private System.Windows.Forms.Timer gameModeTimer;
         private System.Windows.Forms.ToolStripMenuItem autoPingToolStripMenuItem;
         private System.Windows.Forms.Timer activeProcessTimer;
+        private System.Windows.Forms.Timer getPortsTimer;
     }
 }
