@@ -1628,10 +1628,16 @@ namespace pinger_csharp
                 ProcessStartInfo startInfo = new ProcessStartInfo(exeName);
                 startInfo.Verb = "runas";
                 startInfo.Arguments = "-a";
-                System.Diagnostics.Process.Start(startInfo);
 
+                try
+                {
+                    System.Diagnostics.Process.Start(startInfo);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Didn't get admin permissions!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 Close();
-                return;
             }
 
             if (!continueCapturing)
