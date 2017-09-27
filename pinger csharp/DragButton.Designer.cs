@@ -44,7 +44,6 @@
             this.button.TabIndex = 1;
             this.button.UseVisualStyleBackColor = false;
             this.button.MouseDown += new System.Windows.Forms.MouseEventHandler(this.button_MouseDown);
-            this.button.MouseMove += new System.Windows.Forms.MouseEventHandler(this.button_MouseMove);
             this.button.MouseUp += new System.Windows.Forms.MouseEventHandler(this.button_MouseUp);
             // 
             // follow
@@ -57,8 +56,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(0, 0);
             this.Controls.Add(this.button);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "DragButton";
             this.Text = "DragButton";
             this.TransparencyKey = System.Drawing.Color.Black;

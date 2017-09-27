@@ -73,9 +73,12 @@ namespace pinger_csharp
         }
         private void button_MouseMove(object sender, MouseEventArgs e)
         {
+            //Get actual form screen and use it to enable FullScreen
+            Screen screen = Screen.FromControl(this);
+
             Point p = PointToClient(Control.MousePosition);
-            int h = Screen.PrimaryScreen.WorkingArea.Bottom;
-            int w = Screen.PrimaryScreen.WorkingArea.Right;
+            int h = screen.WorkingArea.Bottom;
+            int w = screen.WorkingArea.Right;
             p.X -= w / 64;
             p.Y -= h / 64;
             Rectangle r = new Rectangle(p, new Size(w / 32, h / 32));
@@ -95,15 +98,6 @@ namespace pinger_csharp
                 Left += xoffset;
                 Top += yoffset;
                 lastPos = MousePosition;
-                //OwnX.Text = "" + Location.X;
-                //OwnY.Text = "" + Location.Y;
-                /*if (!IsOnScreen())//not needed cause anchor now manages it
-                {
-                    Location = lastFormPos;
-                    mouseDown = false;
-                    this.Focus();
-                }
-                */
             }
             else
             {
@@ -114,6 +108,7 @@ namespace pinger_csharp
 
         private void follow_Tick(object sender, EventArgs e)
         {
+            button_MouseMove(this, null);
             //button.Location = new Point(overlay.Location.X - button.Width, overlay.Location.Y);// czy cus podobnego? idk
         }
         public void SetButtonColor(Color color)
