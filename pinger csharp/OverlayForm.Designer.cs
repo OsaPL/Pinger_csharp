@@ -128,21 +128,21 @@
             // moveToolStripMenuItem
             // 
             this.moveToolStripMenuItem.Name = "moveToolStripMenuItem";
-            this.moveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.moveToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.moveToolStripMenuItem.Text = "Move";
             this.moveToolStripMenuItem.Click += new System.EventHandler(this.moveToolStripMenuItem_Click_1);
             // 
             // fontToolStripMenuItem
             // 
             this.fontToolStripMenuItem.Name = "fontToolStripMenuItem";
-            this.fontToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fontToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.fontToolStripMenuItem.Text = "Font";
             this.fontToolStripMenuItem.Click += new System.EventHandler(this.fontToolStripMenuItem_Click);
             // 
             // backgroundColorToolStripMenuItem
             // 
             this.backgroundColorToolStripMenuItem.Name = "backgroundColorToolStripMenuItem";
-            this.backgroundColorToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.backgroundColorToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.backgroundColorToolStripMenuItem.Text = "Color";
             this.backgroundColorToolStripMenuItem.Click += new System.EventHandler(this.backgroundColorToolStripMenuItem_Click);
             // 
@@ -151,7 +151,7 @@
             this.opacityToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.opacityTextBox});
             this.opacityToolStripMenuItem.Name = "opacityToolStripMenuItem";
-            this.opacityToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.opacityToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.opacityToolStripMenuItem.Text = "Opacity";
             // 
             // opacityTextBox
@@ -166,7 +166,7 @@
             this.intervalToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.intervalStripTextBox});
             this.intervalToolStripMenuItem.Name = "intervalToolStripMenuItem";
-            this.intervalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.intervalToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.intervalToolStripMenuItem.Text = "Interval";
             // 
             // intervalStripTextBox
@@ -184,7 +184,7 @@
             this.barsSpacingToolStripMenuItem,
             this.barsWidthToolStripMenuItem});
             this.graphsToolStripMenuItem.Name = "graphsToolStripMenuItem";
-            this.graphsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.graphsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.graphsToolStripMenuItem.Text = "Graphs";
             // 
             // graphsToggleToolStripMenuItem
@@ -242,14 +242,14 @@
             // transferToolStripMenuItem
             // 
             this.transferToolStripMenuItem.Name = "transferToolStripMenuItem";
-            this.transferToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.transferToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.transferToolStripMenuItem.Text = "Transfer";
             this.transferToolStripMenuItem.Click += new System.EventHandler(this.transferToolStripMenuItem_Click);
             // 
             // autoPingToolStripMenuItem
             // 
             this.autoPingToolStripMenuItem.Name = "autoPingToolStripMenuItem";
-            this.autoPingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.autoPingToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.autoPingToolStripMenuItem.Text = "AutoPing OFF";
             this.autoPingToolStripMenuItem.Click += new System.EventHandler(this.autoPingToolStripMenuItem_Click);
             // 
@@ -319,10 +319,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(281, 261);
+            this.ClientSize = new System.Drawing.Size(0, 0);
             this.Controls.Add(this.netQualityBar);
             this.Controls.Add(this.bytesSLabel);
             this.Controls.Add(this.bytesRLabel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "OverlayForm";
             this.Text = "OverlayForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OverlayForm_FormClosing);

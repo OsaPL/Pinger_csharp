@@ -639,14 +639,20 @@ namespace pinger_csharp
         private void refresh_Tick(object sender, EventArgs e)
         {
             Refresh();
+            //Makes sure that dragbutton is in the correct place
             Location = new Point(dragbutton.Location.X - 1, dragbutton.Location.Y);
 
-            int h = Screen.PrimaryScreen.WorkingArea.Bottom;
-            int w = Screen.PrimaryScreen.WorkingArea.Right;
+            //Get actual form screen and use it to enable FullScreen
+            Screen screen = Screen.FromControl(this);
+
+            int h = screen.WorkingArea.Bottom;
+            int w = screen.WorkingArea.Right;
             Point p = PointToClient(Control.MousePosition);
             p.X -= w / 64;
             p.Y -= h / 64;
             Rectangle r = new Rectangle(p, new Size(w / 32, h / 32));
+
+            //Check if mouse if close enough, if yes, fade out, if not fade back in
             if (Opacity != UsedSettings.Opacity && (!ClientRectangle.IntersectsWith(r) || dragbutton.ContainsFocus))
             {
                 if (Opacity <= UsedSettings.Opacity)
@@ -664,7 +670,8 @@ namespace pinger_csharp
                         Opacity -= 0.03;
                 }
             }
-            dragbutton.AnchorToCorners(h, w, p, Size);
+            //Anchors to a corner
+            dragbutton.AnchorToCorners(h, w, Size, screen);
         }
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -675,6 +682,7 @@ namespace pinger_csharp
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //Adds new label
             bool autoping = false;
             if (UsedSettings.AutoPing)
             {
@@ -692,6 +700,7 @@ namespace pinger_csharp
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //Remove label
             bool autoping = false;
             if (UsedSettings.AutoPing)
             {
@@ -709,6 +718,7 @@ namespace pinger_csharp
 
         private void OverlayForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            //Save settings on closing
             UsedSettings.Location = dragbutton.Location;
             SaveValidatedAdresses();
             if (!UsedSettings.SaveSettings())
@@ -721,7 +731,7 @@ namespace pinger_csharp
         {
             try
             {
-                //on close save everything
+                //On close save everything
                 string[] settings = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
                 //cause Im dumb and also lazy ^ DONT LOOK AT THAT LINE ^
                 int i;
@@ -771,6 +781,7 @@ namespace pinger_csharp
 
         private void fontToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //Change font
             FontDialog fontDialog1 = new FontDialog();
             fontDialog1.Font = UsedSettings.Font;
 
@@ -783,6 +794,7 @@ namespace pinger_csharp
 
         private void backgroundColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //Change background color
             ColorDialog MyDialog = new ColorDialog();
             MyDialog.AllowFullOpen = true;
             MyDialog.Color = UsedSettings.BackColor;
@@ -795,6 +807,7 @@ namespace pinger_csharp
         }
         private void RefreshOverlay()
         {
+            //Refreshes whole overlay UI
             try
             {
                 if (UsedSettings.LabelsNr == 1)
@@ -894,8 +907,7 @@ namespace pinger_csharp
                 dragbutton.SetButtonSize(last.Width, last.Height);
                 opacityTextBox.Text = "" + Opacity * 100 + "%";
                 intervalStripTextBox.Text = "" + UsedSettings.PingInterval + "ms";
-                //Size = new Size (Size.Width*UsedSettings.SizeMlt,Size.Height*UsedSettings.SizeMlt); //need things other than just this to scale overlay
-                //UsedSettings.SizeMlt = 1;
+
                 if (UsedSettings.MoveButton)
                 {
                     dragbutton.Show();
@@ -1078,6 +1090,7 @@ namespace pinger_csharp
 
         private void bytesTimer_Tick(object sender, EventArgs e)
         {
+            //Gets traffic every second
             if (UsedSettings.BytesActivated)
             {
                 netBytes();

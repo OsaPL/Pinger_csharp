@@ -120,13 +120,13 @@ namespace pinger_csharp
         {
             button.BackColor = color;
         }
-        public void AnchorToCorners(int h, int w, Point p, Size size)
+        public void AnchorToCorners(int h, int w, Size size, Screen screen)
         {
             if (!mouseDown)
             {
-                if (Location.X < w / 64 && Location.Y < h / 64)
+                if (Location.X < w / 64 + screen.WorkingArea.Left && Location.Y < h / 64 + screen.WorkingArea.Top)
                 {
-                    Location = new Point(0, 0);
+                    Location = new Point(screen.WorkingArea.Left, screen.WorkingArea.Top);
                 }
                 if (Location.X > w - size.Width - w / 64 && Location.Y > h - size.Height - h / 64)
                 {
@@ -136,17 +136,17 @@ namespace pinger_csharp
                 {
                     Location = new Point(w - size.Width, Location.Y);
                 }
-                if (Location.X < w / 64)
+                if (Location.X < w / 64 + screen.WorkingArea.Left)
                 {
-                    Location = new Point(0,Location.Y);
+                    Location = new Point(screen.WorkingArea.Left, Location.Y);
                 }
                 if (Location.Y > h - size.Height - h / 64)
                 {
                     Location = new Point(Location.X, h - size.Height);
                 }
-                if (Location.Y < h / 64)
+                if (Location.Y < h / 64 + screen.WorkingArea.Top)
                 {
-                    Location = new Point(Location.X,0);
+                    Location = new Point(Location.X, screen.WorkingArea.Top);
                 }
             }
         }
