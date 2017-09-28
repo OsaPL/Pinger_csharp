@@ -1566,7 +1566,7 @@ namespace pinger_csharp
 
         string bestIp;
         uint processId;
-        List<Port> Ports;
+        List<Port> Ports = new List<Port>();
         List<Packet> ProcessPackets = new List<Packet>();
         string maxIp;
 
@@ -1591,7 +1591,7 @@ namespace pinger_csharp
         int timeout = 20;
         private void getPorts()
         {
-            Ports = NetStatPorts.GetNetStatPorts();
+                Ports = NetStatPorts.GetNetStatPorts();
         }
         private void getPortsTimer_Tick(object sender, EventArgs e)
         {
@@ -1709,7 +1709,12 @@ namespace pinger_csharp
                 bool found = false;
                 string foundPort = String.Empty;
 
-                foreach (Port port in Ports)
+                List<Port> copyPorts;
+                lock (Ports)
+                {
+                    copyPorts = Ports;
+                }
+                foreach (Port port in copyPorts)
                 {
                     if (packet.IP.ProtocolType == Protocol.TCP)
                     {
