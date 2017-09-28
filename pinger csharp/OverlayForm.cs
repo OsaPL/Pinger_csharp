@@ -21,7 +21,6 @@ namespace pinger_csharp
     public struct Settings
     {
         public Point Location;
-        public double SizeMlt;
         public Font Font;
         public double Opacity;
         public int PingInterval;
@@ -40,30 +39,29 @@ namespace pinger_csharp
             try
             {
                 //on close save everything
-                string[] settings = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
-                settings[0] = Location.X.ToString();
-                settings[1] = Location.Y.ToString();
-                settings[2] = SizeMlt.ToString();
+                List<string> settings = new List<string>();
+                settings.Add("[X]=" + Location.X.ToString());
+                settings.Add("[Y]=" + Location.Y.ToString());
                 var cvt = new FontConverter();
-                settings[3] = cvt.ConvertToString(Font);
-                settings[4] = Opacity.ToString();
-                settings[5] = PingInterval.ToString();
-                settings[6] = LabelsNr.ToString();
-                settings[7] = BackColor.R.ToString();
-                settings[8] = BackColor.G.ToString();
-                settings[9] = BackColor.B.ToString();
-                settings[10] = GraphActivated.ToString();
-                settings[11] = BarsWidth.ToString();
-                settings[12] = DotHeight.ToString();
-                settings[13] = BarsSpacing.ToString();
-                settings[14] = BytesActivated.ToString();
-                settings[15] = MoveButton.ToString();
-                settings[16] = AutoPing.ToString();
+                settings.Add("[Font]=" + cvt.ConvertToString(Font));
+                settings.Add("[Opacity]=" + Opacity.ToString());
+                settings.Add("[Interval]=" + PingInterval.ToString());
+                settings.Add("[Labels]=" + LabelsNr.ToString());
+                settings.Add("[BackgroundR]=" + BackColor.R.ToString());
+                settings.Add("[BackgroundG]=" + BackColor.G.ToString());
+                settings.Add("[BackgroundB]=" + BackColor.B.ToString());
+                settings.Add("[Graphs]=" + GraphActivated.ToString());
+                settings.Add("[BarsWidth]=" + BarsWidth.ToString());
+                settings.Add("[DotHeight]=" + DotHeight.ToString());
+                settings.Add("[BarsSpacing]=" + BarsSpacing.ToString());
+                settings.Add("[DataTraffic]=" + BytesActivated.ToString());
+                settings.Add("[Movable]=" + MoveButton.ToString());
+                settings.Add("[AutoPing]=" + AutoPing.ToString());
 
                 string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\settings.cfg";
                 System.IO.FileInfo file = new System.IO.FileInfo(filepath);
                 file.Directory.Create();
-                System.IO.File.WriteAllLines(file.FullName, settings, Encoding.UTF8);
+                System.IO.File.WriteAllLines(file.FullName, settings.ToArray(), Encoding.UTF8);
                 return true;
             }
             catch (Exception e)
@@ -72,6 +70,12 @@ namespace pinger_csharp
                 return false;
             }
 
+        }
+        public static string GetValue(string cfgline)
+        {
+            int index = cfgline.IndexOf("=") + 1;
+
+            return cfgline.Substring(index, cfgline.Length - index);
         }
         public bool LoadSettings()
         {
@@ -83,21 +87,20 @@ namespace pinger_csharp
                     System.IO.FileInfo file = new System.IO.FileInfo(filepath);
                     file.Directory.Create(); // if the directory already exists, this method does nothing, just a failsafe
                     string[] settings = System.IO.File.ReadAllLines(file.FullName, Encoding.UTF8);
-                    Location = new Point(System.Convert.ToInt32(settings[0]), System.Convert.ToInt32(settings[1]));
-                    SizeMlt = System.Convert.ToDouble(settings[2]);
+                    Location = new Point(System.Convert.ToInt32(GetValue(settings[0])), System.Convert.ToInt32(GetValue(settings[1])));
                     var cvt = new FontConverter();
-                    Font = cvt.ConvertFromString(settings[3]) as Font;
-                    Opacity = Convert.ToDouble(settings[4]);
-                    PingInterval = Convert.ToInt32(settings[5]);
-                    LabelsNr = Convert.ToInt32(settings[6]);
-                    BackColor = Color.FromArgb(Convert.ToInt16(settings[7]), Convert.ToInt16(settings[8]), Convert.ToInt16(settings[9]));
-                    GraphActivated = Convert.ToBoolean(settings[10]);
-                    BarsWidth = Convert.ToInt32(settings[11]);
-                    DotHeight = Convert.ToInt32(settings[12]);
-                    BarsSpacing = Convert.ToInt32(settings[13]);
-                    BytesActivated = Convert.ToBoolean(settings[14]);
-                    MoveButton = Convert.ToBoolean(settings[15]);
-                    AutoPing = Convert.ToBoolean(settings[16]);
+                    Font = cvt.ConvertFromString(GetValue(settings[2])) as Font;
+                    Opacity = Convert.ToDouble(GetValue(settings[3]));
+                    PingInterval = Convert.ToInt32(GetValue(settings[4]));
+                    LabelsNr = Convert.ToInt32(GetValue(settings[5]));
+                    BackColor = Color.FromArgb(Convert.ToInt16(GetValue(settings[6])), Convert.ToInt16(GetValue(settings[7])), Convert.ToInt16(GetValue(settings[8])));
+                    GraphActivated = Convert.ToBoolean(GetValue(settings[9]));
+                    BarsWidth = Convert.ToInt32(GetValue(settings[10]));
+                    DotHeight = Convert.ToInt32(GetValue(settings[11]));
+                    BarsSpacing = Convert.ToInt32(GetValue(settings[12]));
+                    BytesActivated = Convert.ToBoolean(GetValue(settings[13]));
+                    MoveButton = Convert.ToBoolean(GetValue(settings[14]));
+                    AutoPing = Convert.ToBoolean(GetValue(settings[15]));
                     return true;
                 }
                 else
@@ -113,7 +116,6 @@ namespace pinger_csharp
         public void DefaultValues()
         {
             Location = new Point(0, 0);
-            SizeMlt = 0;
             Font = new Font("Consolas", (float)8.75);
             Opacity = 0.8;
             PingInterval = 300;
@@ -732,18 +734,19 @@ namespace pinger_csharp
             try
             {
                 //On close save everything
-                string[] settings = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+                List<string> adresses = new List<string>();
                 //cause Im dumb and also lazy ^ DONT LOOK AT THAT LINE ^
-                int i;
-                for (i = 0; i < UsedSettings.LabelsNr; i++)
+                int i = 1;
+                foreach (IPAddress ip in validatedAdresses)
                 {
-                    settings[i] = validatedAdresses[i].ToString();
+                    adresses.Add("[" + i + "]=" + ip.ToString());
+                    i++;
                 }
 
                 string filepath = Environment.GetEnvironmentVariable("APPDATA") + "\\Pinger\\validatedadresses.dat";
                 System.IO.FileInfo file = new System.IO.FileInfo(filepath);
                 file.Directory.Create();
-                System.IO.File.WriteAllLines(file.FullName, settings, Encoding.UTF8);
+                System.IO.File.WriteAllLines(file.FullName, adresses.ToArray(), Encoding.UTF8);
                 return true;
             }
             catch (Exception e)
@@ -761,12 +764,12 @@ namespace pinger_csharp
                 {
                     System.IO.FileInfo file = new System.IO.FileInfo(filepath);
                     file.Directory.Create(); // if the directory already exists, this method does nothing, just a failsafe
-                    string[] settings = System.IO.File.ReadAllLines(file.FullName, Encoding.UTF8);
-                    int i = 0;
-                    while (settings[i] != "")
+                    List<string> adresses = System.IO.File.ReadAllLines(file.FullName, Encoding.UTF8).ToList<string>();
+
+                    for (int i = 0; i < adresses.Count; i++)
                     {
-                        validatedAdresses.Add(IPAddress.Parse(settings[i]));
-                        i++;
+                        string ip = Settings.GetValue(adresses[i]).ToString();
+                        validatedAdresses.Add( IPAddress.Parse(ip));
                     }
                     return true;
                 }
@@ -1591,7 +1594,7 @@ namespace pinger_csharp
         int timeout = 20;
         private void getPorts()
         {
-                Ports = NetStatPorts.GetNetStatPorts();
+            Ports = NetStatPorts.GetNetStatPorts();
         }
         private void getPortsTimer_Tick(object sender, EventArgs e)
         {
@@ -1611,7 +1614,7 @@ namespace pinger_csharp
                 autoPingToolStripMenuItem.PerformClick();
                 autoPingToolStripMenuItem.PerformClick();
             }
-            if (timeout < 2000/activeProcessTimer.Interval)
+            if (timeout < 2000 / activeProcessTimer.Interval)
             {
                 (this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label).Text = NetStatPorts.LookupProcess(Convert.ToInt16(processId));
                 timeout++;
@@ -1751,7 +1754,7 @@ namespace pinger_csharp
                             {
                                 ProcessPackets.Add(packet);
                             }
-                            
+
                             break;
                         }
                     }
