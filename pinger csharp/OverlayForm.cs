@@ -1655,6 +1655,7 @@ namespace pinger_csharp
 
             if (!continueCapturing)
             {
+                Log("AutoPing enabled");
                 UsedSettings.AutoPing = true;
                 string name = "B" + (UsedSettings.LabelsNr);
                 ToolStripItem[] menu = adressesToolStripMenuItem.DropDownItems.Find(name, true);
@@ -1672,6 +1673,7 @@ namespace pinger_csharp
             }
             else
             {
+                Log("AutoPing disabled");
                 UsedSettings.AutoPing = false;
                 string name = "B" + (UsedSettings.LabelsNr);
                 ToolStripItem[] menu = adressesToolStripMenuItem.DropDownItems.Find(name, true);
