@@ -688,7 +688,7 @@ namespace pinger_csharp
             bool autoping = false;
             if (UsedSettings.AutoPing)
             {
-                autoPingToolStripMenuItem.PerformClick();
+                ToggleAuto();
                 autoping = true;
             }
 
@@ -696,7 +696,7 @@ namespace pinger_csharp
 
             if (autoping)
             {
-                autoPingToolStripMenuItem.PerformClick();
+                ToggleAuto();
             }
         }
 
@@ -706,7 +706,7 @@ namespace pinger_csharp
             bool autoping = false;
             if (UsedSettings.AutoPing)
             {
-                autoPingToolStripMenuItem.PerformClick();
+                ToggleAuto();
                 autoping = true;
             }
 
@@ -714,7 +714,7 @@ namespace pinger_csharp
 
             if (autoping)
             {
-                autoPingToolStripMenuItem.PerformClick();
+                ToggleAuto();
             }
         }
 
@@ -769,7 +769,7 @@ namespace pinger_csharp
                     for (int i = 0; i < adresses.Count; i++)
                     {
                         string ip = Settings.GetValue(adresses[i]).ToString();
-                        validatedAdresses.Add( IPAddress.Parse(ip));
+                        validatedAdresses.Add(IPAddress.Parse(ip));
                     }
                     return true;
                 }
@@ -1512,8 +1512,11 @@ namespace pinger_csharp
                         return;
                     }
                 }
-                Packets = copy;
-                Packets.Add(packet);
+                lock (Packets)
+                {
+                    Packets = copy;
+                    Packets.Add(packet);
+                }
             }
         }
 
@@ -1575,12 +1578,17 @@ namespace pinger_csharp
 
         private void gameModeTimer_Tick(object sender, EventArgs e)
         {
-            ProcessPackets.Clear();
+            lock (ProcessPackets)
+            {
+                ProcessPackets.Clear();
+            }
 
             FindProcessPackets();
             FindBestDestinationIp();
-
-            Packets.Clear();
+            lock (Packets)
+            {
+                Packets.Clear();
+            }
 
             if (maxIp != String.Empty)
             {
@@ -1611,8 +1619,8 @@ namespace pinger_csharp
                 timeout = 0;
                 graphPings[UsedSettings.LabelsNr - 1] = new List<int>();
                 //Poopy workaround, change it!
-                autoPingToolStripMenuItem.PerformClick();
-                autoPingToolStripMenuItem.PerformClick();
+                ToggleAuto();
+                ToggleAuto();
             }
             if (timeout < 2000 / activeProcessTimer.Interval)
             {
@@ -1621,8 +1629,7 @@ namespace pinger_csharp
             }
             bestIp = FindBestInterface();
         }
-
-        private void autoPingToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ToggleAuto()
         {
             if (IsAdministrator() == false)
             {
@@ -1655,7 +1662,6 @@ namespace pinger_csharp
 
             if (!continueCapturing)
             {
-                Log("AutoPing enabled");
                 UsedSettings.AutoPing = true;
                 string name = "B" + (UsedSettings.LabelsNr);
                 ToolStripItem[] menu = adressesToolStripMenuItem.DropDownItems.Find(name, true);
@@ -1673,7 +1679,6 @@ namespace pinger_csharp
             }
             else
             {
-                Log("AutoPing disabled");
                 UsedSettings.AutoPing = false;
                 string name = "B" + (UsedSettings.LabelsNr);
                 ToolStripItem[] menu = adressesToolStripMenuItem.DropDownItems.Find(name, true);
@@ -1688,14 +1693,26 @@ namespace pinger_csharp
                 autoPingToolStripMenuItem.BackColor = SystemColors.Control;
             }
         }
+
+        private void autoPingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToggleAuto();
+            if (UsedSettings.AutoPing)
+            {
+                Log("AutoPing enabled");
+            }
+            else
+            {
+                Log("AutoPing disabled");
+            }
+
+        }
         private static bool IsAdministrator()
         {
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
             WindowsPrincipal principal = new WindowsPrincipal(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
-
-
         // To run as admin, alter exe manifest file after building.
         // Or create shortcut with "as admin" checked.
         // Or ShellExecute(C# Process.Start) can elevate - use verb "runas".
@@ -1769,7 +1786,12 @@ namespace pinger_csharp
         {
             maxIp = String.Empty;
             int maxcount = 0;
-            foreach (Packet packet in ProcessPackets)
+            List<Packet> copy;
+            lock (ProcessPackets)
+            {
+                copy = ProcessPackets;
+            }
+            foreach (Packet packet in copy)
             {
                 if (maxcount < packet.Count)
                 {
@@ -1795,12 +1817,12 @@ namespace pinger_csharp
             {
                 if (args.Contains("-a"))
                 {
-                    autoPingToolStripMenuItem.PerformClick();
+                    ToggleAuto();
                 }
             }
             else if (UsedSettings.AutoPing)
             {
-                autoPingToolStripMenuItem.PerformClick();
+                ToggleAuto();
             }
         }
 
