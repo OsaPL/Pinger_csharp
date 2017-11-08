@@ -1263,7 +1263,7 @@ namespace pinger_csharp
             }
         }
 
-        #region autoIpdetecion
+            #region autoIpdetecion
         #region getprocess
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out uint ProcessId);
@@ -1490,10 +1490,12 @@ namespace pinger_csharp
             }
         }
 
+        Object packetparselock = new Object();
+        Object packetslock = new Object();
         private void newPacketParse(Packet packet)
         {
             List<Packet> copy = new List<Packet>();
-            lock (Packets)
+            lock (packetparselock)
             {
                 copy = Packets;
             }
@@ -1512,7 +1514,7 @@ namespace pinger_csharp
                         return;
                     }
                 }
-                lock (Packets)
+                lock (packetslock)
                 {
                     Packets = copy;
                     Packets.Add(packet);
@@ -1575,17 +1577,17 @@ namespace pinger_csharp
         List<Port> Ports = new List<Port>();
         List<Packet> ProcessPackets = new List<Packet>();
         string maxIp;
-
+        Object processpacketslock = new Object();
         private void gameModeTimer_Tick(object sender, EventArgs e)
         {
-            lock (ProcessPackets)
+            lock (processpacketslock)
             {
                 ProcessPackets.Clear();
             }
 
             FindProcessPackets();
             FindBestDestinationIp();
-            lock (Packets)
+            lock (packetslock)
             {
                 Packets.Clear();
             }
@@ -1718,68 +1720,75 @@ namespace pinger_csharp
         // Or ShellExecute(C# Process.Start) can elevate - use verb "runas".
         // Or an elevate vbs script can launch programs as admin.
         // (does not work: "runas /user:admin" from cmd-line prompts for admin pass)
-
+        Object portslock = new Object();
         private void FindProcessPackets()
         {
-            List<Packet> copy = new List<Packet>();
-            lock (Packets)
+            try
             {
-                copy = Packets;
-            }
-            foreach (Packet packet in copy)
-            {
-                bool found = false;
-                string foundPort = String.Empty;
-
-                List<Port> copyPorts;
-                lock (Ports)
+                List<Packet> copy = new List<Packet>();
+                lock (packetslock)
                 {
-                    copyPorts = Ports;
+                    copy = Packets;
                 }
-                foreach (Port port in copyPorts)
+                foreach (Packet packet in copy)
                 {
-                    if (packet.IP.ProtocolType == Protocol.TCP)
-                    {
-                        if (packet.IP.SourceAddress.ToString() == bestIp)
-                        {
-                            foundPort = packet.TCP.SourcePort;
+                    bool found = false;
+                    string foundPort = String.Empty;
 
-                            found = true;
-                        }
-                        else if (packet.IP.DestinationAddress.ToString() == bestIp)
-                        {
-                            foundPort = packet.TCP.DestinationPort;
-                            found = true;
-                        }
-                    }
-                    else if (packet.IP.ProtocolType == Protocol.UDP)
+                    List<Port> copyPorts;
+                    lock (portslock)
                     {
-                        if (packet.IP.SourceAddress.ToString() == bestIp)
-                        {
-                            foundPort = packet.UDP.SourcePort;
-                            found = true;
-                        }
-                        else if (packet.IP.DestinationAddress.ToString() == bestIp)
-                        {
-                            foundPort = packet.UDP.DestinationPort;
-                            found = true;
-                        }
+                        copyPorts = Ports;
                     }
-                    if (found)
+                    foreach (Port port in copyPorts)
                     {
-                        if (port.port_number == foundPort && port.process_pid == processId.ToString())
+                        if (packet.IP.ProtocolType == Protocol.TCP)
                         {
-                            lock (ProcessPackets)
+                            if (packet.IP.SourceAddress.ToString() == bestIp)
                             {
-                                ProcessPackets.Add(packet);
-                            }
+                                foundPort = packet.TCP.SourcePort;
 
-                            break;
+                                found = true;
+                            }
+                            else if (packet.IP.DestinationAddress.ToString() == bestIp)
+                            {
+                                foundPort = packet.TCP.DestinationPort;
+                                found = true;
+                            }
+                        }
+                        else if (packet.IP.ProtocolType == Protocol.UDP)
+                        {
+                            if (packet.IP.SourceAddress.ToString() == bestIp)
+                            {
+                                foundPort = packet.UDP.SourcePort;
+                                found = true;
+                            }
+                            else if (packet.IP.DestinationAddress.ToString() == bestIp)
+                            {
+                                foundPort = packet.UDP.DestinationPort;
+                                found = true;
+                            }
+                        }
+                        if (found)
+                        {
+                            if (port.port_number == foundPort && port.process_pid == processId.ToString())
+                            {
+                                lock (processpacketslock)
+                                {
+                                    ProcessPackets.Add(packet);
+                                }
+
+                                break;
+                            }
                         }
                     }
                 }
-            }
 
+            }
+            catch(Exception ex)
+            {
+
+            }
         }
 
         private void FindBestDestinationIp()
@@ -1787,7 +1796,7 @@ namespace pinger_csharp
             maxIp = String.Empty;
             int maxcount = 0;
             List<Packet> copy;
-            lock (ProcessPackets)
+            lock (processpacketslock)
             {
                 copy = ProcessPackets;
             }
