@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pinger csharp", "pinger csharp\pinger csharp.csproj", "{A233CA05-82B8-4411-8DFE-BC4F8F0C844C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartAdressIpDetectionTest", "WindowsFormsApplication2\SmartAdressIpDetectionTest.csproj", "{15D2176C-2EF4-4484-8089-DD96394D9148}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartAdressIpDetectionTest", "SmartAdressIpDetectionTest\SmartAdressIpDetectionTest.csproj", "{15D2176C-2EF4-4484-8089-DD96394D9148}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

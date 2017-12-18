@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-namespace WindowsFormsApplication2
+namespace SmartAdressIpDetectionTest
 {
     public class NetStatPorts
     {

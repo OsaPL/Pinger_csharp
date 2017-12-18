@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-namespace WindowsFormsApplication2
+namespace SmartAdressIpDetectionTest
 {
     public class TCPHeader
     {

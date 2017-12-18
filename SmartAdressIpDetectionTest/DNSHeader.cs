@@ -7,7 +7,7 @@ using System.Collections.Specialized;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace WindowsFormsApplication2
+namespace SmartAdressIpDetectionTest
 {
     public class DNSHeader
     {

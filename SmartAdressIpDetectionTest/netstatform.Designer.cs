@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApplication2
+﻿namespace SmartAdressIpDetectionTest
 {
     partial class netstatform
     {

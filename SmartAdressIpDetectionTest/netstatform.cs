@@ -1,5 +1,4 @@
-﻿using IPHelper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,31 +13,69 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace WindowsFormsApplication2
+namespace SmartAdressIpDetectionTest
 {
-    public partial class packetsniff : Form
+    public enum Protocol
     {
-        public packetsniff()
+        TCP = 6,
+        UDP = 17,
+        Unknown = -1
+    };
+    public partial class netstatform : Form
+    {
+        public netstatform()
         {
             InitializeComponent();
         }
 
+        #region getprocess
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out uint ProcessId);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        string GetActiveProcessFileName()
+        {
+            try
+            {
+                IntPtr hwnd = GetForegroundWindow();
+                uint pid;
+                GetWindowThreadProcessId(hwnd, out pid);
+                Process p = Process.GetProcessById((int)pid);
+                return p.MainModule.FileName;
+            }
+            catch (Exception ex)
+            {
+                return String.Empty;
+            }
+        }
+        uint GetActiveProcessId()
+        {
+            try
+            {
+                IntPtr hwnd = GetForegroundWindow();
+                uint pid;
+                GetWindowThreadProcessId(hwnd, out pid);
+                return pid;
+            }
+            catch (Exception ex)
+            {
+                return 9999;
+            }
+        }
+        #endregion
+        #region getbestinterface
         [DllImport("iphlpapi.dll", CharSet = CharSet.Auto)]
         public static extern int GetBestInterface(UInt32 destAddr, out UInt32 bestIfIndex);
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            FindBestInterface();
-        }
-        string ipstr;//active interfaces' ip
-        private void FindBestInterface()
+        private string FindBestInterface()
         {
             IPAddress ipv4Address = new IPAddress(134744072); //its 8.8.8.8
             UInt32 ipv4AddressAsUInt32 = BitConverter.ToUInt32(ipv4Address.GetAddressBytes(), 0);
             UInt32 index;
             GetBestInterface(ipv4AddressAsUInt32, out index);
-            ipstr = "";
-
+            string ipstr = String.Empty;
             foreach (UnicastIPAddressInformation ip in GetNetworkInterfaceByIndex(index).GetIPProperties().UnicastAddresses)
             {
                 if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
@@ -47,10 +84,10 @@ namespace WindowsFormsApplication2
                 }
             }
 
-            button1.Text = ipstr;
-            textBox1.Text = GetNetworkInterfaceByIndex(index).Name + " " + ipstr;
-        }
+            textBoxInterface.Text = GetNetworkInterfaceByIndex(index).Name + " " + ipstr;
 
+            return ipstr;
+        }
         private static NetworkInterface GetNetworkInterfaceByIndex(uint index)
         {
             // Search in all network interfaces that support IPv4.
@@ -71,119 +108,23 @@ namespace WindowsFormsApplication2
 
             return ipv6Interface;
         }
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out uint ProcessId);
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetForegroundWindow();
-
-        string GetActiveProcessFileName()
-        {
-            IntPtr hwnd = GetForegroundWindow();
-            uint pid;
-            GetWindowThreadProcessId(hwnd, out pid);
-            Process p = Process.GetProcessById((int)pid);
-            return p.MainModule.FileName;
-        }
-        uint GetActiveProcessId()
-        {
-            IntPtr hwnd = GetForegroundWindow();
-            uint pid;
-            GetWindowThreadProcessId(hwnd, out pid);
-            return pid;
-        }
-
-
-        ProcessPorts ports;
-        private void button2_Click(object sender, EventArgs e)
-        {
-            timer1.Enabled = true;
-        }
-
-        private void GetAllProcessPorts(int id)
-        {
-            try
-            {
-                var tcpArray = Functions.GetExtendedTcpTable(true, Win32Funcs.TcpTableType.OwnerPidAll).ToList();
-                var updArray = Functions.GetExtendedUdpTable(true, Win32Funcs.UdpTableType.OwnerPid).ToList();
-
-                foreach (TcpRow tcp in tcpArray)
-                {
-                    if (tcp.ProcessId == id)
-                    {
-                        if (tcp.LocalEndPoint.Address.ToString() == ipstr)
-                        {
-                            ports.AddPort(tcp.LocalEndPoint.Port, "tcp");
-                        }
-                    }
-                }
-
-                foreach (UdpRow udp in updArray)
-                {
-                    if (true)//udp.ProcessId == id) //process id is wrong?
-                    {
-                        if (udp.LocalEndPoint.Address.ToString() == ipstr)
-                        {
-                            ports.AddPort(udp.LocalEndPoint.Port, "udp");
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
-        }
-        int id;
-
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            try
-            {
-                if (id != (int)GetActiveProcessId())
-                {
-                    id = (int)GetActiveProcessId();
-                    button2.Text = GetActiveProcessFileName();
-                    ports = new ProcessPorts(GetActiveProcessFileName(), GetActiveProcessId());
-                }
-                GetAllProcessPorts(id);
-                ports.Decay();
-                ports.ToListBox(listBox1);
-            }
-            catch (Exception ex)
-            {
-
-            }
-        }
-
-        List<Packet> packetsList = new List<Packet>();
-
-        private void packetsniff_Load(object sender, EventArgs e)
-        {
-            //Form1 connections = new Form1();
-            //connections.Show();
-        }
-
+        #endregion
+        #region netstat
+        #endregion
+        #region packetshiffer
         private Socket mainSocket;                          //The socket which captures all incoming packets
         private byte[] byteData = new byte[4096];
-        private bool bContinueCapturing = false;            //A flag to check if packets are to be captured or not
-
-        private void sniffButton_Click(object sender, EventArgs e)
+        private bool continueCapturing = false;
+        private List<Packet> Packets = new List<Packet>();
+        public void ToggleSniffing()
         {
-            if (button1.Text == String.Empty)
-            {
-                button1_Click(this, null);
-            }
             try
             {
-                if (!bContinueCapturing)
+                if (!continueCapturing)
                 {
                     //Start capturing the packets...
-
-                    sniffButton.Text = "&Stop";
-
-                    bContinueCapturing = true;
+                    bestIp = FindBestInterface();
+                    continueCapturing = true;
 
                     //For sniffing the socket to capture the packets has to be a raw socket, with the
                     //address family being of type internetwork, and protocol being IP
@@ -191,7 +132,7 @@ namespace WindowsFormsApplication2
                         SocketType.Raw, ProtocolType.IP);
 
                     //Bind the socket to the selected IP address
-                    mainSocket.Bind(new IPEndPoint(IPAddress.Parse(button1.Text), 0));
+                    mainSocket.Bind(new IPEndPoint(IPAddress.Parse(bestIp), 0));
 
                     //Set the socket  options
                     mainSocket.SetSocketOption(SocketOptionLevel.IP,            //Applies only to IP packets
@@ -213,8 +154,7 @@ namespace WindowsFormsApplication2
                 }
                 else
                 {
-                    sniffButton.Text = "&Start";
-                    bContinueCapturing = false;
+                    continueCapturing = false;
                     //To stop capturing the packets close the socket
                     mainSocket.Close();
                 }
@@ -235,7 +175,7 @@ namespace WindowsFormsApplication2
 
                 ParseData(byteData, nReceived);
 
-                if (bContinueCapturing)
+                if (continueCapturing)
                 {
                     byteData = new byte[4096];
 
@@ -256,7 +196,6 @@ namespace WindowsFormsApplication2
 
         private void ParseData(byte[] byteData, int nReceived)
         {
-
             try
             {
                 //Since all protocol packets are encapsulated in the IP datagram
@@ -306,7 +245,7 @@ namespace WindowsFormsApplication2
                         //Thread safe adding of the packets!!
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "parseData", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -316,14 +255,14 @@ namespace WindowsFormsApplication2
         {
             try
             {
-                List<Packet> copy = packetsList;
-                if (packet.IP.SourceAddress.ToString() == ipstr || packet.IP.DestinationAddress.ToString() == ipstr)
+                List<Packet> copy = Packets;
+                if (packet.IP.SourceAddress.ToString() == bestIp || packet.IP.DestinationAddress.ToString() == bestIp)
                 {
-                    if(listBox1.Items.Count> 20)
+                    if (listBoxPackets.Items.Count > listBoxPackets.Height / (listBoxPackets.ItemHeight + 1))
                     {
-                        listBox1.Items.RemoveAt(0);
+                        listBoxPackets.Items.RemoveAt(0);
                     }
-                    listBox1.Items.Add(packet);
+                    listBoxPackets.Items.Add(packet);
                     foreach (Packet other in copy)
                     {
                         if (other.IP.SourceAddress.ToString() == packet.IP.SourceAddress.ToString() && other.IP.DestinationAddress.ToString() == packet.IP.DestinationAddress.ToString())
@@ -337,102 +276,94 @@ namespace WindowsFormsApplication2
                             return;
                         }
                     }
-                    packetsList = copy;
-                    packetsList.Add(packet);
+                    Packets = copy;
+                    Packets.Add(packet);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "newPacketParse", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-           
         }
 
-        private void packetsniff_FormClosing(object sender, FormClosingEventArgs e)
+        public class Packet
         {
-            if (bContinueCapturing)
+            public IPHeader IP;
+            public UDPHeader UDP;
+            public TCPHeader TCP;
+            public DNSHeader DNS;
+            public int Count = 0;
+
+            public Packet(IPHeader IP, UDPHeader UDP)
             {
-                mainSocket.Close();
+                this.IP = IP;
+                this.UDP = UDP;
             }
-        }
-
-
-
-        private void timer2_Tick(object sender, EventArgs e)
-        {
-            if (bContinueCapturing)
+            public Packet(IPHeader IP, TCPHeader TCP)
             {
-                //Thread.Sleep(200);
-                listBox2.Items.Clear();
-                List<Packet> copy = packetsList;
-                foreach (Packet packet in copy)
+                this.IP = IP;
+                this.TCP = TCP;
+            }
+            public Packet(IPHeader IP)
+            {
+                this.IP = IP;
+            }
+            public override string ToString()
+            {
+                string info = String.Empty;
+
+                if (UDP != null)
                 {
-                    listBox2.Items.Add(packet);
+                    info += "[UDP] ";
+                    info += IP.SourceAddress + ":" + UDP.SourcePort + " -> " + IP.DestinationAddress + ":" + UDP.DestinationPort;
                 }
-                packetsList.Clear();
-                //Thread.Sleep(200);
+                else if (TCP != null)
+                {
+                    info += "[TCP] ";
+                    info += IP.SourceAddress + ":" + TCP.SourcePort + " -> " + IP.DestinationAddress + ":" + TCP.DestinationPort;
+                }
+                else
+                {
+                    info += IP.SourceAddress + " -> " + IP.DestinationAddress;
+                }
+                if (Count > 0)
+                {
+                    info += "(" + Count + ")";
+                }
 
-                blinktimer.Enabled = true;
+                return info;
             }
         }
-
-        private void timer3_Tick(object sender, EventArgs e)
-        {
-            Thread t1 = new Thread(SendPing);
-            t1.Start();
-        }
-
+        #endregion
+        #region ping
         private void SendPing()
         {
             try
             {
-                List<Packet> copy = packetsList;
-                int max = 0;
-                string maxip = String.Empty;
-                int secondmax = 0;
-                foreach (Packet packet in copy)
-                {
-                    if (packet.Count > max)
-                    {
-                        secondmax = max;
-                        max = packet.Count;
-                        if (packet.IP.SourceAddress.ToString() != ipstr)
-                        {
-                            maxip = packet.IP.SourceAddress.ToString();
-                        }
-                        else
-                        {
-                            maxip = packet.IP.DestinationAddress.ToString();
-                        }
-                    }
-                }
-                if (maxip != String.Empty )//&& max > secondmax * 10) add something similar!
+                string maxip = textBoxIp.Text;
+                if (maxip != String.Empty)//&& max > secondmax * 10) add something similar!
                 {
                     Ping pingClass = new Ping();
                     PingReply pingReply = pingClass.Send(maxip);
                     long ping = pingReply.RoundtripTime;
-                    label1.Text = ping.ToString();
-                    button2.Text = maxip;
+                    textBoxPing.Text = ping.ToString();
                     if (pingReply.Status != IPStatus.Success)
                     {
                         maxip = String.Empty;
                     }
-                    label1.ForeColor = pingColor(ping);
+                    textBoxPing.ForeColor = pingColor(ping);
                 }
                 else
                 {
-                    label1.ForeColor = Color.White;
-                    label1.Text = "Ping";
-                    button2.Text = "IP Detected";
+                    textBoxPing.ForeColor = Color.White;
+                    textBoxPing.Text = "Ping";
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "sendPing", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
-
         private Color pingColor(long ping) //using 2 diffrent functions to create green to yellow to red spectrum for the ranges 25 to 230 ms.
         {
             if (ping == -1)
@@ -476,161 +407,192 @@ namespace WindowsFormsApplication2
                 return Color.FromArgb(r, g, 0);
             }
         }
+        #endregion
 
-        private void blinktimer_Tick(object sender, EventArgs e)
+        List<string> ignored = new List<string>();
+
+        string bestIp;
+        uint processId;
+        List<Port> Ports;
+
+        private void buttonStart_Click(object sender, EventArgs e)
         {
-            if(button1.BackColor == Color.White)
+            if (!continueCapturing)
             {
-                button1.BackColor = Color.GreenYellow;
+                bestIp = FindBestInterface();
+                timerActiveProcess.Enabled = true;
+                Ports = NetStatPorts.GetNetStatPorts();
+                timerGetPorts.Enabled = true;
+                ToggleSniffing();
+                timerShowPackets.Enabled = true;
+                timerPing.Enabled = true;
+                timerIgnoreCheck.Enabled = true;
+
+                buttonStart.Text = "Staph";
             }
             else
             {
-                button1.BackColor = Color.White;
-                blinktimer.Enabled = false;
+                timerActiveProcess.Enabled = false;
+                timerGetPorts.Enabled = false;
+                ToggleSniffing();
+                timerShowPackets.Enabled = false;
+                timerPing.Enabled = false;
+                timerIgnoreCheck.Enabled = false;
+
+                buttonStart.Text = "Sturt";
             }
-        }
-    }
 
-    public class Packet
-    {
-        public IPHeader IP;
-        public UDPHeader UDP;
-        public TCPHeader TCP;
-        public DNSHeader DNS;
-        public int Count = 0;
+        }
 
-        public Packet(IPHeader IP, UDPHeader UDP)
+        private void timerActiveProcess_Tick(object sender, EventArgs e)
         {
-            this.IP = IP;
-            this.UDP = UDP;
-        }
-        public Packet(IPHeader IP, TCPHeader TCP)
-        {
-            this.IP = IP;
-            this.TCP = TCP;
-        }
-        public Packet(IPHeader IP)
-        {
-            this.IP = IP;
-        }
-        public override string ToString()
-        {
-            string info = String.Empty;
-
-            info += IP.SourceAddress + " -> " + IP.DestinationAddress;
-            if (UDP != null)
+            uint newid = GetActiveProcessId();
+            if (processId != newid)
             {
-                info += "[UDP]";
+                processId = newid;
+                listBoxPackets.Items.Clear();
+                listBoxPorts.Items.Clear();
+                listBoxSummed.Items.Clear();
             }
-            if (TCP != null)
+
+            textBoxProcess.Text = "PID:" + processId.ToString();
+            textBoxPath.Text = GetActiveProcessFileName();
+            if (textBoxPath.Text.Length > 90)
             {
-                info += "[TCP]";
+                textBoxPath.Text = textBoxPath.Text.Substring(textBoxPath.Text.Length - 90);
             }
-            if (Count > 0)
-            {
-                info += "(" + Count + ")";
-            }
-
-            return info;
-        }
-    }
-
-    public class ProcessPorts
-    {
-        string Name;
-        uint PID;
-        List<int> Ports;
-        List<int> KickInterval;
-        List<string> Type;
-
-        public ProcessPorts(string Name, uint PID)
-        {
-            Ports = new List<int>();
-            KickInterval = new List<int>();
-            Type = new List<string>();
-
-            this.Name = Name;
-            this.PID = PID;
         }
 
-        internal void AddPort(int port, string type)
+        private void timerGetPorts_Tick(object sender, EventArgs e)
         {
+            listBoxPorts.Items.Clear();
+
             if (Ports.Count > 0)
             {
-                bool found = false;
-                int i = 0;
-                foreach (int existingPort in Ports)
+                foreach (Port port in Ports)
                 {
-                    if (existingPort == port)
+                    if (port.process_pid == processId.ToString())
+                        listBoxPorts.Items.Add(port);
+                }
+            }
+
+        }
+
+        private void timerShowPackets_Tick(object sender, EventArgs e) //separate this into methods!!
+        {
+            listBoxSummed.Items.Clear();
+
+            FindProcessPackets();
+            FindBestDestinationIp();
+
+            Packets.Clear();
+        }
+
+        private void timerPing_Tick(object sender, EventArgs e)
+        {
+            Thread t1 = new Thread(SendPing);
+            t1.Start();
+        }
+        private void timerIgnoreCheck_Tick(object sender, EventArgs e)
+        {
+            //checks if app should be ignored, add remebering last process active
+            foreach (string process in ignored)
+            {
+                if (textBoxPath.Text.ToLower().Contains(process))
+                {
+                    labelIgnored.ForeColor = Color.Red;
+                    return;
+                }
+            }
+            labelIgnored.ForeColor = SystemColors.Control;
+        }
+
+        private void E_Load(object sender, EventArgs e)
+        {
+            //example ignore list
+            ignored.Add("explorer.exe");
+            ignored.Add("cmd.exe");
+            ignored.Add("iexplore.exe");
+
+            ignored.Add("winrar.exe");
+            //ignored.Add("chrome.exe");
+            ignored.Add("vlc.exe");
+            ignored.Add("devenv.exe");
+        }
+
+        private void FindProcessPackets()
+        {
+            List<Packet> copy = Packets;
+
+            foreach (Packet packet in copy)
+            {
+                bool found = false;
+                string foundPort = String.Empty;
+
+                foreach (Port port in Ports)
+                {
+                    if (packet.IP.ProtocolType == Protocol.TCP)
                     {
-                        if (Type[i] == type)
+                        if (packet.IP.SourceAddress.ToString() == bestIp)
                         {
+                            foundPort = packet.TCP.SourcePort;
+
                             found = true;
-                            KickInterval[i] = 100;
+                        }
+                        else if (packet.IP.DestinationAddress.ToString() == bestIp)
+                        {
+                            foundPort = packet.TCP.DestinationPort;
+                            found = true;
                         }
                     }
-                    i++;
+                    else if (packet.IP.ProtocolType == Protocol.UDP)
+                    {
+                        if (packet.IP.SourceAddress.ToString() == bestIp)
+                        {
+                            foundPort = packet.UDP.SourcePort;
+                            found = true;
+                        }
+                        else if (packet.IP.DestinationAddress.ToString() == bestIp)
+                        {
+                            foundPort = packet.UDP.DestinationPort;
+                            found = true;
+                        }
+                    }
+                    if (found)
+                    {
+                        if (port.port_number == foundPort && port.process_pid == processId.ToString())
+                        {
+                            listBoxSummed.Items.Add(packet);
+                            break;
+                        }
+                    }
                 }
+            }
 
-                if (!found)
+        }
+
+        private void FindBestDestinationIp()
+        {
+            string maxIp = String.Empty;
+            int maxcount = 0;
+            foreach (Packet packet in listBoxSummed.Items)
+            {
+                if (maxcount < packet.Count)
                 {
-                    Ports.Add(port);
-                    KickInterval.Add(100);
-                    Type.Add(type);
+                    maxcount = packet.Count;
+
+                    if (packet.IP.SourceAddress.ToString() == bestIp)
+                    {
+                        maxIp = packet.IP.DestinationAddress.ToString();
+                    }
+                    else if (packet.IP.DestinationAddress.ToString() == bestIp)
+                    {
+                        maxIp = packet.IP.SourceAddress.ToString();
+                    }
                 }
             }
-            else
-            {
-                //if its empty
-                Ports.Add(port);
-                KickInterval.Add(100);
-                Type.Add(type);
-            }
+            textBoxIp.Text = maxIp;
         }
 
-        public void KillPort(int index)
-        {
-            Ports.RemoveAt(index);
-            KickInterval.RemoveAt(index);
-            Type.RemoveAt(index);
-        }
-
-        public void Decay()
-        {
-            for (int i = 0; i < KickInterval.Count; i++)
-            {
-                KickInterval[i]--;
-                if (KickInterval[i] < 0)
-                {
-                    KillPort(i);
-                }
-            }
-
-
-        }
-
-        public void ToListBox(ListBox listBox)
-        {
-            listBox.Items.Clear();
-            string txt = String.Empty;
-
-            for (int i = 0; i < Ports.Count; i++)
-            {
-                txt = Ports[i].ToString() + " ";
-                txt += Type[i].ToString() + " ";
-                txt += KickInterval[i].ToString();
-
-                listBox.Items.Add(txt);
-            }
-        }
-
-        public bool IsEmpty()
-        {
-            if (Ports.Count < 1)
-            {
-                return true;
-            }
-            return false;
-        }
     }
 }

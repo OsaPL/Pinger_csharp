@@ -12,7 +12,7 @@ using System.Threading;
 using System.Net.NetworkInformation;
 using IPHelper;
 
-namespace WindowsFormsApplication2
+namespace SmartAdressIpDetectionTest
 {
     public partial class Form1 : Form
     {
