@@ -464,7 +464,10 @@ namespace pinger_csharp
             }
             return txt;
         }
-
+        private void InvokeUI(Control control, object field, object value)
+        {
+            control.Invoke((MethodInvoker)(() => field = value));
+        }
         private void pingthread(int id)
         {
             //add invoking methods to ensure thread safeness
@@ -509,7 +512,10 @@ namespace pinger_csharp
                     }
                     else
                     {
-                        label.Text = FormatPingText(ping, id);
+                        //TODO: All ui methods should make invokes if they are in a thread!!
+                        label.Invoke((MethodInvoker)(() => label.Text = FormatPingText(ping, id)));
+                        //InvokeUI(label, label.Text, FormatPingText(ping, id));    //why it is not working??
+                        //label.Text = FormatPingText(ping, id);    //should be invoke'd
 
                         label.ForeColor = pingColor(ping);
                     }
@@ -1277,7 +1283,7 @@ namespace pinger_csharp
             }
         }
 
-            #region autoIpdetecion
+        #region autoIpdetecion
         #region getprocess
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out uint ProcessId);
@@ -1799,7 +1805,7 @@ namespace pinger_csharp
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
