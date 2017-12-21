@@ -15,6 +15,8 @@ using System.IO;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Security.Principal;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace pinger_csharp
 {
@@ -464,10 +466,52 @@ namespace pinger_csharp
             }
             return txt;
         }
-        private void InvokeUI(Control control, object field, object value)
+        private void InvokeUI<T>(Control control, object field, object value)
         {
             control.Invoke((MethodInvoker)(() => field = value));
         }
+
+        #region thread_safe_methods
+        private delegate void SetPropertyThreadSafeDelegate<TResult>(
+    Control @this,
+    Expression<Func<TResult>> property,
+    TResult value);
+
+        public static void SetPropertyThreadSafe<TResult>(
+            this Control @this,
+            Expression<Func<TResult>> property,
+            TResult value)
+        {
+            var propertyInfo = (property.Body as MemberExpression).Member
+                as PropertyInfo;
+
+            if (propertyInfo == null ||
+                !@this.GetType().IsSubclassOf(propertyInfo.ReflectedType) ||
+                @this.GetType().GetProperty(
+                    propertyInfo.Name,
+                    propertyInfo.PropertyType) == null)
+            {
+                throw new ArgumentException("The lambda expression 'property' must reference a valid property on this Control.");
+            }
+
+            if (@this.InvokeRequired)
+            {
+                @this.Invoke(new SetPropertyThreadSafeDelegate<TResult>
+                (SetPropertyThreadSafe),
+                new object[] { @this, property, value });
+            }
+            else
+            {
+                @this.GetType().InvokeMember(
+                    propertyInfo.Name,
+                    BindingFlags.SetProperty,
+                    null,
+                    @this,
+                    new object[] { value });
+            }
+        }
+        #endregion
+
         private void pingthread(int id)
         {
             //add invoking methods to ensure thread safeness
@@ -490,12 +534,14 @@ namespace pinger_csharp
                     {
                         if (timeout < 2000 / activeProcessTimer.Interval)
                         {
-                            label.ForeColor = Color.Aqua;
+                            //label.ForeColor = Color.Aqua;
+                            label.Invoke((MethodInvoker)(() => label.ForeColor = Color.Aqua));
                             return;
                         }
                         else if (usedip == "127.0.0.1")
                         {
-                            label.ForeColor = Color.Aqua;
+                            //label.ForeColor = Color.Aqua;
+                            label.Invoke((MethodInvoker)(() => label.ForeColor = Color.Aqua));
                             label.Text = "No IP";
                             return;
                         }
@@ -507,8 +553,10 @@ namespace pinger_csharp
                 {
                     if (pingReply.Status != IPStatus.Success)
                     {
-                        label.Text = "Timeout!";
-                        label.ForeColor = Color.White;
+                        label.Invoke((MethodInvoker)(() => label.Text = "Timeout!"));
+                        label.Invoke((MethodInvoker)(() => label.ForeColor = Color.White));
+                        //label.Text = "Timeout!";
+                        //label.ForeColor = Color.White;
                     }
                     else
                     {
@@ -516,8 +564,8 @@ namespace pinger_csharp
                         label.Invoke((MethodInvoker)(() => label.Text = FormatPingText(ping, id)));
                         //InvokeUI(label, label.Text, FormatPingText(ping, id));    //why it is not working??
                         //label.Text = FormatPingText(ping, id);    //should be invoke'd
-
-                        label.ForeColor = pingColor(ping);
+                        label.Invoke((MethodInvoker)(() => label.ForeColor = pingColor(ping)));
+                        //label.ForeColor = pingColor(ping);
                     }
                 }
 
@@ -553,7 +601,8 @@ namespace pinger_csharp
             {
                 Label label = this.Controls.Find((id + 1).ToString(), true).FirstOrDefault() as Label;
                 //label.Text = e.ToString();//"Unreachable!";
-                label.ForeColor = Color.White;
+                label.Invoke((MethodInvoker)(() => label.ForeColor = Color.White));
+                //label.ForeColor = Color.White;
             }
         }
         private Color pingColor(long ping) //using 2 diffrent functions to create green to yellow to red spectrum for the ranges 25 to 230 ms.
