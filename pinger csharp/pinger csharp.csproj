@@ -107,6 +107,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigFileClass.cs" />
     <Compile Include="DNSHeader.cs" />
     <Compile Include="DragButton.cs">
       <SubType>Form</SubType>
