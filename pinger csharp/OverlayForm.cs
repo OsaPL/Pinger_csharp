@@ -510,6 +510,7 @@ namespace pinger_csharp
 
                 lock (label)
                 {
+                    this.Invoke((MethodInvoker)(() => this.Refresh()));
                     if (pingReply.Status != IPStatus.Success)
                     {
                         label.Invoke((MethodInvoker)(() => label.Text = "Timeout!"));
@@ -668,7 +669,7 @@ namespace pinger_csharp
 
         private void refresh_Tick(object sender, EventArgs e)
         {
-            Refresh();
+            //Refresh();
             //Makes sure that dragbutton is in the correct place
             Location = new Point(dragbutton.Location.X - 1, dragbutton.Location.Y);
 
