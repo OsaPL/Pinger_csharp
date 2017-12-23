@@ -7,8 +7,411 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Text;
+using System.Runtime.InteropServices;
+using System.Net.NetworkInformation;
+using System.Net;
+using System.Collections;
+using System.ComponentModel;
+
 namespace pinger_csharp
 {
+
+    #region Managed IP Helper API
+
+    public class TcpTable : IEnumerable<TcpRow>
+    {
+        #region Private Fields
+
+        private IEnumerable<TcpRow> tcpRows;
+
+        #endregion
+
+        #region Constructors
+
+        public TcpTable(IEnumerable<TcpRow> tcpRows)
+        {
+            this.tcpRows = tcpRows;
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public IEnumerable<TcpRow> Rows
+        {
+            get { return this.tcpRows; }
+        }
+
+        #endregion
+
+        #region IEnumerable<TcpRow> Members
+
+        public IEnumerator<TcpRow> GetEnumerator()
+        {
+            return this.tcpRows.GetEnumerator();
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.tcpRows.GetEnumerator();
+        }
+
+        #endregion
+    }
+    public class UdpTable : IEnumerable<UdpRow>
+    {
+        #region Private Fields
+
+        private IEnumerable<UdpRow> udpRows;
+
+        #endregion
+
+        #region Constructors
+
+        public UdpTable(IEnumerable<UdpRow> udpRows)
+        {
+            this.udpRows = udpRows;
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public IEnumerable<UdpRow> Rows
+        {
+            get { return this.udpRows; }
+        }
+
+        #endregion
+
+        #region IEnumerable<UdpRow> Members
+
+        public IEnumerator<UdpRow> GetEnumerator()
+        {
+            return this.udpRows.GetEnumerator();
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.udpRows.GetEnumerator();
+        }
+
+        #endregion
+    }
+    public class TcpRow
+    {
+        #region Private Fields
+
+        private IPEndPoint localEndPoint;
+        private IPEndPoint remoteEndPoint;
+        private TcpState state;
+        private int processId;
+
+        #endregion
+
+        #region Constructors
+
+        public TcpRow(IpHelper.TcpRow tcpRow)
+        {
+            this.state = tcpRow.state;
+            this.processId = tcpRow.owningPid;
+
+            int localPort = (tcpRow.localPort1 << 8) + (tcpRow.localPort2) + (tcpRow.localPort3 << 24) + (tcpRow.localPort4 << 16);
+            long localAddress = tcpRow.localAddr;
+            this.localEndPoint = new IPEndPoint(localAddress, localPort);
+
+            int remotePort = (tcpRow.remotePort1 << 8) + (tcpRow.remotePort2) + (tcpRow.remotePort3 << 24) + (tcpRow.remotePort4 << 16);
+            long remoteAddress = tcpRow.remoteAddr;
+            this.remoteEndPoint = new IPEndPoint(remoteAddress, remotePort);
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public IPEndPoint LocalEndPoint
+        {
+            get { return this.localEndPoint; }
+        }
+
+        public IPEndPoint RemoteEndPoint
+        {
+            get { return this.remoteEndPoint; }
+        }
+
+        public TcpState State
+        {
+            get { return this.state; }
+        }
+
+        public int ProcessId
+        {
+            get { return this.processId; }
+        }
+
+        #endregion
+    }
+
+    public class UdpRow
+    {
+        #region Private Fields
+
+        private IPEndPoint localEndPoint;
+        private IPEndPoint remoteEndPoint;
+        private TcpState state;
+        private int processId;
+
+        #endregion
+
+        #region Constructors
+
+        public UdpRow(IpHelper.UdpRow udpRow)
+        {
+            this.state = udpRow.state;
+            this.processId = udpRow.owningPid;
+
+            int localPort = (udpRow.localPort1 << 8) + (udpRow.localPort2) + (udpRow.localPort3 << 24) + (udpRow.localPort4 << 16);
+            long localAddress = udpRow.localAddr;
+            this.localEndPoint = new IPEndPoint(localAddress, localPort);
+
+            int remotePort = (udpRow.remotePort1 << 8) + (udpRow.remotePort2) + (udpRow.remotePort3 << 24) + (udpRow.remotePort4 << 16);
+            long remoteAddress = udpRow.remoteAddr;
+            this.remoteEndPoint = new IPEndPoint(remoteAddress, remotePort);
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public IPEndPoint LocalEndPoint
+        {
+            get { return this.localEndPoint; }
+        }
+
+        public IPEndPoint RemoteEndPoint
+        {
+            get { return this.remoteEndPoint; }
+        }
+
+        public TcpState State
+        {
+            get { return this.state; }
+        }
+
+        public int ProcessId
+        {
+            get { return this.processId; }
+        }
+
+        #endregion
+    }
+
+    public static class ManagedIpHelper
+    {
+        #region Public Methods
+
+        public static TcpTable GetExtendedTcpTable(bool sorted)
+        {
+            List<TcpRow> tcpRows = new List<TcpRow>();
+
+            IntPtr tcpTable = IntPtr.Zero;
+            int tcpTableLength = 0;
+
+            if (IpHelper.GetExtendedTcpTable(tcpTable, ref tcpTableLength, sorted, IpHelper.AfInet, IpHelper.TcpTableType.OwnerPidAll, 0) != 0)
+            {
+                try
+                {
+                    tcpTable = Marshal.AllocHGlobal(tcpTableLength);
+                    if (IpHelper.GetExtendedTcpTable(tcpTable, ref tcpTableLength, true, IpHelper.AfInet, IpHelper.TcpTableType.OwnerPidAll, 0) == 0)
+                    {
+                        IpHelper.TcpTable table = (IpHelper.TcpTable)Marshal.PtrToStructure(tcpTable, typeof(IpHelper.TcpTable));
+
+                        IntPtr rowPtr = (IntPtr)((long)tcpTable + Marshal.SizeOf(table.length));
+                        for (int i = 0; i < table.length; ++i)
+                        {
+                            tcpRows.Add(new TcpRow((IpHelper.TcpRow)Marshal.PtrToStructure(rowPtr, typeof(IpHelper.TcpRow))));
+                            rowPtr = (IntPtr)((long)rowPtr + Marshal.SizeOf(typeof(IpHelper.TcpRow)));
+                        }
+                    }
+                }
+                finally
+                {
+                    if (tcpTable != IntPtr.Zero)
+                    {
+                        Marshal.FreeHGlobal(tcpTable);
+                    }
+                }
+            }
+
+            return new TcpTable(tcpRows);
+        }
+
+        public static UdpTable GetExtendedUdpTable(bool sorted)
+        {
+            List<UdpRow> udpRows = new List<UdpRow>();
+
+            IntPtr udpTable = IntPtr.Zero;
+            int udpTableLength = 0;
+
+            if (IpHelper.GetExtendedTcpTable(udpTable, ref udpTableLength, sorted, IpHelper.AfInet, IpHelper.TcpTableType.OwnerPidAll, 0) != 0)
+            {
+                try
+                {
+                    udpTable = Marshal.AllocHGlobal(udpTableLength);
+                    if (IpHelper.GetExtendedTcpTable(udpTable, ref udpTableLength, true, IpHelper.AfInet, IpHelper.TcpTableType.OwnerPidAll, 0) == 0)
+                    {
+                        IpHelper.TcpTable table = (IpHelper.TcpTable)Marshal.PtrToStructure(udpTable, typeof(IpHelper.TcpTable));
+
+                        IntPtr rowPtr = (IntPtr)((long)udpTable + Marshal.SizeOf(table.length));
+                        for (int i = 0; i < table.length; ++i)
+                        {
+                            udpRows.Add(new UdpRow((IpHelper.UdpRow)Marshal.PtrToStructure(rowPtr, typeof(IpHelper.UdpRow))));
+                            rowPtr = (IntPtr)((long)rowPtr + Marshal.SizeOf(typeof(IpHelper.UdpRow)));
+                        }
+                    }
+                }
+                finally
+                {
+                    if (udpTable != IntPtr.Zero)
+                    {
+                        Marshal.FreeHGlobal(udpTable);
+                    }
+                }
+            }
+
+            return new UdpTable(udpRows);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region P/Invoke IP Helper API
+
+    /// <summary>
+    /// <see cref="http://msdn2.microsoft.com/en-us/library/aa366073.aspx"/>
+    /// </summary>
+    public static class IpHelper
+    {
+        #region Public Fields
+
+        public const string DllName = "iphlpapi.dll";
+        public const int AfInet = 2;
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// <see cref="http://msdn2.microsoft.com/en-us/library/aa365928.aspx"/>
+        /// </summary>
+        [DllImport(IpHelper.DllName, SetLastError = true)]
+        public static extern uint GetExtendedTcpTable(IntPtr tcpTable, ref int tcpTableLength, bool sort, int ipVersion, TcpTableType tcpTableType, int reserved);
+        [DllImport(IpHelper.DllName, SetLastError = true)]
+        public static extern uint GetExtendedUdpTable(IntPtr udpTable, ref int udpTableLength, bool sort, int ipVersion, UdpTableType udpTableType, int reserved);
+
+        #endregion
+
+        #region Public Enums
+
+        /// <summary>
+        /// <see cref="http://msdn2.microsoft.com/en-us/library/aa366386.aspx"/>
+        /// </summary>
+        public enum TcpTableType
+        {
+            BasicListener,
+            BasicConnections,
+            BasicAll,
+            OwnerPidListener,
+            OwnerPidConnections,
+            OwnerPidAll,
+            OwnerModuleListener,
+            OwnerModuleConnections,
+            OwnerModuleAll,
+        }
+        public enum UdpTableType
+        {
+            BasicListener,
+            BasicConnections,
+            BasicAll,
+            OwnerPidListener,
+            OwnerPidConnections,
+            OwnerPidAll,
+            OwnerModuleListener,
+            OwnerModuleConnections,
+            OwnerModuleAll,
+        }
+
+        #endregion
+
+        #region Public Structs
+
+        /// <summary>
+        /// <see cref="http://msdn2.microsoft.com/en-us/library/aa366921.aspx"/>
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct TcpTable
+        {
+            public uint length;
+            public TcpRow row;
+        }
+        [StructLayout(LayoutKind.Sequential)]
+        public struct UdpTable
+        {
+            public uint length;
+            public UdpRow row;
+        }
+
+        /// <summary>
+        /// <see cref="http://msdn2.microsoft.com/en-us/library/aa366913.aspx"/>
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct TcpRow
+        {
+            public TcpState state;
+            public uint localAddr;
+            public byte localPort1;
+            public byte localPort2;
+            public byte localPort3;
+            public byte localPort4;
+            public uint remoteAddr;
+            public byte remotePort1;
+            public byte remotePort2;
+            public byte remotePort3;
+            public byte remotePort4;
+            public int owningPid;
+        }
+        [StructLayout(LayoutKind.Sequential)]
+        public struct UdpRow
+        {
+            public TcpState state;
+            public uint localAddr;
+            public byte localPort1;
+            public byte localPort2;
+            public byte localPort3;
+            public byte localPort4;
+            public uint remoteAddr;
+            public byte remotePort1;
+            public byte remotePort2;
+            public byte remotePort3;
+            public byte remotePort4;
+            public int owningPid;
+        }
+
+        #endregion
+    }
+
+    #endregion
     public class NetStatPorts
     {
         public static List<Port> GetNetStatPorts()
@@ -17,51 +420,20 @@ namespace pinger_csharp
 
             try
             {
-                using (Process p = new Process())
+                foreach (TcpRow tcpRow in ManagedIpHelper.GetExtendedTcpTable(true))
                 {
+                    Ports.Add(new Port(
+                        ExtractPort(tcpRow.LocalEndPoint.ToString()),
+                        tcpRow.ProcessId.ToString(),
+                        "TCP"));
+                }
 
-                    ProcessStartInfo ps = new ProcessStartInfo();
-                    ps.Arguments = "-a -n -o";
-                    ps.FileName = "netstat.exe";
-                    ps.UseShellExecute = false;
-                    ps.WindowStyle = ProcessWindowStyle.Hidden;
-                    ps.RedirectStandardInput = true;
-                    ps.RedirectStandardOutput = true;
-                    ps.RedirectStandardError = true;
-                    ps.CreateNoWindow = true;   //Small thing to keep window from flashing
-
-                    p.StartInfo = ps;
-                    p.Start();
-
-                    StreamReader stdOutput = p.StandardOutput;
-                    StreamReader stdError = p.StandardError;
-
-                    string content = stdOutput.ReadToEnd() + stdError.ReadToEnd();
-                    string exitStatus = p.ExitCode.ToString();
-
-                    if (exitStatus != "0")
-                    {
-                        return new List<Port>();
-                    }
-
-                    //Get The Rows
-                    string[] rows = Regex.Split(content, "\r\n");
-                    foreach (string row in rows)
-                    {
-                        //Split it baby
-                        string[] tokens = Regex.Split(row, "\\s+");
-                        if (tokens.Length > 4 && (tokens[1].Equals("UDP") || tokens[1].Equals("TCP")))
-                        {
-                            string localAddress = Regex.Replace(tokens[2], @"\[(.*?)\]", "1.1.1.1");
-                            Ports.Add(new Port
-                            {
-                                protocol = localAddress.Contains("1.1.1.1") ? String.Format("{0}v6", tokens[1]) : String.Format("{0}v4", tokens[1]),
-                                port_number = localAddress.Split(':')[1],
-                                process_name = tokens[1] == "UDP" ? LookupProcess(Convert.ToInt16(tokens[4])) : LookupProcess(Convert.ToInt16(tokens[5])),
-                                process_pid = tokens[1] == "UDP" ? Convert.ToInt16(tokens[4]).ToString() : Convert.ToInt16(tokens[5]).ToString()
-                            });
-                        }
-                    }
+                foreach (UdpRow udpRow in ManagedIpHelper.GetExtendedUdpTable(true))
+                {
+                    Ports.Add(new Port(
+                        ExtractPort(udpRow.LocalEndPoint.ToString()),
+                        udpRow.ProcessId.ToString(),
+                        "UDP"));
                 }
             }
             catch (Exception ex)
@@ -70,12 +442,14 @@ namespace pinger_csharp
             }
             return Ports;
         }
-        public static string LookupProcess(int pid)
+        public static string ExtractPort(string ip)
         {
-            string procName;
-            try { procName = Process.GetProcessById(pid).ProcessName; }
-            catch (Exception) { procName = "-"; }
-            return procName;
+            return ip.Substring(ip.IndexOf(@":") + 1);
+        }
+        
+        public static string LookupProcess(short v)
+        {
+            return Process.GetProcessById(v).ProcessName;
         }
     }
 
@@ -84,6 +458,13 @@ namespace pinger_csharp
     // ===============================================
     public class Port
     {
+        public Port(string port_number, string process_pid, string protocol)
+        {
+            this.port_number = port_number;
+            this.process_pid = process_pid;
+            this.protocol = protocol;
+            this.process_name = "";
+        }
         public string name
         {
             get

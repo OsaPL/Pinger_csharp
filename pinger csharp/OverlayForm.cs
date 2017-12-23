@@ -1638,6 +1638,8 @@ namespace pinger_csharp
         {
             Thread t = new Thread(getPorts);
             t.Start();
+            bestIp = FindBestInterface();
+
         }
         private void activeProcessTimer_Tick(object sender, EventArgs e)
         {
@@ -1657,7 +1659,6 @@ namespace pinger_csharp
                 (this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label).Text = NetStatPorts.LookupProcess(Convert.ToInt16(processId));
                 timeout++;
             }
-            bestIp = FindBestInterface();
         }
         private void ToggleAuto()
         {
@@ -1862,7 +1863,7 @@ namespace pinger_csharp
                 ToggleAuto();
             }
         }
-
+        #endregion
 
     }
 }
