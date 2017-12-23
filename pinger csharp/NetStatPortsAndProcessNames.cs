@@ -16,7 +16,6 @@ using System.ComponentModel;
 
 namespace pinger_csharp
 {
-
     #region Managed IP Helper API
 
     public class TcpTable : IEnumerable<TcpRow>
@@ -166,8 +165,6 @@ namespace pinger_csharp
         #region Private Fields
 
         private IPEndPoint localEndPoint;
-        private IPEndPoint remoteEndPoint;
-        private TcpState state;
         private int processId;
 
         #endregion
@@ -176,16 +173,11 @@ namespace pinger_csharp
 
         public UdpRow(IpHelper.UdpRow udpRow)
         {
-            this.state = udpRow.state;
             this.processId = udpRow.owningPid;
 
             int localPort = (udpRow.localPort1 << 8) + (udpRow.localPort2) + (udpRow.localPort3 << 24) + (udpRow.localPort4 << 16);
             long localAddress = udpRow.localAddr;
             this.localEndPoint = new IPEndPoint(localAddress, localPort);
-
-            int remotePort = (udpRow.remotePort1 << 8) + (udpRow.remotePort2) + (udpRow.remotePort3 << 24) + (udpRow.remotePort4 << 16);
-            long remoteAddress = udpRow.remoteAddr;
-            this.remoteEndPoint = new IPEndPoint(remoteAddress, remotePort);
         }
 
         #endregion
@@ -195,16 +187,6 @@ namespace pinger_csharp
         public IPEndPoint LocalEndPoint
         {
             get { return this.localEndPoint; }
-        }
-
-        public IPEndPoint RemoteEndPoint
-        {
-            get { return this.remoteEndPoint; }
-        }
-
-        public TcpState State
-        {
-            get { return this.state; }
         }
 
         public int ProcessId
@@ -262,14 +244,14 @@ namespace pinger_csharp
             IntPtr udpTable = IntPtr.Zero;
             int udpTableLength = 0;
 
-            if (IpHelper.GetExtendedTcpTable(udpTable, ref udpTableLength, sorted, IpHelper.AfInet, IpHelper.TcpTableType.OwnerPidAll, 0) != 0)
+            if (IpHelper.GetExtendedUdpTable(udpTable, ref udpTableLength, sorted, IpHelper.AfInet, IpHelper.UdpTableType.OwnerPidAll, 0) != 0)
             {
                 try
                 {
                     udpTable = Marshal.AllocHGlobal(udpTableLength);
-                    if (IpHelper.GetExtendedTcpTable(udpTable, ref udpTableLength, true, IpHelper.AfInet, IpHelper.TcpTableType.OwnerPidAll, 0) == 0)
+                    if (IpHelper.GetExtendedUdpTable(udpTable, ref udpTableLength, true, IpHelper.AfInet, IpHelper.UdpTableType.OwnerPidAll, 0) == 0)
                     {
-                        IpHelper.TcpTable table = (IpHelper.TcpTable)Marshal.PtrToStructure(udpTable, typeof(IpHelper.TcpTable));
+                        IpHelper.UdpTable table = (IpHelper.UdpTable)Marshal.PtrToStructure(udpTable, typeof(IpHelper.UdpTable));
 
                         IntPtr rowPtr = (IntPtr)((long)udpTable + Marshal.SizeOf(table.length));
                         for (int i = 0; i < table.length; ++i)
@@ -341,14 +323,8 @@ namespace pinger_csharp
         }
         public enum UdpTableType
         {
-            BasicListener,
-            BasicConnections,
             BasicAll,
-            OwnerPidListener,
-            OwnerPidConnections,
             OwnerPidAll,
-            OwnerModuleListener,
-            OwnerModuleConnections,
             OwnerModuleAll,
         }
 
@@ -394,17 +370,11 @@ namespace pinger_csharp
         [StructLayout(LayoutKind.Sequential)]
         public struct UdpRow
         {
-            public TcpState state;
             public uint localAddr;
             public byte localPort1;
             public byte localPort2;
             public byte localPort3;
             public byte localPort4;
-            public uint remoteAddr;
-            public byte remotePort1;
-            public byte remotePort2;
-            public byte remotePort3;
-            public byte remotePort4;
             public int owningPid;
         }
 
@@ -446,7 +416,7 @@ namespace pinger_csharp
         {
             return ip.Substring(ip.IndexOf(@":") + 1);
         }
-        
+
         public static string LookupProcess(short v)
         {
             return Process.GetProcessById(v).ProcessName;
@@ -463,7 +433,7 @@ namespace pinger_csharp
             this.port_number = port_number;
             this.process_pid = process_pid;
             this.protocol = protocol;
-            this.process_name = "";
+            this.process_name = "N/A";
         }
         public string name
         {

@@ -1281,14 +1281,15 @@ namespace pinger_csharp
         private void notifyTrayIcon_MouseClick(object sender, MouseEventArgs e)
         {
             //if they somehow lose frontness, a click on icon fixes that
-            this.Activate();
+            //TODO: find another fix
+            /*this.Activate();
             this.BringToFront();
 
             if (UsedSettings.MoveButton)
             {
                 dragbutton.Activate();
                 dragbutton.BringToFront();
-            }
+            }*/
         }
 
         #region autoIpdetecion
@@ -1639,6 +1640,15 @@ namespace pinger_csharp
             Thread t = new Thread(getPorts);
             t.Start();
             bestIp = FindBestInterface();
+
+            //try and refresh?
+            //TODO: its dumb, but no other alternative
+            this.BringToFront();
+
+            if (UsedSettings.MoveButton)
+            {
+                dragbutton.BringToFront();
+            }
 
         }
         private void activeProcessTimer_Tick(object sender, EventArgs e)
