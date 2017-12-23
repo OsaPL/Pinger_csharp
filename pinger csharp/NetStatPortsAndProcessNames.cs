@@ -408,7 +408,9 @@ namespace pinger_csharp
             }
             catch (Exception ex)
             {
-                return new List<Port>();
+                Ports = new List<Port>();
+                Ports.Add(new Port("0","0","NA"));
+                return Ports;
             }
             return Ports;
         }

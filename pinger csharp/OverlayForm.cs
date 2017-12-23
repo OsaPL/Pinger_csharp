@@ -669,7 +669,7 @@ namespace pinger_csharp
 
         private void refresh_Tick(object sender, EventArgs e)
         {
-            //Refresh();
+            bool refreshNeeded = false;
             //Makes sure that dragbutton is in the correct place
             Location = new Point(dragbutton.Location.X - 1, dragbutton.Location.Y);
 
@@ -691,6 +691,7 @@ namespace pinger_csharp
                     Opacity += 0.03;
                     if (Opacity > UsedSettings.Opacity)
                         Opacity = UsedSettings.Opacity;
+                    refreshNeeded = true;
                 }
             }
             if (!dragbutton.ContainsFocus)
@@ -698,11 +699,18 @@ namespace pinger_csharp
                 if (ClientRectangle.IntersectsWith(r))
                 {
                     if (Opacity >= UsedSettings.Opacity * 0.3)
+                    {
                         Opacity -= 0.03;
+                        refreshNeeded = true;
+                    }
+
                 }
             }
             //Anchors to a corner
             dragbutton.AnchorToCorners(h, w, Size, screen);
+            //If refresh is needed do it
+            if (refreshNeeded)
+                Refresh();
         }
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1644,13 +1652,12 @@ namespace pinger_csharp
 
             //try and refresh?
             //TODO: its dumb, but no other alternative
-            this.BringToFront();
-
             if (UsedSettings.MoveButton)
             {
                 dragbutton.BringToFront();
             }
 
+            this.BringToFront();
         }
         private void activeProcessTimer_Tick(object sender, EventArgs e)
         {
