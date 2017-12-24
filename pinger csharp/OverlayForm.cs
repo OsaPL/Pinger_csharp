@@ -1661,21 +1661,28 @@ namespace pinger_csharp
         }
         private void activeProcessTimer_Tick(object sender, EventArgs e)
         {
-            uint newprocess = GetActiveProcessId();
+            try
+            {
+                uint newprocess = GetActiveProcessId();
 
-            if (newprocess != processId)
-            {
-                processId = newprocess;
-                timeout = 0;
-                graphPings[UsedSettings.LabelsNr - 1] = new List<int>();
-                //Poopy workaround, change it!
-                ToggleAuto();
-                ToggleAuto();
+                if (newprocess != processId)
+                {
+                    processId = newprocess;
+                    timeout = 0;
+                    graphPings[UsedSettings.LabelsNr - 1] = new List<int>();
+                    //Poopy workaround, change it!
+                    ToggleAuto();
+                    ToggleAuto();
+                }
+                if (timeout < 2000 / activeProcessTimer.Interval)
+                {
+                    (this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label).Text = NetStatPorts.LookupProcess(Convert.ToInt16(processId));
+                    timeout++;
+                }
             }
-            if (timeout < 2000 / activeProcessTimer.Interval)
+            catch (Exception ex)
             {
-                (this.Controls.Find((UsedSettings.LabelsNr).ToString(), true).FirstOrDefault() as Label).Text = NetStatPorts.LookupProcess(Convert.ToInt16(processId));
-                timeout++;
+
             }
         }
         private void ToggleAuto()
