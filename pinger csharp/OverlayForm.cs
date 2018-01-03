@@ -561,7 +561,8 @@ namespace pinger_csharp
             {
                 Label label = this.Controls.Find((id + 1).ToString(), true).FirstOrDefault() as Label;
                 //label.Text = e.ToString();//"Unreachable!";
-                label.Invoke((MethodInvoker)(() => label.ForeColor = Color.White));
+                if (label != null)
+                    label.Invoke((MethodInvoker)(() => label.ForeColor = Color.White));
                 //label.ForeColor = Color.White;
             }
         }
@@ -1714,6 +1715,7 @@ namespace pinger_csharp
                     MessageBox.Show("Didn't get admin permissions!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 Close();
+                return;
             }
 
             if (!continueCapturing)
