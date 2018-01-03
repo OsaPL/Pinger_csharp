@@ -1653,12 +1653,16 @@ namespace pinger_csharp
 
             //try and refresh?
             //TODO: its dumb, but no other alternative
-            if (UsedSettings.MoveButton)
+            if (!contextMenuStrip.Visible)
             {
-                dragbutton.BringToFront();
+                this.BringToFront();
+
+                if (UsedSettings.MoveButton)
+                {
+                    dragbutton.BringToFront();
+                }
             }
 
-            this.BringToFront();
         }
         private void activeProcessTimer_Tick(object sender, EventArgs e)
         {
