@@ -107,7 +107,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigFileClass.cs" />
     <Compile Include="Autopinger\DNSHeader.cs" />
     <Compile Include="FrontForms\DragButton.cs">
       <SubType>Form</SubType>

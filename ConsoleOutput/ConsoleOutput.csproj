@@ -40,6 +40,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\pinger csharp\Autopinger\DNSHeader.cs">
+      <Link>AutoPinger\DNSHeader.cs</Link>
+    </Compile>
+    <Compile Include="..\pinger csharp\Autopinger\IPHeader.cs">
+      <Link>AutoPinger\IPHeader.cs</Link>
+    </Compile>
+    <Compile Include="..\pinger csharp\Autopinger\NetStatPortsAndProcessNames.cs">
+      <Link>AutoPinger\NetStatPortsAndProcessNames.cs</Link>
+    </Compile>
+    <Compile Include="..\pinger csharp\Autopinger\TCPHeader.cs">
+      <Link>AutoPinger\TCPHeader.cs</Link>
+    </Compile>
+    <Compile Include="..\pinger csharp\Autopinger\UDPHeader.cs">
+      <Link>AutoPinger\UDPHeader.cs</Link>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
