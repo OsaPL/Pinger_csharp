@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using pinger_csharp;
 
 namespace SmartAdressIpDetectionTest
 {
@@ -207,7 +208,7 @@ namespace SmartAdressIpDetectionTest
                 //the data field of the datagram
                 switch (ipHeader.ProtocolType)
                 {
-                    case Protocol.TCP:
+                    case pinger_csharp.Protocol.TCP:
 
                         TCPHeader tcpHeader = new TCPHeader(ipHeader.Data,              //IPHeader.Data stores the data being 
                                                                                         //carried by the IP datagram
@@ -223,7 +224,7 @@ namespace SmartAdressIpDetectionTest
                         newPacketParse(new Packet(ipHeader, tcpHeader));
                         break;
 
-                    case Protocol.UDP:
+                    case pinger_csharp.Protocol.UDP:
 
                         UDPHeader udpHeader = new UDPHeader(ipHeader.Data,              //IPHeader.Data stores the data being 
                                                                                         //carried by the IP datagram
@@ -239,7 +240,7 @@ namespace SmartAdressIpDetectionTest
                         newPacketParse(new Packet(ipHeader, udpHeader));
                         break;
 
-                    case Protocol.Unknown:
+                    case pinger_csharp.Protocol.Unknown:
                         break;
 
                         //Thread safe adding of the packets!!
@@ -531,7 +532,7 @@ namespace SmartAdressIpDetectionTest
 
                 foreach (Port port in Ports)
                 {
-                    if (packet.IP.ProtocolType == Protocol.TCP)
+                    if (packet.IP.ProtocolType == pinger_csharp.Protocol.TCP)
                     {
                         if (packet.IP.SourceAddress.ToString() == bestIp)
                         {
@@ -545,7 +546,7 @@ namespace SmartAdressIpDetectionTest
                             found = true;
                         }
                     }
-                    else if (packet.IP.ProtocolType == Protocol.UDP)
+                    else if (packet.IP.ProtocolType == pinger_csharp.Protocol.UDP)
                     {
                         if (packet.IP.SourceAddress.ToString() == bestIp)
                         {
