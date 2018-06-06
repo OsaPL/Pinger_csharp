@@ -19,17 +19,58 @@ namespace ConfigFile
     /// </summary>
     public partial class MainWindow : Window
     {
+        Config cfg;
+       
         public MainWindow()
         {
             InitializeComponent();
 
-            Config cfg = new Config();
-            items.Add(new User() { Name = "John Doe", Age = 42, Mail = "john@doe-family.com" });
-            items.Add(new User() { Name = "Jane Doe", Age = 39, Mail = "jane@doe-family.com" });
-            items.Add(new User() { Name = "Sammy Doe", Age = 7, Mail = "sammy.doe@gmail.com" });
-            lvUsers.ItemsSource = items;
+            cfg = new Config();
+            loadedNamesList.ItemsSource = cfg.Values;
+            cfg.Defaults = new Config();
+            loadedResetNamesList.ItemsSource = cfg.Defaults.Values;
+
+            cfg.SafeAdd(new Field("NameString", "string"));
+            cfg.SafeAdd(new Field("NameInt", 1));
+            cfg.SafeAdd(new Field("NameDouble", 1.2));
+            cfg.Defaults.SafeAdd(new Field());
         }
 
+        protected void HandleDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var field = ((ListViewItem)sender).Content as Field; //Casting back to the binded
+        }
 
+        private void changeViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (loadedNamesList.IsVisible)
+            {
+                loadedResetNamesList.Visibility = Visibility.Visible;
+                loadedNamesList.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                loadedResetNamesList.Visibility = Visibility.Collapsed;
+                loadedNamesList.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void textBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                //If you wanna just push it, even when it can be converted
+                //cfg.Values.Add(new Field(textBox.Text));
+                cfg.SafeAdd(new Field(textBox.Text));
+                loadedNamesList.Items.Refresh();
+            }
+        }
+
+        private void resetFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            cfg.ResetToDefaults();
+            loadedNamesList.Items.Refresh();
+            loadedResetNamesList.Items.Refresh();
+        }
     }
 }

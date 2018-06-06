@@ -5,13 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ConfigFile"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="727.334">
+
+    <Window.Resources>
+        <Style x:Key="dblclickItem" TargetType="{x:Type ListViewItem}">
+            <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" />
+        </Style>
+    </Window.Resources>
+
     <Grid>
-        <Button x:Name="openFileButton" Content="OpenFile" HorizontalAlignment="Left" Height="21.189" Margin="432.086,287.811,0,0" VerticalAlignment="Top" Width="74.914"/>
-        <Button x:Name="saveFileButton" Content="SaveFile" HorizontalAlignment="Left" Height="21.189" Margin="352.172,287.811,0,0" VerticalAlignment="Top" Width="74.914"/>
-        <Button x:Name="resetFileButton" Content="ResetFile" HorizontalAlignment="Left" Height="21.189" Margin="272.258,287.811,0,0" VerticalAlignment="Top" Width="74.914"/>
+        <Button x:Name="openFileButton" Content="OpenFile" HorizontalAlignment="Left" Height="21.19" Margin="634.42,287.811,0,0" VerticalAlignment="Top" Width="74.914"/>
+        <Button x:Name="saveFileButton" Content="SaveFile" HorizontalAlignment="Left" Height="21.19" Margin="554.506,287.811,0,0" VerticalAlignment="Top" Width="74.914"/>
+        <Button x:Name="resetFileButton" Content="ResetFile" HorizontalAlignment="Left" Height="21.19" Margin="495.328,287.811,0,0" VerticalAlignment="Top" Width="54.178" Click="resetFileButton_Click"/>
         <Button x:Name="openResetFileButton" Content="OpenResetFile" HorizontalAlignment="Left" Height="21.189" Margin="10,287.811,0,0" VerticalAlignment="Top" Width="88.11"/>
-        <ListView x:Name="loadedResetNamesList" HorizontalAlignment="Left" Height="267.758" Margin="10,10,0,0" VerticalAlignment="Top" Width="497" >
+        <ListView x:Name="loadedNamesList" HorizontalAlignment="Left" Height="267.758" Margin="10,10,0,0" VerticalAlignment="Top" Width="699.334" ItemContainerStyle="{StaticResource dblclickItem}">
             <!--Makes elemnts unselectable-->
             <!--<ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
@@ -21,22 +28,25 @@
 
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Name" Width="120" DisplayMemberBinding="{Binding Name}" />
-                    <GridViewColumn Header="Type" Width="150" DisplayMemberBinding="{Binding Type}" />
-                    <GridViewColumn Header="Value" Width="50" DisplayMemberBinding="{Binding Value}" />
+                    <GridViewColumn Header="Name" Width="130" DisplayMemberBinding="{Binding Name}" />
+                    <GridViewColumn Header="Type" Width="160" DisplayMemberBinding="{Binding Type}" />
+                    <GridViewColumn Header="Value" Width="100" DisplayMemberBinding="{Binding Value}" />
+                    <GridViewColumn Header="Cfg" Width="240" />
                 </GridView>
             </ListView.View>
         </ListView>
-        <ListView x:Name="loadedNamesList" HorizontalAlignment="Left" Height="267.758" Margin="10,10,0,0" VerticalAlignment="Top" Width="497">
+        <ListView x:Name="loadedResetNamesList" HorizontalAlignment="Left" Height="267.758" Margin="10,10,0,0" VerticalAlignment="Top" Width="699.334" Visibility="Hidden" ItemContainerStyle="{StaticResource dblclickItem}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Name" Width="120" DisplayMemberBinding="{Binding RName}" />
-                    <GridViewColumn Header="Type" Width="150" DisplayMemberBinding="{Binding RType}" />
-                    <GridViewColumn Header="Value" Width="50" DisplayMemberBinding="{Binding RValue}" />
+                    <GridViewColumn Header="Name" Width="130" DisplayMemberBinding="{Binding Name}" />
+                    <GridViewColumn Header="Type" Width="160" DisplayMemberBinding="{Binding Type}" />
+                    <GridViewColumn Header="Value" Width="100" DisplayMemberBinding="{Binding Value}" />
+                    <GridViewColumn Header="Reset" Width="240" />
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button x:Name="changeViewButton" HorizontalAlignment="Left" Margin="491.655,262.413,0,0" VerticalAlignment="Top" Width="15.345" Height="15.345"/>
+        <Button x:Name="changeViewButton" HorizontalAlignment="Left" Margin="693.989,262.413,0,0" VerticalAlignment="Top" Width="15.345" Height="15.345" Click="changeViewButton_Click"/>
+        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="21.19" Margin="103.11,287.811,0,0" TextWrapping="Wrap" Text="[name]=&quot;value&quot;{System.String}" VerticalAlignment="Top" Width="387.218" KeyDown="textBox_KeyDown"/>
 
     </Grid>
 </Window>
