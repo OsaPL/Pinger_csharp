@@ -318,7 +318,7 @@ namespace ConfigFile
         {
             try
             {
-                var regex = Regex.Match(line, "^\\[(\\S+)\\]=\"(.+)\"{(.+)}$");
+                var regex = Regex.Match(line, "^\\[(\\S+)\\](?:\\s*)=(?:\\s*)\"(.+)\"(?:\\s*){(.+)}$");
 
                 Name = regex.Groups[1].Value;
                 Type = Type.GetType(regex.Groups[3].Value);

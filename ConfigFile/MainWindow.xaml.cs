@@ -42,8 +42,14 @@ namespace ConfigFile
             cfg.SafeAdd(new Field("NameColor", Color.FromArgb(10,20,30,40)));
             //My own class
             cfg.SafeAdd(new Field("NameExample", new ExampleClass()));
+            //TODO: More types to check?
 
             cfg.Defaults.SafeAdd(new Field());
+        }
+
+        void GenerateRndData()
+        {
+            //TODO: Do some random data generation to do some automated testing
         }
 
         protected void HandleDoubleClick(object sender, MouseButtonEventArgs e)
@@ -110,8 +116,8 @@ namespace ConfigFile
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
-                //cfg.cfgPath = saveFileDialog.FileName;
-                //cfg.SaveCfg();
+                //cfg.cfgPath = openFileDialog.FileName;
+                //cfg.LoadCfg();
                 //Or better yet we do something like this
                 cfg.LoadCfg(openFileDialog.FileName);
                 loadedNamesList.Items.Refresh();
