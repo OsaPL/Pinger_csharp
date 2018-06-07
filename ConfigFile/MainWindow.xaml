@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ConfigFile"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="727.334">
+        Title="MainWindow" Height="380.162" Width="727.334">
 
     <Window.Resources>
         <Style x:Key="dblclickItem" TargetType="{x:Type ListViewItem}">
@@ -14,10 +14,10 @@
     </Window.Resources>
 
     <Grid>
-        <Button x:Name="openFileButton" Content="OpenFile" HorizontalAlignment="Left" Height="21.19" Margin="634.42,287.811,0,0" VerticalAlignment="Top" Width="74.914"/>
-        <Button x:Name="saveFileButton" Content="SaveFile" HorizontalAlignment="Left" Height="21.19" Margin="554.506,287.811,0,0" VerticalAlignment="Top" Width="74.914"/>
+        <Button x:Name="openFileButton" Content="OpenFile" HorizontalAlignment="Left" Height="21.19" Margin="634.42,287.811,0,0" VerticalAlignment="Top" Width="74.914" Click="openFileButton_Click"/>
+        <Button x:Name="saveFileButton" Content="SaveFile" HorizontalAlignment="Left" Height="21.19" Margin="554.506,287.811,0,0" VerticalAlignment="Top" Width="74.914" Click="saveFileButton_Click"/>
         <Button x:Name="resetFileButton" Content="ResetFile" HorizontalAlignment="Left" Height="21.19" Margin="495.328,287.811,0,0" VerticalAlignment="Top" Width="54.178" Click="resetFileButton_Click"/>
-        <Button x:Name="openResetFileButton" Content="OpenResetFile" HorizontalAlignment="Left" Height="21.189" Margin="10,287.811,0,0" VerticalAlignment="Top" Width="88.11"/>
+        <Button x:Name="openResetFileButton" Content="OpenResetFile" HorizontalAlignment="Left" Height="21.189" Margin="10,287.811,0,0" VerticalAlignment="Top" Width="88.11" Click="openResetFileButton_Click"/>
         <ListView x:Name="loadedNamesList" HorizontalAlignment="Left" Height="267.758" Margin="10,10,0,0" VerticalAlignment="Top" Width="699.334" ItemContainerStyle="{StaticResource dblclickItem}">
             <!--Makes elemnts unselectable-->
             <!--<ListView.ItemContainerStyle>
@@ -47,6 +47,7 @@
         </ListView>
         <Button x:Name="changeViewButton" HorizontalAlignment="Left" Margin="693.989,262.413,0,0" VerticalAlignment="Top" Width="15.345" Height="15.345" Click="changeViewButton_Click"/>
         <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="21.19" Margin="103.11,287.811,0,0" TextWrapping="Wrap" Text="[name]=&quot;value&quot;{System.String}" VerticalAlignment="Top" Width="387.218" KeyDown="textBox_KeyDown"/>
+        <Button x:Name="checkIfValidButton" Content="CheckIfValid" HorizontalAlignment="Left" Height="21.189" Margin="10,314,0,0" VerticalAlignment="Top" Width="88.11" Click="checkIfValidButton_Click"/>
 
     </Grid>
 </Window>
