@@ -179,7 +179,7 @@ namespace ConfigFile
         {
             string oldpath = cfgPath;
             cfgPath = path;
-            if(LoadCfg())
+            if (LoadCfg())
             {
                 return true;
             }
@@ -221,12 +221,12 @@ namespace ConfigFile
         public bool CheckForMissingVars(bool fixIt)
         {
             bool missing = false;
-            foreach(Field fielddefault in Defaults)
+            foreach (Field fielddefault in Defaults)
             {
                 bool found = false;
-                foreach(Field field in Values)
+                foreach (Field field in Values)
                 {
-                    if(fielddefault.Name == field.Name && fielddefault.Type == field.Type)
+                    if (fielddefault.Name == field.Name && fielddefault.Type == field.Type)
                     {
                         found = true;
                     }
@@ -278,7 +278,14 @@ namespace ConfigFile
         }
         public override string ToString()
         {
-            return "[" + Name.ToString() + "]=\"" + Value.ToString() + "\"{" + Type.AssemblyQualifiedName + "}";
+            if (Type.AssemblyQualifiedName.Contains("mscorlib"))
+                {
+                return "[" + Name.ToString() + "]=\"" + Value.ToString() + "\"\t{" + Type.ToString() + "}";
+            }
+            else
+            {
+                return "[" + Name.ToString() + "]=\"" + Value.ToString() + "\"\t{" + Type.AssemblyQualifiedName + "}";
+            }
         }
         //TODO: Add more conversion support as needed!
         private void ConvertFrom(string value)
@@ -323,7 +330,7 @@ namespace ConfigFile
                 Name = regex.Groups[1].Value;
                 Type = Type.GetType(regex.Groups[3].Value);
                 //If we cant recognize the type, just make it a string and let developer convert himself or he can just set the type himself
-                if(Type == null)
+                if (Type == null)
                 {
                     Type = Type.GetType("System.String");
                 }
