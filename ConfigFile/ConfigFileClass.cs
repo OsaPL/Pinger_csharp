@@ -18,7 +18,11 @@ namespace ConfigFile
         public string cfgPath;
 
         //Secure mode for the cfg
-        public bool Secure ;
+        public bool Secure;
+        //DANGEROUS! Allows notsecure cfg file loading. You can load nonsecured cfgs and still keep secure tag.
+        public bool IgnoreIfNonSecure;
+
+        public ExceptionCollector ExceptionStack;
 
         //Enumarable list of all values
         public List<Field> Values;
@@ -67,7 +71,9 @@ namespace ConfigFile
             Values = new List<Field>();
 
             Secure = false;
+            IgnoreIfNonSecure = false;
 
+            ExceptionStack = new ExceptionCollector();
             //try to loadfile, if we cant load it, create it at our path
             //if defaults config is not null, we generate default fields and values
         }
@@ -112,6 +118,10 @@ namespace ConfigFile
         }
         public void ResetToDefaults()
         {
+            if(Defaults == null)
+            {
+                Defaults = new Config();
+            }
             this.Values = Defaults.Values;
         }
 
@@ -139,7 +149,7 @@ namespace ConfigFile
 
             Encryption Encrypt = new Encryption();
             // Encrypt the file
-            if(Encrypt.FileEncrypt(cfgPath, password))
+            if (Encrypt.FileEncrypt(cfgPath, password))
             {
                 File.Delete(cfgPath);
                 File.Move(cfgPath + ".aes", cfgPath);
@@ -147,12 +157,15 @@ namespace ConfigFile
             else
             {
                 // Security flag gets cleared when its misused
-                Secure = false;
+                if (!IgnoreIfNonSecure)
+                    Secure = false;
             }
 
             // To increase the security of the encryption, delete the given password from the memory !
             Encryption.ZeroMemory(gch.AddrOfPinnedObject(), password.Length * 2);
             gch.Free();
+
+            ExceptionStack.AddStack(Encrypt.ExceptionStack.Stack);
         }
         public bool Decrypt()
         {
@@ -164,7 +177,7 @@ namespace ConfigFile
 
             Encryption Decrypt = new Encryption();
             // Decrypt the file
-            if(Decrypt.FileDecrypt(cfgPath, cfgPath + ".temp", password))
+            if (Decrypt.FileDecrypt(cfgPath, cfgPath + ".temp", password))
             {
                 success = true;
                 File.Delete(cfgPath);
@@ -173,7 +186,8 @@ namespace ConfigFile
             else
             {
                 // Security flag gets cleared when its misused
-                Secure = false;
+                if (!IgnoreIfNonSecure)
+                    Secure = false;
             }
 
             // To increase the security of the decryption, delete the used password from the memory !
@@ -186,10 +200,12 @@ namespace ConfigFile
             {
                 File.Delete(cfgPath + ".temp");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                ExceptionStack.Add(ex);
             }
+
+            ExceptionStack.AddStack(Decrypt.ExceptionStack.Stack);
 
             return success;
         }
@@ -224,9 +240,9 @@ namespace ConfigFile
                     Encrypt();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //could save cfg
+                ExceptionStack.Add(ex);
                 return false;
             }
             //success!
@@ -289,9 +305,15 @@ namespace ConfigFile
                     return false;
                 }
 
+                if (Secure)
+                {
+                    Encrypt();
+                }
+
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                ExceptionStack.Add(ex);
                 return false;
             }
             return true;
@@ -359,7 +381,7 @@ namespace ConfigFile
         public override string ToString()
         {
             if (Type.AssemblyQualifiedName.Contains("mscorlib"))
-                {
+            {
                 return "[" + Name.ToString() + "]=\"" + Value.ToString() + "\"\t{" + Type.ToString() + "}";
             }
             else

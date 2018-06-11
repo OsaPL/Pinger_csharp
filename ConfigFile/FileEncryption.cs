@@ -12,6 +12,13 @@ namespace ConfigFile
         [DllImport("KERNEL32.DLL", EntryPoint = "RtlZeroMemory")]
         public static extern bool ZeroMemory(IntPtr Destination, int Length);
 
+        public ExceptionCollector ExceptionStack;
+
+        public Encryption()
+        {
+            ExceptionStack = new ExceptionCollector();
+        }
+
         /// <summary>
         /// Creates a random salt that will be used to encrypt your file. This method is required on FileEncrypt.
         /// </summary>
@@ -86,6 +93,7 @@ namespace ConfigFile
             }
             catch (Exception ex)
             {
+                ExceptionStack.Add(ex);
                 success = false;
             }
             finally
@@ -137,12 +145,12 @@ namespace ConfigFile
             }
             catch (CryptographicException ex_CryptographicException)
             {
-                //return "FileDecrypt:CryptographicException error: " + ex_CryptographicException.Message;
+                ExceptionStack.Add(ex_CryptographicException);
                 success = false;
             }
             catch (Exception ex)
             {
-                //return "FileDecrypt:Error: " + ex.Message;
+                ExceptionStack.Add(ex);
                 success = false;
             }
 
@@ -152,7 +160,7 @@ namespace ConfigFile
             }
             catch (Exception ex)
             {
-                //return "FileDecrypt:Error by closing CryptoStream: " + ex.Message;
+                ExceptionStack.Add(ex);
                 success = false;
             }
             finally
@@ -160,7 +168,6 @@ namespace ConfigFile
                 fsOut.Close();
                 fsCrypt.Close();
             }
-            //return "FileDecrypt:Ok";
             return success;
         }
     }

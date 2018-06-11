@@ -39,12 +39,31 @@ namespace ConfigFile
             cfg.SafeAdd(new Field("NameInt", 1));
             cfg.SafeAdd(new Field("NameDouble", 1.2));
             //Not mscorlib types
-            cfg.SafeAdd(new Field("NameColor", Color.FromArgb(10,20,30,40)));
+            cfg.SafeAdd(new Field("NameColor", Color.FromArgb(10, 20, 30, 40)));
             //My own class
             cfg.SafeAdd(new Field("NameExample", new ExampleClass()));
             //TODO: More types to check?
 
-            cfg.Defaults.SafeAdd(new Field());
+
+            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += RefreshEncryptState;
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
+            dispatcherTimer.Start();
+
+            encryptButton.Background = new SolidColorBrush(Colors.Red);
+            ignoreNotSecureButton.Background = new SolidColorBrush(Colors.Red);
+        }
+
+        private void RefreshEncryptState(object sender, EventArgs e)
+        {
+            if (cfg.Secure)
+            {
+                encryptButton.Background = new SolidColorBrush(Colors.Green);
+            }
+            else
+            {
+                encryptButton.Background = new SolidColorBrush(Colors.Red);
+            }
         }
 
         void GenerateRndData()
@@ -153,17 +172,40 @@ namespace ConfigFile
             }
             loadedNamesList.Items.Refresh();
         }
-
         private void encryptButton_Click(object sender, RoutedEventArgs e)
         {
-            cfg.Secure = true;
-            cfg.SaveCfg();
+            if (cfg.Secure)
+            {
+                cfg.Secure = false;
+                encryptButton.Background = new SolidColorBrush(Colors.Red);
+            }
+            else
+            {
+                cfg.Secure = true;
+                encryptButton.Background = new SolidColorBrush(Colors.Green);
+            }
+
         }
 
-        private void decryptButton_Click(object sender, RoutedEventArgs e)
+
+
+        private void ignoreNotSecureButton_Click(object sender, RoutedEventArgs e)
         {
-            cfg.Secure = true;
-            cfg.LoadCfg();
+            if (cfg.IgnoreIfNonSecure)
+            {
+                cfg.IgnoreIfNonSecure = false;
+                ignoreNotSecureButton.Background = new SolidColorBrush(Colors.Red);
+            }
+            else
+            {
+                cfg.IgnoreIfNonSecure = true;
+                ignoreNotSecureButton.Background = new SolidColorBrush(Colors.Green);
+            }
+        }
+
+        private void encryptButton_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(cfg.ExceptionStack.ToString(), "Config stack");
         }
     }
 
