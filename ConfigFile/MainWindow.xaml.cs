@@ -153,6 +153,18 @@ namespace ConfigFile
             }
             loadedNamesList.Items.Refresh();
         }
+
+        private void encryptButton_Click(object sender, RoutedEventArgs e)
+        {
+            cfg.Secure = true;
+            cfg.SaveCfg();
+        }
+
+        private void decryptButton_Click(object sender, RoutedEventArgs e)
+        {
+            cfg.Secure = true;
+            cfg.LoadCfg();
+        }
     }
 
     public class ExampleClass

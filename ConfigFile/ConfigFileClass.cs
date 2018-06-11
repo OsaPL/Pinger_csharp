@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 
@@ -14,6 +16,9 @@ namespace ConfigFile
     {
         //our path to the used cfg (if we load a cfg, or in case of invoking method to save without a path)
         public string cfgPath;
+
+        //Secure mode for the cfg
+        public bool Secure ;
 
         //Enumarable list of all values
         public List<Field> Values;
@@ -60,6 +65,8 @@ namespace ConfigFile
             }
 
             Values = new List<Field>();
+
+            Secure = false;
 
             //try to loadfile, if we cant load it, create it at our path
             //if defaults config is not null, we generate default fields and values
@@ -123,6 +130,69 @@ namespace ConfigFile
             return value;
             //or we just ask for the string representation of the value *shrugs*
         }
+        public void Encrypt()
+        {
+            string password = @"qZRwSvsTdc=!RESxnNB8BAnmnAwKzWX3km9rACu#?X38VxT7$u6Jyyu+23G2-@rQ=vMCgG3%-XMr%kTbX6!_#qN4Td$d=9EQb$nf&K%z8bT^NyhpE3qTqgenU?$h^KmRGMb^yHZ=BzU%3PB8KA_7kN8?DUSr4pMr8cwys9n=FW6ULWDnx9T4wEb-+_AG?fYQ3aV+gdc4!9GULa+#mD82?w!Sc+rQzX7G#jdMxJzZf$3vLSUe3?FCCSv@_ynZdvzMsPR3j@Kn#^8MqZ%!Lv3*XpJY7Ew@BCbQDD%^tLB5TgTa+!?fUY*$cb&rdTUf$Hhbmw5&5tGMvSk%JyAc_AXSv&+*Dqk_C6EGrYM#x5QrNz*ZBLebZUzch@DcebJ+LW%w3kbrUkCXbzM&UF2D&aHXsev+BJ&-NDFF=dNpT48_5Fr^+8q^dECBXrMm5wtLhn3-y4X=$fnaBra8vy2ANAPTDjFb$?yWQD-rT-ncKgwRH9v$N-HUm%ET@tdJHU9H9@wUJMD?yq+?Rja*!J3XFQjCs=ChVCdSGCaSXFT&gXTVGuc5beVpxVEDvt8QV@STBt4!3hm?Yct#sY_#S2E-r22_7LN7Jj7W@GTCnUZKJTMS&sr3%bCeUmBC^+saxT*+-Ngha4FDMm96e3MMaa?t$^5nRcs9h#WPEMM2wpU3kBtzwR#4wMQfHDH-N7@L9cZK_A*tDCVV4F*KC=L+EsyfaeqAKCtNn&7pd*-EKnex5uZ$mBA!9TvG6pcB+=^tA8jynD9F9y%WQGg%LZ-4Ykjhz8UyTChU32sz8qM?d-L9wmeU57$Z=?yjJ2hk%E^Zg5Ea@Vy=tcm$T-jSttR8^?_nUT@YxQxFsLD@Ft=maFLGGy^Dz-Tz%p9Zdkz8dvYv!EBP!@uSptY8x5AuSdQNeWaf!q@@P4QxGXDbNVdrmATaXDxWM-dnhV&*p*Fb?^T9@2fNw6Ac^Ausj-xmL%bMA6w6_v3!@x%D@H56cx2X$_^^xQhBJSw@U#+n%W6Le8VFvmqkhF!^6+XQX4x%M*_PSagc6Q!Ddj?t&+R6=8Y2777RYc=njwSQh%sDy@%F#fN#Hqf4v!_Hu4QndQQTbhEvRdprdn3&K9DjpNcZpnqs2DfrFp35*7qnrJupnBFbW_%n!N+fT87e9KP_nK!+vD8=ETU-8jvgsJfsRQ+SeqEmzbWcq3Qx!3gEVtSzT^%257Uma%FXExNjpTy#%N@pDxue4NKZsnQ#L&LUg*wPgLfV+H%acrB24-Y4w_+Lka^3vHTh^Vp3c2kh8+TE?3#=_K_WLsMAxh^MFy6gGQw_!mZPW%W$Y=N7Yv5XMs8My$_6CZ&*-LNWfE2sK-8HN?@m@d4uqWVjcWyhL-TYU7Tg^3*#LvGdTFBumcuxjhJhNmMyCejraKSn^$=wKUu%pBnq!$&@c9*X36fD8cBdmcuxe9@YRbK%KtbQQ^vtZP+pjzx?y?#c9%&yr#VMfdmxsfn8KR3-b8aEG^EH44*NtA9WeTx-?nf%6tv*nszm$j?x5!&+Z?uUn^5VYJJKZ!?H9zVKrp9pHx89rGQAWrEG8XUEC=BVA_&8+Y=G5G?VR9JuHQzuNKLZqF33fGcYRHy*FS%ppg%5HDZV42?SzEhEKZk7cQHmZuJg9FGqGp&9mQ%vN7jEg?5st8-QHq9nA2q9Hm6HwvYEF-z5F64X!AjY#6%hduK7_Yd6Y-*62LqJr8s3$J9QwbhCjtwaF3tyytcmHdR$UHfJ?zLNSB?jjTwzY@*Gw+h2=*&czBXPPDa=D$DNS3BS83_BE?+V9d*CJsZV*QLa3#b@TStfXu973u*DYsC_P7?P2x9azffcgzk&#!sMmQ$Dy!n?S2!-vEca_A3GX8D$dHd+ZZ%nLkXZZuWWwbX87jZw2=2PMS@Va_ms3xH*aLMFnamVS6=Z*#NdnG-$g#=xuTJyhZyuK@&8?wNfnr?JYggB729t82SFs*2jABQB@4nhNkLr^vNV_Zq#r%#BBXD@B?nAgkr#p#t7&fD?WWCF&hN=8@sN2jes#nNr45$64#JsPR7ZDe_Ac=mQ";
+
+            // For additional security Pin the password of your files
+            GCHandle gch = GCHandle.Alloc(password, GCHandleType.Pinned);
+
+            Encryption Encrypt = new Encryption();
+            // Encrypt the file
+            if(Encrypt.FileEncrypt(cfgPath, password))
+            {
+                File.Delete(cfgPath);
+                File.Move(cfgPath + ".aes", cfgPath);
+            }
+            else
+            {
+                // Security flag gets cleared when its misused
+                Secure = false;
+            }
+
+            // To increase the security of the encryption, delete the given password from the memory !
+            Encryption.ZeroMemory(gch.AddrOfPinnedObject(), password.Length * 2);
+            gch.Free();
+        }
+        public bool Decrypt()
+        {
+            bool success = false;
+            string password = @"qZRwSvsTdc=!RESxnNB8BAnmnAwKzWX3km9rACu#?X38VxT7$u6Jyyu+23G2-@rQ=vMCgG3%-XMr%kTbX6!_#qN4Td$d=9EQb$nf&K%z8bT^NyhpE3qTqgenU?$h^KmRGMb^yHZ=BzU%3PB8KA_7kN8?DUSr4pMr8cwys9n=FW6ULWDnx9T4wEb-+_AG?fYQ3aV+gdc4!9GULa+#mD82?w!Sc+rQzX7G#jdMxJzZf$3vLSUe3?FCCSv@_ynZdvzMsPR3j@Kn#^8MqZ%!Lv3*XpJY7Ew@BCbQDD%^tLB5TgTa+!?fUY*$cb&rdTUf$Hhbmw5&5tGMvSk%JyAc_AXSv&+*Dqk_C6EGrYM#x5QrNz*ZBLebZUzch@DcebJ+LW%w3kbrUkCXbzM&UF2D&aHXsev+BJ&-NDFF=dNpT48_5Fr^+8q^dECBXrMm5wtLhn3-y4X=$fnaBra8vy2ANAPTDjFb$?yWQD-rT-ncKgwRH9v$N-HUm%ET@tdJHU9H9@wUJMD?yq+?Rja*!J3XFQjCs=ChVCdSGCaSXFT&gXTVGuc5beVpxVEDvt8QV@STBt4!3hm?Yct#sY_#S2E-r22_7LN7Jj7W@GTCnUZKJTMS&sr3%bCeUmBC^+saxT*+-Ngha4FDMm96e3MMaa?t$^5nRcs9h#WPEMM2wpU3kBtzwR#4wMQfHDH-N7@L9cZK_A*tDCVV4F*KC=L+EsyfaeqAKCtNn&7pd*-EKnex5uZ$mBA!9TvG6pcB+=^tA8jynD9F9y%WQGg%LZ-4Ykjhz8UyTChU32sz8qM?d-L9wmeU57$Z=?yjJ2hk%E^Zg5Ea@Vy=tcm$T-jSttR8^?_nUT@YxQxFsLD@Ft=maFLGGy^Dz-Tz%p9Zdkz8dvYv!EBP!@uSptY8x5AuSdQNeWaf!q@@P4QxGXDbNVdrmATaXDxWM-dnhV&*p*Fb?^T9@2fNw6Ac^Ausj-xmL%bMA6w6_v3!@x%D@H56cx2X$_^^xQhBJSw@U#+n%W6Le8VFvmqkhF!^6+XQX4x%M*_PSagc6Q!Ddj?t&+R6=8Y2777RYc=njwSQh%sDy@%F#fN#Hqf4v!_Hu4QndQQTbhEvRdprdn3&K9DjpNcZpnqs2DfrFp35*7qnrJupnBFbW_%n!N+fT87e9KP_nK!+vD8=ETU-8jvgsJfsRQ+SeqEmzbWcq3Qx!3gEVtSzT^%257Uma%FXExNjpTy#%N@pDxue4NKZsnQ#L&LUg*wPgLfV+H%acrB24-Y4w_+Lka^3vHTh^Vp3c2kh8+TE?3#=_K_WLsMAxh^MFy6gGQw_!mZPW%W$Y=N7Yv5XMs8My$_6CZ&*-LNWfE2sK-8HN?@m@d4uqWVjcWyhL-TYU7Tg^3*#LvGdTFBumcuxjhJhNmMyCejraKSn^$=wKUu%pBnq!$&@c9*X36fD8cBdmcuxe9@YRbK%KtbQQ^vtZP+pjzx?y?#c9%&yr#VMfdmxsfn8KR3-b8aEG^EH44*NtA9WeTx-?nf%6tv*nszm$j?x5!&+Z?uUn^5VYJJKZ!?H9zVKrp9pHx89rGQAWrEG8XUEC=BVA_&8+Y=G5G?VR9JuHQzuNKLZqF33fGcYRHy*FS%ppg%5HDZV42?SzEhEKZk7cQHmZuJg9FGqGp&9mQ%vN7jEg?5st8-QHq9nA2q9Hm6HwvYEF-z5F64X!AjY#6%hduK7_Yd6Y-*62LqJr8s3$J9QwbhCjtwaF3tyytcmHdR$UHfJ?zLNSB?jjTwzY@*Gw+h2=*&czBXPPDa=D$DNS3BS83_BE?+V9d*CJsZV*QLa3#b@TStfXu973u*DYsC_P7?P2x9azffcgzk&#!sMmQ$Dy!n?S2!-vEca_A3GX8D$dHd+ZZ%nLkXZZuWWwbX87jZw2=2PMS@Va_ms3xH*aLMFnamVS6=Z*#NdnG-$g#=xuTJyhZyuK@&8?wNfnr?JYggB729t82SFs*2jABQB@4nhNkLr^vNV_Zq#r%#BBXD@B?nAgkr#p#t7&fD?WWCF&hN=8@sN2jes#nNr45$64#JsPR7ZDe_Ac=mQ";
+
+            // For additional security Pin the password of your files
+            GCHandle gch = GCHandle.Alloc(password, GCHandleType.Pinned);
+
+            Encryption Decrypt = new Encryption();
+            // Decrypt the file
+            if(Decrypt.FileDecrypt(cfgPath, cfgPath + ".temp", password))
+            {
+                success = true;
+                File.Delete(cfgPath);
+                File.Move(cfgPath + ".temp", cfgPath);
+            }
+            else
+            {
+                // Security flag gets cleared when its misused
+                Secure = false;
+            }
+
+            // To increase the security of the decryption, delete the used password from the memory !
+            Encryption.ZeroMemory(gch.AddrOfPinnedObject(), password.Length * 2);
+            gch.Free();
+
+
+            // We do a cleanup
+            try
+            {
+                File.Delete(cfgPath + ".temp");
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return success;
+        }
 
         //Saves to the loaded cfgPath (or just default to anything) Lets return true if everything saves ok
         public bool SaveCfg()
@@ -149,6 +219,10 @@ namespace ConfigFile
                     }
                 }
                 System.IO.File.WriteAllLines(file.FullName, new[] { output }, Encoding.UTF8);
+                if (Secure)
+                {
+                    Encrypt();
+                }
             }
             catch (Exception)
             {
@@ -194,6 +268,10 @@ namespace ConfigFile
         {
             try
             {
+                if (Secure)
+                {
+                    Decrypt();
+                }
                 Values.Clear();
                 if (System.IO.File.Exists(cfgPath))  //if cfg file exists
                 {
@@ -204,11 +282,13 @@ namespace ConfigFile
                         Values.Add(new Field(line));
                     }
                     CheckForValuesToRemove();
+
                 }
                 else
                 {
                     return false;
                 }
+
             }
             catch (Exception)
             {
