@@ -74,8 +74,6 @@ namespace ConfigFile
             IgnoreIfNonSecure = false;
 
             ExceptionStack = new ExceptionCollector();
-            //try to loadfile, if we cant load it, create it at our path
-            //if defaults config is not null, we generate default fields and values
         }
 
         //Tries to add a value, if cant it will delete it, it will return false if there was something invalid
@@ -128,6 +126,7 @@ namespace ConfigFile
         public void GetValue(string Name, out object value)
         {
             value = null;
+
             //foreach line search for Name named value and try to take it out
             //then we get type of Value and the convert it to that type
             //object.GetType() == typeof(int)
